@@ -468,8 +468,6 @@ function b = durbin(x,p,q)
     b = b*length(x)/sqrt(epsilon);
   end
 
-
-
 endfunction
 
 
