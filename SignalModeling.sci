@@ -418,5 +418,59 @@ function [a,err] = covm(x,p)
 
 endfunction
 
+//**********************************************************************
+//
+//  Name: durbin
+//
+//  Purpose: The purpose of this function is to solve for the
+//  moving average model parameters for an input sequence using
+//  Durbin's method.
+//  The signal is modeled as the unit sample response of a system
+//  represented by, H(z) = B(z) / A(z), such that the coefficients of
+//  B(z) and A(z) are contained in the vectors, [b(0), b(1),.. b(q)],
+//  and [1 a(1), a(2),... a(p)] respectively.
+//
+//  Calling Sequence: b = durbin(x,p,q)
+//
+//  Inputs:
+//
+//    x - The input vector to be processed.
+//
+//    p - The order of the all-pole model used to approximate 1/B(z).
+//    This parameter should be at least 4*q.
+//
+//    q - The order of the moving average model.
+//
+//  Outputs:
+//
+//
+//    b - The parameters of the moving average model.
+//
+//**********************************************************************
+function b = durbin(x,p,q)
+
+  // Ensure that we have a column vector.
+  x = x(:);
+
+  if p < length(x)
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Use the autocorrelation method to estimate the
+    // denominator of an all-pole model for x(n).
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    [a,epsilon] = acm(x,p);
+
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Use the autocorrelation method to estimate the model
+    // parameters of an all-pole model for a(n).  This will
+    // be an estimate of b(n).
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    [b,epsilon] = acm(length(x)*a/sqrt(epsilon),q);
+    b = b*length(x)/sqrt(epsilon);
+  end
+
+
+
+endfunction
+
 
 
