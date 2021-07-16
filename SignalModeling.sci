@@ -51,6 +51,8 @@ function [a,b] = pade(x,p,q)
     // bq = X0 * ap
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     b = X(1:q+1,1:p+1) * a;
+  else
+    error('Model order too large');
   end
 
 endfunction
@@ -115,6 +117,8 @@ function [a,b,err] = prony(x,p,q)
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     err = x(q+2:N)' * X(q+2:N,1:p+1) * a;
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  else
+    error('Model order too large');
   end
 
 endfunction
@@ -183,6 +187,8 @@ function [a,b,err] = shanks(x,p,q)
     // err = rx(0) - rxg * b
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     err = x'*x -x'*G(1:N,1:q+1) * b;
+  else
+    error('Model order too large');
   end
 
 endfunction
@@ -318,7 +324,9 @@ function [a,b,err] = ipf(x,p,q,n,a)
 
       // Compute error.
       err = norm( u(1:N,1) + [u(1:N,2:p+1) -v(1:N,:)]*ab);
-      end
+    end
+  else
+    error('Model order too large');
   end
 
 endfunction
@@ -367,6 +375,8 @@ function [a,err] = acm(x,p)
 
     // Compute error.
     err = abs(X(1:N+p,1)'*X*a);
+  else
+    error('Model order too large');
   end
 
 endfunction
@@ -414,6 +424,8 @@ function [a,err] = covm(x,p)
 
     // Compute error.
     err = abs(X(p+1:N,1)'*X(p+1:N,:)*a);
+  else
+    error('Model order too large');
   end
 
 endfunction
@@ -466,6 +478,8 @@ function b = durbin(x,p,q)
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     [b,epsilon] = acm(length(x)*a/sqrt(epsilon),q);
     b = b*length(x)/sqrt(epsilon);
+  else
+    error('Model order too large');
   end
 
 endfunction

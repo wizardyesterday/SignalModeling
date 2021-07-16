@@ -155,7 +155,7 @@ endfunction
 //
 //**********************************************************************
 function X = convm(x,p)
-H
+
   N = length(x) + 2 * p - 2;
 
   // Ensure that we have a column vector.
