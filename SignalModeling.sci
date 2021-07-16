@@ -438,9 +438,8 @@ endfunction
 //  moving average model parameters for an input sequence using
 //  Durbin's method.
 //  The signal is modeled as the unit sample response of a system
-//  represented by, H(z) = B(z) / A(z), such that the coefficients of
-//  B(z) and A(z) are contained in the vectors, [b(0), b(1),.. b(q)],
-//  and [1 a(1), a(2),... a(p)] respectively.
+//  represented by, H(z) = B(z) , such that the coefficients of
+//  B(z)  are contained in the vector, [b(0), b(1),.. b(q)].
 //
 //  Calling Sequence: b = durbin(x,p,q)
 //
