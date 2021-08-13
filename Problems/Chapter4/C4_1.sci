@@ -67,8 +67,8 @@ function performPadeProcessing(omegaC,n0,displayNumber)
   [m16_3,fr] = frmag(b_3,a_16,200);
   [m19_0,fr] = frmag(b_0,a_19,200);
 
-  // Convert to rad/sample.
-  fr = fr * %pi;
+  // Scale frequency to f/%pi.
+  fr = fr * 2;
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Plot the results.
@@ -109,6 +109,7 @@ endfunction
 performPadeProcessing(%pi/2,1,1);
 
 // Perform part (b) processing.
+performPadeProcessing(%pi/16,1,2);
 
 // Perform part (c) processing.
 
