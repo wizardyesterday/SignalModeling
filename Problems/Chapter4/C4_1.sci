@@ -13,13 +13,17 @@ exec('utils.sci',-1);
 //  using the Pade approximation.  Plots are created for various values
 //  of p and q.  The heavy lifting is performed by the pade() function.
 //
-//  Calling Sequence: performPadeProcessing()
+//  Calling Sequence: performPadeProcessing(omegaC,n0,scaleFactor,
+//                                          displayNumber)
 //
 //  Inputs:
 //
 //    omegaC - The cuttoff frequency in rad/sample.
 //
 //    n0 - The delay in samples.
+//
+//    scaleFactor - The factor for which the sinc() function is
+//    dividec.
 //
 //    displayNumber - The identifier of the display for which plots
 //    are to be rendered.
@@ -29,7 +33,7 @@ exec('utils.sci',-1);
 //    None.
 //
 //**********************************************************************
-function performPadeProcessing(omegaC,n0,displayNumber)
+function performPadeProcessing(omegaC,n0,scaleFactor,displayNumber)
 
   // Generate time vector.
   n = 0:19;
@@ -40,31 +44,28 @@ function performPadeProcessing(omegaC,n0,displayNumber)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Generate ideal impulse responses.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  i9 = sinc(nShifted * omegaC);
-
-  // Generate truncated impulse response.
-  h9 = [i9(1:10) zeros(1,10)];
+  h = sinc(nShifted * omegaC) / scaleFactor;
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Generate filters.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // p = 0, q = 19.
-  [a_0,b_19] = pade(h9,0,19);
+  [a_0,b_19] = pade(h ,0,19);
 
   // p = 4, q = 15.
-  [a_4,b_15] = pade(h9,4,15);
+  [a_4,b_15] = pade(h ,4,15);
 
   // p = 8, q = 11.
-  [a_8,b_11] = pade(h9,8,11);
+  [a_8,b_11] = pade(h ,8,11);
 
   // p = 12, q = 7.
-  [a_12,b_7] = pade(h9,12,7);
+  [a_12,b_7] = pade(h ,12,7);
 
   // p = 16, q = 3.
-  [a_16,b_3] = pade(h9,16,3);
+  [a_16,b_3] = pade(h ,16,3);
 
   // p = 19, q = 0.
-  [a_19,b_0] = pade(h9,19,0);
+  [a_19,b_0] = pade(h ,19,0);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -127,10 +128,10 @@ endfunction
 //**********************************************************************
 
 // Parform part (a),
-performPadeProcessing(%pi/2,1,1);
+performPadeProcessing(%pi/2,9,2,1);
 
 // Perform part (b).
-performPadeProcessing(%pi/16,1,2);
+performPadeProcessing(%pi/16,9,16,2);
 
 // Perform part (c).
 
