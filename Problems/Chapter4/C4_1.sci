@@ -7,14 +7,14 @@ exec('utils.sci',-1);
 
 //**********************************************************************
 //
-//  Name: performPadeProcessing
+//  Name: performPadeProc
 //
 //  Purpose: The purpose of this function is to create lowpass filters
 //  using the Pade approximation.  Plots are created for various values
 //  of p and q.  The heavy lifting is performed by the pade() function.
 //
-//  Calling Sequence: performPadeProcessing(omegaC,n0,scaleFactor,
-//                                          displayNumber)
+//  Calling Sequence: performPadeProc(omegaC,n0,scaleFactor,
+//                                    displayNumber)
 //
 //  Inputs:
 //
@@ -33,7 +33,7 @@ exec('utils.sci',-1);
 //    None.
 //
 //**********************************************************************
-function performPadeProcessing(omegaC,n0,scaleFactor,displayNumber)
+function performPadeProc(omegaC,n0,scaleFactor,displayNumber)
 
   // Generate time vector.
   n = 0:19;
@@ -125,14 +125,14 @@ endfunction
 
 //**********************************************************************
 //
-//  Name: performPronyProcessing
+//  Name: performPronyProc
 //
 //  Purpose: The purpose of this function is to create lowpass filters
-//  using the Pade approximation.  Plots are created for various values
+//  using the Prony approximation.  Plots are created for various values
 //  of p and q.  The heavy lifting is performed by the prony() function.
 //
-//  Calling Sequence: performPronyProcessing(omegaC,n0,scaleFactor,
-//                                           displayNumber)
+//  Calling Sequence: performPronyProc(omegaC,n0,scaleFactor,
+//                                     displayNumber)
 //
 //  Inputs:
 //
@@ -151,7 +151,7 @@ endfunction
 //    None.
 //
 //**********************************************************************
-function performPronyProcessing(omegaC,n0,scaleFactor,displayNumber)
+function performPronyProc(omegaC,n0,scaleFactor,displayNumber)
 
   // Generate time vector.
   n = 0:19;
@@ -248,21 +248,123 @@ function performPronyProcessing(omegaC,n0,scaleFactor,displayNumber)
 endfunction
 
 //**********************************************************************
+//
+//  Name: performEllipticProc
+//
+//  Purpose: The purpose of this function is to create a lowpass filter
+//  using an elliptic approximation.  A plot is created to illustrate
+//  the frequency response.
+//
+//  Calling Sequence: performEllipticProc(n,omegaC,ripple,displayNumber)
+//
+//  Inputs:
+//
+//    n - The filter order.
+//
+//    omegaC - The cuttoff frequency in rad/sample.
+//
+//    ripple - The passband and stopband ripple.
+//
+//    displayNumber - The identifier of the display for which plots
+//    are to be rendered.
+//
+//  Outputs:
+//
+//    None.
+//
+//**********************************************************************
+function performEllipticProc(n,omegaC,ripple,displayNumber);
+
+  // Construct elliptic filter.  
+  hs = analpf(n,'ellip',[ripple,ripple],omegaC);
+
+  // Construct independent variable.
+  fr = 0:1/200:1 - (1/200);
+  fr = fr * %pi;
+
+  // Generate frequency response vector.
+  hf = freq(hs(2),hs(3),%i*fr);
+
+  // Convert to magnitude response.
+  hm = abs(hf);
+
+  // Compute number of elements in passband.
+  l = omegaC / %pi;
+  l = l * length(hm);
+
+  // Compute number of elements in stopband.
+  u = length(hm) - l;
+
+  // Create ideal magnitude response vector.
+  ideal = [ones(1,l) zeros(1,u)];
+
+  // Compute differences.
+  difference = ideal - hm;
+
+  // Square the differences.
+  difference = difference .* difference;
+
+  // Compute mean square value.
+  eps = sum(difference);
+  
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Plot the results.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  scf(displayNumber);
+
+  // Plot frequency response.
+  subplot(211)
+  s1 = "Elliptic LP Filter, ";
+  s2 = msprintf("wc: %1.2f, ",omegaC);
+  title(s1+s2);
+  plot(fr,hm);
+
+  // Plot squared error.
+  subplot(212)
+  s1 = "Elliptic LP Filter, ";
+  s2 = msprintf("epsilon: %f, ",eps);
+  title(s1+s2);
+  plot(difference);
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+endfunction
+
+//**********************************************************************
 // Mainline code.
 //**********************************************************************
 
-// Parform part (a),
-performPadeProcessing(%pi/2,9,2,1);
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (a):
+// Design a filter with a cutoff frequency
+// of PI/2 using the Pade' method.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+performPadeProc(%pi/2,9,2,1);
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-// Perform part (b).
-performPadeProcessing(%pi/16,9,16,2);
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (b):
+// Design a filter with a cutoff frequency
+// of PI/16 using the Pade' method.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+performPadeProc(%pi/16,9,16,2);
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-// Perform part (c).
-performPronyProcessing(%pi/2,9,2,3);
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (c):
+// Design a filter with a cutoff frequency
+// of PI/2 using the Prony method.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-// Perform part (d).
+performPronyProc(%pi/2,9,2,3);
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-
-
-
-
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (d):
+// Design a filter using the builtin
+// analpf() command.  This will be a 10th
+// order elliptic filter with a cutoff
+// frequency of PI/2.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+performEllipticProc(10,%pi/2,10^(-1.25),4);
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
