@@ -86,6 +86,11 @@ endfunction
 //    b - The numerator coefficients in the model.
 //
 //    err - The mean square error of the approximation to the signal.
+//    If p has a value of zero, and q has a value equal to one less
+//    than the length of the input vector, x, err will be set to a
+//    value of [].  This indicates that there is no error and the
+//    model is being applied to the full length of an FIR filter.  I
+//    think I'll return an error value of zero for this case.
 //
 //**********************************************************************
 function [a,b,err] = prony(x,p,q)
@@ -113,9 +118,16 @@ function [a,b,err] = prony(x,p,q)
     b = X(1:q+1,1:p+1) * a;
 
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-    // err = Rx*ap
+    // err = Rx*ap.
+    // If the filter is nonrecursive,
+    // the error will be zero.
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     err = x(q+2:N)' * X(q+2:N,1:p+1) * a;
+
+    if err == []
+      // fix it up.
+      err = 0;
+    end
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   else
     error('Model order too large');
