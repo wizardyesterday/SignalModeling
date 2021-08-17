@@ -12,11 +12,13 @@ exec('utils.sci',-1);
 //  Purpose: The purpose of this function is to create models using
 //  the iterative prefiltering method.
 //
-//  Calling Sequence: performIpfProc(h,n,displayNumber)
+//  Calling Sequence: performIpfProc(h,sigma2,n,displayNumber)
 //
 //  Inputs:
 //
 //    h - The unit sample response to be modeled.
+//
+//    sigma2 - The variance of the noise to be added to h.
 //
 //    n - The number of iterations that the iterative prefilter
 //    method should execute.
@@ -29,13 +31,28 @@ exec('utils.sci',-1);
 //    None.
 //
 //**********************************************************************
-function performIpfProc(h,n,displayNumber)
+function performIpfProc(h,sigma2,n,displayNumber)
+
+  N = length(h);
+
+  if sigma2 == 0
+    v = zeros(1,N);
+  else
+    noisegen(1,N,sigma2);
+
+    // Generate Gaussian noise sequence.
+    v = feval([1:N],Noise);
+  end
+
+  // Force column vectors.
+  h = h(:);
+  v = v(:);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Two-zero, four-pole model.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Generate the model.
-  [a4,b2,err42] = ipf(h,4,2,6);
+  [a4,b2,err42] = ipf(h+v,4,2,n);
 
   // Compute unit sample response.
   h42 = filterBlock(u,b2,a4(2:$));
@@ -45,7 +62,7 @@ function performIpfProc(h,n,displayNumber)
   // Four-zero, four-pole model.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Generate the model.
-  [a4,b4,err44] = ipf(h,4,4,n);
+  [a4,b4,err44] = ipf(h+v,4,4,n);
 
   // Compute unit sample response.
   h44 = filterBlock(u,b4,a4(2:$));
@@ -55,7 +72,7 @@ function performIpfProc(h,n,displayNumber)
   // Five-pole, five-zero model.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Generate the model.
-  [a5,b5,err55] = ipf(h,5,5,n);
+  [a5,b5,err55] = ipf(h+v,5,5,n);
 
   // Compute unit sample response.
   h55 = filterBlock(u,b5,a5(2:$));
@@ -67,24 +84,26 @@ function performIpfProc(h,n,displayNumber)
   scf(displayNumber);
 
   subplot(411);
-  title("Original Filter, h(n)");
-  plot(h);
+  s1 = "Original Filter, h(n), ";
+  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err42);  
+  title(s1+s2);
+  plot(h+v);
 
   subplot(412);
   s1 = "IPF Model, p: 4, q: 2, ";
-  s2 = msprintf("err: %e",err42);  
+  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err42);  
   title(s1+s2);
   plot(h42);
 
   subplot(413);
   s1 = "IPF Model, p: 4, q: 4, ";
-  s2 = msprintf("err: %e",err44);  
+  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err44);  
   title(s1+s2);
   plot(h44);
 
   subplot(414);
   s1 = "IPF Model, p: 5, q: 5, ";
-  s2 = msprintf("err: %e",err55);  
+  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err55);  
   title(s1+s2);
   plot(h55);
  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -202,6 +221,22 @@ h = filterBlock(u,b,a);
 // Use iterative prefiltering to generate
 // some models.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-performIpfProc(h,6,1);
-performPronyProc(h,2);
+performIpfProc(h,0,6,1);
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (c):
+// Use iterative prefiltering to generate
+// some models with noise added to the signal.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+performIpfProc(h,0.0001,6,2);
+performIpfProc(h,0.001,6,3);
+performIpfProc(h,0.01,6,4);
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (d):
+// Use Prony to generate some models.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+//performPronyProc(h,5);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
