@@ -85,25 +85,26 @@ function performIpfProc(h,sigma2,n,displayNumber)
 
   subplot(411);
   s1 = "Original Filter, h(n), ";
-  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err42);  
+  s2 = msprintf("sigma^2: %1.2e, err: 0.00",sigma2);  
+  s2 = "";
   title(s1+s2);
   plot(h+v);
 
   subplot(412);
   s1 = "IPF Model, p: 4, q: 2, ";
-  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err42);  
+  s2 = msprintf("sigma^2: %1.2e, err42: %1.2e",sigma2,err42);  
   title(s1+s2);
   plot(h42);
 
   subplot(413);
   s1 = "IPF Model, p: 4, q: 4, ";
-  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err44);  
+  s2 = msprintf("sigma^2: %1.2e, err44: %1.2e",sigma2,err44);  
   title(s1+s2);
   plot(h44);
 
   subplot(414);
   s1 = "IPF Model, p: 5, q: 5, ";
-  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err55);  
+  s2 = msprintf("sigma^2: %1.2e, err55: %1.2e",sigma2,err55);  
   title(s1+s2);
   plot(h55);
  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -187,24 +188,25 @@ function performPronyProc(h,sigma2,displayNumber)
 
   subplot(411);
   s1 = "Original Filter, h(n), ";
-  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err42);  
+  s2 = msprintf("sigma^2: %1.2e, err: 0.00",sigma2);  
   title(s1+s2);
   plot(h+v);
 
   subplot(412);
   s1 = "Prony Model, p: 4, q: 2, ";
-  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err42);
+  s2 = msprintf("sigma^2: %1.2e, err42: %1.2e",sigma2,err42);
   title(s1+s2);
   plot(h42);
 
   subplot(413)
-  s1 = msprintf("Noise variance: %e, err: %e",sigma2,err44);
+  s1 = "Prony Model, p: 4, q: 4, ";
+  s1 = msprintf("sigma^2: %1.2e, err44: %1.2e",sigma2,err44);
   title(s1+s2);
   plot(h44);
 
   subplot(414);
   s1 = "Prony Model, p: 5, q: 5, ";
-  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err55);  
+  s2 = msprintf("sigma^2: %1.2e, err55: %1.2e",sigma2,err55);  
   title(s1+s2);
   plot(h55);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
