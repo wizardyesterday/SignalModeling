@@ -253,7 +253,8 @@ performIpfProc(h,0.01,6,4);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (d):
-// Use Prony to generate some models.
+// Use Prony to generate some modelswith and
+// without noise.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 performPronyProc(h,0,5);
 performPronyProc(h,0.0001,6);
