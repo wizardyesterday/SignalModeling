@@ -83,26 +83,25 @@ function performIpfProc(h,sigma2,n,displayNumber)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   scf(displayNumber);
 
-  subplot(411);
+  subplot(421);
   s1 = "Original Filter, h(n), ";
   s2 = msprintf("sigma^2: %1.2e, err: 0.00",sigma2);  
-  s2 = "";
   title(s1+s2);
   plot(h+v);
 
-  subplot(412);
+  subplot(423);
   s1 = "IPF Model, p: 4, q: 2, ";
   s2 = msprintf("sigma^2: %1.2e, err42: %1.2e",sigma2,err42);  
   title(s1+s2);
   plot(h42);
 
-  subplot(413);
+  subplot(425);
   s1 = "IPF Model, p: 4, q: 4, ";
   s2 = msprintf("sigma^2: %1.2e, err44: %1.2e",sigma2,err44);  
   title(s1+s2);
   plot(h44);
 
-  subplot(414);
+  subplot(427);
   s1 = "IPF Model, p: 5, q: 5, ";
   s2 = msprintf("sigma^2: %1.2e, err55: %1.2e",sigma2,err55);  
   title(s1+s2);
@@ -186,25 +185,25 @@ function performPronyProc(h,sigma2,displayNumber)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   scf(displayNumber);
 
-  subplot(411);
+  subplot(422);
   s1 = "Original Filter, h(n), ";
   s2 = msprintf("sigma^2: %1.2e, err: 0.00",sigma2);  
   title(s1+s2);
   plot(h+v);
 
-  subplot(412);
+  subplot(424);
   s1 = "Prony Model, p: 4, q: 2, ";
   s2 = msprintf("sigma^2: %1.2e, err42: %1.2e",sigma2,err42);
   title(s1+s2);
   plot(h42);
 
-  subplot(413)
+  subplot(426)
   s1 = "Prony Model, p: 4, q: 4, ";
-  s1 = msprintf("sigma^2: %1.2e, err44: %1.2e",sigma2,err44);
+  s2 = msprintf("sigma^2: %1.2e, err44: %1.2e",sigma2,err44);
   title(s1+s2);
   plot(h44);
 
-  subplot(414);
+  subplot(428);
   s1 = "Prony Model, p: 5, q: 5, ";
   s2 = msprintf("sigma^2: %1.2e, err55: %1.2e",sigma2,err55);  
   title(s1+s2);
@@ -255,11 +254,11 @@ performIpfProc(h,0.01,6,4);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (d):
-// Use Prony to generate some modelswith and
+// Use Prony to generate some models with and
 // without noise.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-performPronyProc(h,0,5);
-performPronyProc(h,0.0001,6);
-performPronyProc(h,0.001,7);
-performPronyProc(h,0.01,8);
+performPronyProc(h,0,1);
+performPronyProc(h,0.0001,2);
+performPronyProc(h,0.001,3);
+performPronyProc(h,0.01,4);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
