@@ -117,13 +117,15 @@ endfunction
 //  Purpose: The purpose of this function is to create models using
 //  the Prony method.
 //
-//  Calling Sequence: performPronyProc(h,displayNumber)
+//  Calling Sequence: performPronyProc(h,sigma2,displayNumber)
 //
 //  Inputs:
 //
 //    h - The unit sample response to be modeled.
 //
-//    displayNumber - The identifier of the display for which plots
+//    sigma2 - The variance of the noise to be added to h.
+//
+///    displayNumber - The identifier of the display for which plots
 //    are to be rendered.
 ///
 //  Outputs:
@@ -131,13 +133,28 @@ endfunction
 //    None.
 //
 //**********************************************************************
-function performPronyProc(h,displayNumber)
+function performPronyProc(h,sigma2,displayNumber)
+
+  N = length(h);
+
+  if sigma2 == 0
+    v = zeros(1,N);
+  else
+    noisegen(1,N,sigma2);
+
+    // Generate Gaussian noise sequence.
+    v = feval([1:N],Noise);
+  end
+
+  // Force column vectors.
+  h = h(:);
+  v = v(:);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Two-zero, four-pole model.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Generate the model.
-  [a4,b2,err42] = prony(h,4,2);
+  [a4,b2,err42] = prony(h+v,4,2);
 
   // Compute unit sample response.
   h42 = filterBlock(u,b2,a4(2:$));
@@ -147,7 +164,7 @@ function performPronyProc(h,displayNumber)
   // Four-zero, four-pole model.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Generate the model.
-  [a4,b4,err44] = prony(h,4,4);
+  [a4,b4,err44] = prony(h+v,4,4);
 
   // Compute unit sample response.
   h44 = filterBlock(u,b4,a4(2:$));
@@ -157,7 +174,7 @@ function performPronyProc(h,displayNumber)
   // Five-pole, five-zero model.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Generate the model.
-  [a5,b5,err55] = prony(h,5,5);
+  [a5,b5,err55] = prony(h+v,5,5);
 
   // Compute unit sample response.
   h55 = filterBlock(u,b5,a5(2:$));
@@ -169,27 +186,27 @@ function performPronyProc(h,displayNumber)
   scf(displayNumber);
 
   subplot(411);
-  title("Original Filter, h(n)");
-  plot(h);
+  s1 = "Original Filter, h(n), ";
+  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err42);  
+  title(s1+s2);
+  plot(h+v);
 
   subplot(412);
   s1 = "Prony Model, p: 4, q: 2, ";
-  s2 = msprintf("err: %e",err42);  
+  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err42);
   title(s1+s2);
   plot(h42);
 
-  subplot(413);
-  s1 = "Prony Model, p: 4, q: 4, ";
-  s2 = msprintf("err: %e",err44);  
+  subplot(413)
+  s1 = msprintf("Noise variance: %e, err: %e",sigma2,err44);
   title(s1+s2);
   plot(h44);
 
   subplot(414);
   s1 = "Prony Model, p: 5, q: 5, ";
-  s2 = msprintf("err: %e",err55);  
+  s2 = msprintf("Noise variance: %e, err: %e",sigma2,err55);  
   title(s1+s2);
   plot(h55);
- //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 endfunction
@@ -238,5 +255,8 @@ performIpfProc(h,0.01,6,4);
 // Part (d):
 // Use Prony to generate some models.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-//performPronyProc(h,5);
+performPronyProc(h,0,5);
+performPronyProc(h,0.0001,6);
+performPronyProc(h,0.001,7);
+performPronyProc(h,0.01,8);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
