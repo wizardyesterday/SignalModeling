@@ -52,7 +52,7 @@ function [a,b] = pade(x,p,q)
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     b = X(1:q+1,1:p+1) * a;
   else
-    error('Model order too large');
+    error('Delay too large');
   end
 
 endfunction
@@ -101,7 +101,7 @@ function [a,b,err] = prony(x,p,q)
   N = length(x);
 
   if (p + q) < length(x) then
-    // Create convolution matrix.
+    // Create data matrix.
     X = convm(x,p+1);
 
     // Construct the data matrix.
@@ -237,7 +237,7 @@ function [h,err] = spike(g,n0,n)
   m = length(g);
 
   if (m + n - 1) > n0
-    // Construct convolution matrix.
+    // Construct data matrix.
     G = convm(g,n);
 
     // Construct delayed unit sample.
@@ -297,12 +297,12 @@ function [a,b,err] = ipf(x,p,q,n,a)
 
   if (p+q) < length(x)
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-    // argn() returns is the number of arguments passed to the
+    // argn(2) returns is the number of arguments passed to the
     // function.
     // If 5 arguments were not passed to the function, it is
     // implied that the last parameter was not passed.
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-    if argn() < 5
+    if argn(2) < 5
       // Fall through to Prony's method for the initial estimate.
       a   = prony(x,p,q);
     end
@@ -319,10 +319,10 @@ function [a,b,err] = ipf(x,p,q,n,a)
       // g(n) = a(n) * delta(n).
       g = filterBlock(delta,1,a);
 
-      // Construct convolution matrix of f.
+      // Construct data matrix of f.
       u = convm(f,p+1); 
 
-      // Construct convolution matrix of g.
+      // Construct data matrix of g.
       v = convm(g,q+1);
 
       // Compute composite of numerator and denominator coefficients.
@@ -376,7 +376,7 @@ function [a,err] = acm(x,p)
   N   = length(x);
 
   if p < length(x)
-    // Construct convolution matrix,
+    // Construct data matrix,
     X   = convm(x,p+1);
 
     // Construct data matrix.
@@ -425,7 +425,7 @@ function [a,err] = covm(x,p)
   N   = length(x);
 
   if p < length(x)
-    // Construct convolution matrix,
+    // Construct data matrix,
     X = convm(x,p+1);
 
     // Construct data matrix.

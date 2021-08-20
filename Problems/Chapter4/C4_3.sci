@@ -121,7 +121,7 @@ endfunction
 //    xhat - An estimate of the original signal.
 //
 //**********************************************************************
-function xhat = recoverSignal(y,g,n0,sigma2)
+function xhat = recoverSignal(y,g,n0,sigma2,alpha)
 
   N = length(g);
 
@@ -141,11 +141,121 @@ function xhat = recoverSignal(y,g,n0,sigma2)
   // Introduce noise into the channel.
   g0 = g + v;
 
-  // Create spiking filter.
-  [hn,err] = spike(g0,n0,50);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // argn(2) returns is the number of arguments passed to the
+  // function.
+  // If 5 arguments were not passed to the function, it is
+  // implied that the last parameter was not passed.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  if argn(2) == 5
+   // Create spiking filter with whitening.
+    [hn,err] = spikeWithWhitening(g0,n0,50,alpha); 
+  else
+    // Create spiking filter.
+    [hn,err] = spike(g0,n0,50);
+  end
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Recover x(n).
   xhat = convol(hn,y);
+
+endfunction
+
+//**********************************************************************
+//
+//  Name: spikeWithWhitening
+//
+//  Purpose: The purpose of this function is to compute a least squares
+//  inverse FIR filter that approximates a delayed unit sample.  This
+//  function differs in the implementation of the original spike()
+//  function since it solves the system of equations using the
+//  autocorrelation matrix for the vector g.  Additionally, this
+//  function accepts a whitening parameter.  The equations are of the
+//  form,
+//
+//  (Rg + alpha * I)h = g0,
+//
+//  where, Rg is the autocorrelation matrix of g, alpha is a
+//  whitening parameter, I is an identify matrix of the same size
+//  as Rg, h is the vector of coefficients, and g0 is the vector of
+//  delayed values of g.
+//
+//  Calling Sequence: [h,err] = spike(g,n0,n)
+//
+//  Inputs:
+//
+//    g - The filter for which an inverse it to be computed.
+//
+//    n0 - The delay of the unit sample to be approximated.
+//
+//    n - The order of the inverse filter.
+//
+//    alpha - The whitening parameter.
+//
+//  Outputs:
+//
+//    h - The inverse filter coefficients.
+//
+//    err - The mean square error of the approximation to the delayed
+//    unit sample.
+//
+//**********************************************************************
+function [h,err] = spikeWithWhitening(g,n0,n,alpha)
+disp('im here');
+  g = g(:);
+
+  if alpha < 0
+    // Nuke the whitening parameter.
+    alpha = 0;
+  end
+
+  if n > n0
+    // Construct data matrix.
+    G = convm(g,n);
+
+    // Construct autocorrelation matrix.
+    Rg = G' * G;
+
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Extract the number of columns in Rg.  This is
+    // necessary since other vectors, used to compute
+    // the solution to the system of equations need
+    // to be of sized consistant for the computations.
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Determine the number of rows and columns in Rg.
+    k = size(Rg);
+
+    // Extract the number of rows of Rg.
+    numberOfColumnsInRg = k(2);
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+    // Add in the whitening parameter.
+    Rg = Rg + alpha * eye(numberOfColumnsInRg);
+
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Construct g0(n).
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Allocate space for desired vector, d(n).
+    d = zeros(numberOfColumnsInRg,1);
+
+    // Allocate space for expanded g(n).
+    gx = zeros(numberOfColumnsInRg,1);
+
+    // Copy g(n) to expanded version of g(n).
+    gx(1:length(g)) = g(1:$);
+
+    // Construct the g0(n) vector.
+    g0(1:n0+1) = gx(n0+1:-1:1);
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+    // Compute coefficients of inverse filter.
+    h = Rg \ g0;
+
+    // Compute error.
+    err = 1 - G(n0+1,:) * h;
+  else
+    error('Delay too large');
+  end
 
 endfunction
 
@@ -172,15 +282,19 @@ y = createdBlurredSignal(x,g,0)
 xhat = recoverSignal(y,g,49,0);
 
 xhat49 = recoverSignal(y,g,49,0);
+xhat49 = xhat49(50:50+154);
 xhat49 = xhat49 / max(xhat49);
 
-xhat50 = recoverSignal(y,g,50,0);
-xhat50 = xhat50 / max(xhat50);
+white49 = recoverSignal(y,g,49,0,0);
+white49 = white49(50:50+154);
+white49 = white49 / max(white49);
 
-subplot(211);
+subplot(311);
 plot(x);
-subplot(212);
-plot(xhat / max(xhat));
+subplot(312);
+plot(xhat49);
+subplot(313);
+plot(white49);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
