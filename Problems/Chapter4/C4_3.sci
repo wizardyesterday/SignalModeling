@@ -7,6 +7,46 @@ exec('utils.sci',-1);
 
 //**********************************************************************
 //
+//  Name: generateWhiteNoise
+//
+//  Purpose: The purpose of this function is to generate a white noise
+//  sequence for which the random variable is uniformly distributed
+//  between -0.005 and 0.005.
+//
+//  Calling Sequence: v = generateWhiteNoise(numberOfSamples)
+//
+//  Inputs:
+//
+//    numberOfSampels - The number of random numbers to generate.
+//
+//  Outputs:
+//
+//    v - A uniformly distributed white noise sequence.
+//
+//**********************************************************************
+function v = generateWhiteNoise(numberOfSamples)
+
+  // Ensure that we have a uniform distribution.
+  rand('uniform');
+
+  for i = 1:numberOfSamples
+    // Generate the next random number.
+    a = rand();
+
+    // Scale appropriately.
+    a = a * .01;
+
+    // Translate so that -0.005 <= a <= .005.
+    a = a - 0.005;
+
+    // Save in returned vector.
+    v(i) = a;
+  end
+
+endfunction
+
+//**********************************************************************
+//
 //  Name: createImpulseTrain
 //
 //  Purpose: The purpose of this function is to a stream of weighted
@@ -25,10 +65,10 @@ exec('utils.sci',-1);
 //**********************************************************************
 function x = createImpulseTrain()
 
-  // Generate location of impulses.
+  // Generate locations of impulses.
   nk = [25 40 55 65 85 95 110 130 140 155];
 
-  // Generate template vector
+  // Generate impulse weights.
   xk = [1 .8 .7 .5 .7 .2 .9 .5 .6 .3];
 
   // This index is used for lookup purposes.
@@ -201,7 +241,8 @@ endfunction
 //
 //**********************************************************************
 function [h,err] = spikeWithWhitening(g,n0,n,alpha)
-disp('im here');
+
+  // Force column vector.
   g = g(:);
 
   if alpha < 0
@@ -272,6 +313,12 @@ n = 0:50;
 // Generate blurring filter.
 g = cos(0.2 * (n - 25)) .* exp(-0.01 * (n - 25)^2);
 
+// Generate uniformly distributed white noise.
+v = generateWhiteNoise(length(g));
+
+// Create noisy blurring filter.
+gNoisy = g + v';
+
 // Create noise-free signal.
 x = createImpulseTrain();
 
@@ -289,6 +336,13 @@ white49 = recoverSignal(y,g,49,0,0);
 white49 = white49(50:50+154);
 white49 = white49 / max(white49);
 
+scf(1);
+subplot(211);
+plot(g);
+subplot(212);
+plot(gNoisy);
+
+scf(2);
 subplot(311);
 plot(x);
 subplot(312);
