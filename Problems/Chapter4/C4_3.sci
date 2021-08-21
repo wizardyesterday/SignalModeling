@@ -387,7 +387,7 @@ xhatNoisyG = xhatNoisyG(50:50+154);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 subplot(331);
 title('Original x(n)');
-plot(x);
+plot2d3([1:length(x)],x,style=[color("red")]);
 
 subplot(332);
 title('Channel-impaired x(n)');
