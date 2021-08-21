@@ -13,7 +13,7 @@ exec('utils.sci',-1);
 //  sequence for which the random variable is uniformly distributed
 //  between -0.005 and 0.005.
 //
-//  Calling Sequence: v = generateWhiteNoise(numberOfSamples)
+//  Calling Sequence: w = generateWhiteNoise(numberOfSamples)
 //
 //  Inputs:
 //
@@ -21,10 +21,10 @@ exec('utils.sci',-1);
 //
 //  Outputs:
 //
-//    v - A uniformly distributed white noise sequence.
+//    w - A uniformly distributed white noise sequence.
 //
 //**********************************************************************
-function v = generateWhiteNoise(numberOfSamples)
+function w = generateWhiteNoise(numberOfSamples)
 
   // Ensure that we have a uniform distribution.
   rand('uniform');
@@ -33,14 +33,14 @@ function v = generateWhiteNoise(numberOfSamples)
     // Generate the next random number.
     a = rand();
 
-    // Scale appropriately.
+    // Translate for symmetry about 0.
+    a = a - .5;
+
+    // Scale so that -0.005 <= a <= .005.
     a = a * .01;
 
-    // Translate so that -0.005 <= a <= .005.
-    a = a - 0.005;
-
     // Save in returned vector.
-    v(i) = a;
+    w(i) = a;
   end
 
 endfunction
@@ -141,9 +141,10 @@ endfunction
 //
 //  Purpose: The purpose of this function is to recover a signal by
 //  passing a distorted signal through an inverse filter of that of the
-//  channel.
+//  channel.  Depending whether or not alpha is passed to this function,
+//  one of two spike() routines is invoked.
 //
-//  Calling Sequence: xhar = recoverSignal(y,g,n0,sigma2)
+//  Calling Sequence: xhar = recoverSignal(y,g,n0,alpha)
 //
 //  Inputs:
 //
@@ -153,8 +154,7 @@ endfunction
 //
 //    n0 - The delay that is used to optimize the inverse filter.
 //
-//    sigma2 - The variance of the noise to be added to the channel.
-//
+//    alpha - The prewhitening parameter.
 //
 //  Outputs:
 //
@@ -188,8 +188,8 @@ function xhat = recoverSignal(y,g,n0,sigma2,alpha)
   // implied that the last parameter was not passed.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   if argn(2) == 5
-   // Create spiking filter with whitening.
-    [hn,err] = spikeWithWhitening(g0,n0,50,alpha); 
+   // Create spiking filter with prewhitening.
+    [hn,err] = spikeWithPrewhitening(g0,n0,50,alpha); 
   else
     // Create spiking filter.
     [hn,err] = spike(g0,n0,50);
@@ -203,7 +203,7 @@ endfunction
 
 //**********************************************************************
 //
-//  Name: spikeWithWhitening
+//  Name: spikeWithPrewhitening
 //
 //  Purpose: The purpose of this function is to compute a least squares
 //  inverse FIR filter that approximates a delayed unit sample.  This
@@ -216,11 +216,11 @@ endfunction
 //  (Rg + alpha * I)h = g0,
 //
 //  where, Rg is the autocorrelation matrix of g, alpha is a
-//  whitening parameter, I is an identify matrix of the same size
+//  prewhitening parameter, I is an identify matrix of the same size
 //  as Rg, h is the vector of coefficients, and g0 is the vector of
 //  delayed values of g.
 //
-//  Calling Sequence: [h,err] = spike(g,n0,n)
+//  Calling Sequence: [h,err] = spikeWithPrewhitening(g,n0,n,alpha)
 //
 //  Inputs:
 //
@@ -240,13 +240,13 @@ endfunction
 //    unit sample.
 //
 //**********************************************************************
-function [h,err] = spikeWithWhitening(g,n0,n,alpha)
+function [h,err] = spikeWithPrewhitening(g,n0,n,alpha)
 
   // Force column vector.
   g = g(:);
 
   if alpha < 0
-    // Nuke the whitening parameter.
+    // Nuke the prewhitening parameter.
     alpha = 0;
   end
 
@@ -313,67 +313,113 @@ n = 0:50;
 // Generate blurring filter.
 g = cos(0.2 * (n - 25)) .* exp(-0.01 * (n - 25)^2);
 
-// Generate uniformly distributed white noise.
-v = generateWhiteNoise(length(g));
-
-// Create noisy blurring filter.
-gNoisy = g + v';
-
-// Create noise-free signal.
+// Create original signal.
 x = createImpulseTrain();
 
 // Create noise-free distorted signal.
-y = createdBlurredSignal(x,g,0)
-
-// Recover the signal assumming a noise-free g(n).
-xhat = recoverSignal(y,g,49,0);
-
-xhat49 = recoverSignal(y,g,49,0);
-xhat49 = xhat49(50:50+154);
-xhat49 = xhat49 / max(xhat49);
-
-white49 = recoverSignal(y,g,49,0,0);
-white49 = white49(50:50+154);
-white49 = white49 / max(white49);
-
-scf(1);
-subplot(211);
-plot(g);
-subplot(212);
-plot(gNoisy);
-
-scf(2);
-subplot(311);
-plot(x);
-subplot(312);
-plot(xhat49);
-subplot(313);
-plot(white49);
-
+y = createdBlurredSignal(x,g,0);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (b):
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Create noise-free distorted signal.
+y = createdBlurredSignal(x,g,0);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (c):
+// Recover the original signal with an
+// optimum delay of 49 samples.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Recover the signal assumming a noise-free g(n).
+xhat = recoverSignal(y,g,49,0);
+xhat = xhat(50:50+154);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (d):
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Create noisy distorted signals.
+y_0001 = createdBlurredSignal(x,g,0.0001);
+y_001 = createdBlurredSignal(x,g,0.001);
+
+// Recover original signal in both cases.
+xhat_0001 = recoverSignal(y_0001,g,49,0);
+xhat_001 = recoverSignal(y_001,g,49,0);
+
+// Keep only the portions of interest.
+xhat_0001 = xhat_0001(50:50+154);
+xhat_001 = xhat_001(50:50+154);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (e):
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+white_0001_50 = recoverSignal(y_0001,g,49,0,50);
+white_0001_500 = recoverSignal(y_0001,g,49,0,500);
+white_001_50 = recoverSignal(y_001,g,49,0,50);
+white_001_500 = recoverSignal(y_001,g,49,0,500);
+
+white_0001_50 = white_0001_50(50:50+154);
+white_0001_500 = white_0001_500(50:50+154);
+
+white_001_50 = white_001_50(50:50+154);
+white_001_500 = white_001_500(50:50+154);
+
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (f):
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Generate uniformly distributed white noise.
+w = generateWhiteNoise(length(g));
+
+// Create noisy blurring filter.
+gNoisy = g + w';
+
+xhatNoisyG = recoverSignal(y,gNoisy,49,0);
+xhatNoisyG = xhatNoisyG(50:50+154);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Make some plots.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+subplot(331);
+title('Original x(n)');
+plot(x);
+
+subplot(332);
+title('Channel-impaired x(n)');
+plot(y);
+
+subplot(333);
+title('Recovered, sigma^2: 0.0001');
+plot(xhat_0001 / max(xhat_0001));
+
+subplot(334);
+title('Recovered, sigma^2: 0.001');
+plot(xhat_001 / max(xhat_001));
+
+subplot(335);
+title('Recovered, sigma^2: 0.0001, alpha: 50');
+plot(white_0001_50 / max(white_0001_50));
+
+subplot(336);
+title(' Recovered, sigma^2: 0.0001, alpha: 500');
+plot(white_0001_500 / max(white_0001_500));
+
+subplot(337);
+title('Recovered, sigma^2: 0.001, alpha: 50');
+plot(white_001_50 / max(white_001_50));
+
+subplot(338);
+title('Recovered, sigma^2: 0.001, alpha: 500');
+plot(white_001_500 / max(white_001_500));
+
+subplot(339);
+title('Recovered, Noisy g(n)');
+plot(xhatNoisyG / max(xhatNoisyG));
+
+
 
