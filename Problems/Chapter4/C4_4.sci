@@ -31,13 +31,8 @@ function b = constructMaModel(x)
   // Find rx(0).
   n = find(rx == max(rx));
 
-  // Construct the autocorrelation for the positive lags.
-  for i = 0:2
-    r(i + 1) = rx(n + i);
-  end
-
-  // Populate with values for the negative lags.
-  r = [r($:-1:2); r];
+  // Only a second-order model is of interest.
+  r = [rx(n-2) rx(n-1) rx(n) rx(n+1) rx(n+2)];
 
   // Perform our "z-transform".
   p = poly(r,'z','coeff');
