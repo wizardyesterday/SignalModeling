@@ -183,17 +183,13 @@ bdcc = flexibleDurbin(covm,covm,x,8,2);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Compute  the unit sample response of the
+// Compute  the white noise response of the
 // filters.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Construct the unit sample.
-u = [1 zeros(1,199)];
-
-// Compute responses.
-y = filterBlock(u,b,0);
-yd = filterBlock(u,bd,0);
-ydac = filterBlock(u,bdac,0);
-ydcc = filterBlock(u,bdcc,0);
+y = filterBlock(w,b,0);
+yd = filterBlock(w,bd,0);
+ydac = filterBlock(w,bdac,0);
+ydcc = filterBlock(w,bdcc,0);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
