@@ -146,9 +146,9 @@ endfunction
 // Part (b)
 // Test our function.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Generate 200 samples of white Gaussian noise with unit variance.
-noisegen(1,200,1);
-w = feval([1:200],Noise);
+// Generate 256 samples of white Gaussian noise with unit variance.
+noisegen(1,256,1);
+w = feval([1:256],Noise);
 
 // Filter the noise.
 x = filterBlock(w,[1 0 0.9],0);
