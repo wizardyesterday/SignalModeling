@@ -466,7 +466,6 @@ endfunction
 //
 //  Outputs:
 //
-//
 //    b - The parameters of the moving average model.
 //
 //**********************************************************************
