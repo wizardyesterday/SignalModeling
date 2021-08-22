@@ -23,7 +23,7 @@ function r = autocorrelate(x,lag);
 // Start with a clean slate.
 accumulator = 0;
 
-// Avoid constant reevaluation durin loop execution.
+// Avoid constant reevaluation during loop execution.
 upperLimit = length(x) - lag;
 
 for i = 1:upperLimit
