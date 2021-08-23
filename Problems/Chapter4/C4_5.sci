@@ -1,0 +1,127 @@
+//**********************************************************************
+// File Name: C4_5.sci
+//**********************************************************************
+
+// Bring in all of the utility functions.
+exec('utils.sci',-1);
+
+//**********************************************************************
+//
+//  Name: modifiedYullWalker
+//
+//  Purpose: The purpose of this function is to solve for the
+//  coefficients of a filter that models a signal given the number of
+//  poles and zeros of the model.
+//  The signal is modeled as the white noise response of a system
+//  represented by, H(z) = B(z) / A(z), such that the coefficients of
+//  B(z) and A(z) are contained in the vectors, [b(0), b(1),.. b(q)],
+//  and [1 a(1), a(2),... a(p)] respectively.
+//
+//  Calling Sequence: [a,b] = pade(x,p,q)
+//
+//  Inputs:
+//
+//    x - The input vector to be processed.
+//
+//    p - The number of poles in the model.
+//
+//    q - The number of zeros in the model.
+//
+//  Outputs:
+//
+//    a - The denominator coefficients in the model.
+//
+//    b - The numerator coefficients in the model.
+//
+//**********************************************************************
+function [a,b] = modifiedYuleWalker(x,p,q)
+
+  // Compute autocorrelation sequence.
+  rx = convol(x,x($:-1:1));
+
+  // Find rx(0).
+  n = find(rx == max(rx));
+
+  // Use only rx(0) and the positive lags.
+  rx = rx(n:$);
+
+  // Let Pade' do the work with b being a dummy value.
+  [a,b] = pade(rx,p,q);
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Determine the numberator coefficients.
+  // First, rx(n) drives a filter with the
+  // system function H(z) = 1/A(x) to produce
+  // an output y(n). Then Durbin's method is
+  // used to produce the AR(q) coefficients.
+  // Note that when invoking Durbin's method,
+  // the all-pole model needs to be at least
+  // four times the order of the estimated
+  // all-zero model.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  y = filterBlock(rx,a(2:$),1);
+
+  // Durbin's method does the rest of the work.  
+  b = durbin(y,20*q,q);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+endfunction
+
+//**********************************************************************
+// Mainline code.
+//**********************************************************************
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (a): The writing of our function,
+// constructMaModel().
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (b)
+// Create x(n).  The spectrum will be plotted
+// later.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Generate 100 samples of white Gaussian noise with unit variance.
+noisegen(1,100,1);
+w = feval([1:100],Noise);
+
+// Set the numerator coefficients of H(z).
+b = [1 -0.9 0.81];
+
+// Set the denominator coefficients of H(z).
+a = [-1.978 2.853 -1.877 0.904];
+
+// Filter the noise.
+x = filterBlock(w,b,a);
+
+// Compute the autocorrelation function.
+rx = convol(x,x($:-1:1));
+
+// Compute the power spectrum.
+Px = fft(rx,-1);
+Px = Px(1:length(Px)/2 + 1);
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (c)
+// Use the modified Yule-Walker equation to
+// find an ARMA(4.2) model for x(n).
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+[ahat,bhat] = modifiedYuleWalker(x,4,2);
+
+xhat = filterBlock(w,bhat,ahat(2:$));
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Plot the output so that comparasions can
+// be made.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+subplot(211);
+title('Original x(n)');
+plot(x);
+
+subplot(212);
+title('Modified Yule-Walker Equations');
+plot(xhat);
+
