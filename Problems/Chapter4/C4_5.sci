@@ -63,7 +63,7 @@ function [a,b] = modifiedYuleWalker(x,p,q)
   // four times the order of the estimated
   // all-zero model.  We choose 20q.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  y = filterBlock(x,a(2:$),1);
+  y = filterBlock(x,a(2:$),0);
 
   // Durbin's method does the rest of the work.  
   b = durbin(y,20*q,q);
@@ -114,6 +114,43 @@ Px = Px(1:length(Px)/2 + 1);
 [ahat,bhat] = modifiedYuleWalker(x,4,2);
 
 xhat = filterBlock(w,bhat,ahat(2:$));
+
+//-----------------------------------------
+// Now create 10 realizations of the model
+// so that some statistical analysis can be
+// carried out.
+//-----------------------------------------
+as = zeros(5,10);
+bs = zeros(2,10);
+
+for i = 1:10
+ // Generate 100 samples of white Gaussian noise with unit variance.
+  noisegen(1,100,1);
+  ws = feval([1:100],Noise);
+
+  // Filter the noise.
+  xs = filterBlock(ws,b,a);
+
+  // Generate the model coefficients.
+  [as bs] = modifiedYuleWalker(xs,4,2);
+
+  // Save in matrix.
+  am(:,i) = as;
+  bm(:,i) = bs;
+end
+
+// Perform statistical analysis.
+for i = 1:5
+  meanA(i) = mean(am(i,:));
+  stA(i) = stdev(am(i,:));
+end
+
+for i = 1:3
+  meanB(i) = mean(bm(i,:));
+  stB(i) = stdev(bm(i,:));
+end
+//-----------------------------------------
+
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 
