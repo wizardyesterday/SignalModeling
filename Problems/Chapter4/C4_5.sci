@@ -7,7 +7,7 @@ exec('utils.sci',-1);
 
 //**********************************************************************
 //
-//  Name: modifiedYullWalker
+//  Name: modifiedYuleWalker
 //
 //  Purpose: The purpose of this function is to solve for the
 //  coefficients of a filter that models a signal given the number of
@@ -49,17 +49,21 @@ function [a,b] = modifiedYuleWalker(x,p,q)
   [a,b] = pade(rx,p,q);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Determine the numberator coefficients.
-  // First, rx(n) drives a filter with the
-  // system function H(z) = 1/A(x) to produce
-  // an output y(n). Then Durbin's method is
-  // used to produce the AR(q) coefficients.
+  // Determine the numerator coefficients.
+  // Note that if the system function is
+  // H(z) = B(z) / A(z), we can pass the
+  // x(n) through a filter with the system
+  // function described by H1(z) = A(z).
+  // That is, define y(n) = h1(n) * x(n).  The
+  // result will be an MA(q) process.  We can
+  // then present this process to the Durbin
+  // algorithm to estimate b(n).
   // Note that when invoking Durbin's method,
   // the all-pole model needs to be at least
   // four times the order of the estimated
-  // all-zero model.
+  // all-zero model.  We choose 20q.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  y = filterBlock(rx,a(2:$),1);
+  y = filterBlock(x,a(2:$),1);
 
   // Durbin's method does the rest of the work.  
   b = durbin(y,20*q,q);
@@ -73,7 +77,7 @@ endfunction
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (a): The writing of our function,
-// constructMaModel().
+// modifiedYuleWalker().
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -117,11 +121,15 @@ xhat = filterBlock(w,bhat,ahat(2:$));
 // Plot the output so that comparasions can
 // be made.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-subplot(211);
-title('Original x(n)');
-plot(x);
+subplot(311);
+title('Original Spectrum, Px(w)');
+plot(abs(Px));
 
-subplot(212);
-title('Modified Yule-Walker Equations');
-plot(xhat);
+subplot(312);
+title('Original, x(n) (normalized)');
+plot(x / max(x));
+
+subplot(313);
+title('Modified Yule-Walker Equations, xhat(n) (normalized)');
+plot(xhat / max(xhat));
 
