@@ -63,7 +63,7 @@ function [a,b] = modifiedYuleWalker(x,p,q)
   // four times the order of the estimated
   // all-zero model.  We choose 20q.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  y = filterBlock(x,a(2:$),0);
+  y = filterBlock(x,a,0);
 
   // Durbin's method does the rest of the work.  
   b = durbin(y,20*q,q);
