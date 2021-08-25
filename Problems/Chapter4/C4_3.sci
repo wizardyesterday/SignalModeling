@@ -120,7 +120,7 @@ function y = createdBlurredSignal(x,g,sigma2)
   if sigma2 == 0
     v = zeros(1,N);
   else
-    noisegen(1,N,sigma2);
+    noisegen(1,N,sqrt(sigma2));
 
     // Generate Gaussian noise sequence.
     v = feval([1:N],Noise);
@@ -168,7 +168,7 @@ function xhat = recoverSignal(y,g,n0,sigma2,alpha)
   if sigma2 == 0
     v = zeros(1,N);
   else
-    noisegen(1,N,sigma2);
+    noisegen(1,N,sqrt(sigma2));
 
     // Generate Gaussian noise sequence.
     v = feval([1:N],Noise);

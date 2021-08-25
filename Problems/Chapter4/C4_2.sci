@@ -38,7 +38,7 @@ function performIpfProc(h,sigma2,n,displayNumber)
   if sigma2 == 0
     v = zeros(1,N);
   else
-    noisegen(1,N,sigma2);
+    noisegen(1,N,sqrt(sigma2));
 
     // Generate Gaussian noise sequence.
     v = feval([1:N],Noise);
@@ -140,7 +140,7 @@ function performPronyProc(h,sigma2,displayNumber)
   if sigma2 == 0
     v = zeros(1,N);
   else
-    noisegen(1,N,sigma2);
+    noisegen(1,N,sqrt(sigma2));
 
     // Generate Gaussian noise sequence.
     v = feval([1:N],Noise);
