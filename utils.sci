@@ -138,7 +138,7 @@ endfunction
 //
 //  Name: convm
 //
-//  Purpose: The purpose of this function is to construct a xoncolurion
+//  Purpose: The purpose of this function is to construct a convolution
 //  matrix.
 //
 //  Calling Sequence: X = convm(x,p)
@@ -172,4 +172,57 @@ function X = convm(x,p)
 endfunction
 
 exec('SignalModeling.sci',-1);
+
+//**********************************************************************
+//
+//  Name: flipud
+//
+//  Purpose: The purpose of this function is to reverse the order of
+//  the entries of a vector.
+//
+//  Calling Sequence: b = flipud(a)
+//
+//  Inputs:
+//
+//    a - The input vector.
+//
+//  Outputs:
+//
+//    b - The vector that contains reversed entries of a.
+//
+//**********************************************************************
+function b = flipud(a)
+
+  // Reverse the order of a.
+  b = a($:-1:1);
+
+endfunction
+
+//**********************************************************************
+//
+//  Name: fliplr
+//
+//  Purpose: The purpose of this function is to reverse the order of
+//  the entries of a vector.
+//
+//  Calling Sequence: b = fliplr(a)
+//
+//  Inputs:
+//
+//    a - The input vector.
+//
+//  Outputs:
+//
+//    b - The vector that contains reversed entries of a.
+//
+//**********************************************************************
+function b = fliplr(a)
+
+  // Reverse the order of a.
+  b = a($:-1:1);
+
+endfunction
+
+exec('SignalModeling.sci',-1);
+exec('LevinsonRecursion.sci',-1);
 
