@@ -44,9 +44,9 @@ function [a,epsilon] = rtoa(r)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct coefficient sequence.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  for j=2:p+1
+  for j = 2:p+1
     gamm = -r(2:j)' * flipud(a) / epsilon;
-    a=[a;0] + gamm * [0;conj(flipud(a))];
+    a=[a;0] + gamm * [0; conj(flipud(a))];
     epsilon = epsilon * (1 - abs(gamm)^2);
   end
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -120,7 +120,7 @@ function a=gtoa(gamm)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct coefficient sequence.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  for j=2:p+1;
+  for j = 2:p+1
      a = [a;0] + gamm(j-1) * [0; conj(flipud(a))];
  end
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -160,7 +160,7 @@ function gamm = atog(a)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct reflection coefficients.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  for j=p-1:-1:2;
+  for j = p-1:-1:2
     a= (a(1:j-1) - gamm(j) * flipud(conj(a(1:j-1)))) ./ (1 - abs(gamm(j))^2);
     gamm(j-1)=a(j-1);
   end
@@ -190,7 +190,7 @@ endfunction
 //**********************************************************************
 function r = gtor(gamm,epsilon)
 
-p=length(gamm);
+  p=length(gamm);
 
   aa=gamm(1);
 
@@ -199,9 +199,9 @@ p=length(gamm);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct autocorrelation sequence.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  for j=2:p;
-    aa=[aa; 0] + gamm(j) * [conj(flipud(aa));1];
-    r=[r -fliplr(r) * aa];
+  for j = 2:p
+    aa = [aa; 0] + gamm(j) * [conj(flipud(aa));1];
+    r = [r -fliplr(r) * aa];
   end
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
@@ -213,7 +213,7 @@ p=length(gamm);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   if argn(2) == 2
     // Normalize.
-    ir = r * epsilon/prod(1-abs(gamm).^2);
+    r = r * epsilon/prod(1-abs(gamm).^2);
   end
 
 endfunction
@@ -303,7 +303,7 @@ function x = glev(r,b)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct data sequence.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  for j=2:p;
+  for j = 2:p
     g = r(2:j)' * flipud(a)
     gamm(j-1) = -g / epsilon
     a = [a; 0] + gamm(j-1) * [0; conj(flipud(a))]
