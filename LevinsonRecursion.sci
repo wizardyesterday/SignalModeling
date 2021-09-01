@@ -31,15 +31,15 @@
 function [a,epsilon] = rtoa(r)
 
   // Ensure that we have a column vector.
-  r=r(:);
+  r = r(:);
 
-  p=length(r)-1;
+  p = length(r)-1;
 
   // a0(0) = 1.
-  a=1;
+  a = 1;
 
   // e0 = rx(0).
-  epsilon=r(1);
+  epsilon = r(1);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct coefficient sequence.
@@ -113,9 +113,9 @@ function a=gtoa(gamm)
   gamm = gamm(:);
 
   // a0(0) = 1.
-  a=1;
+  a = 1;
 
-  p=length(gamm);
+  p = length(gamm);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct coefficient sequence.
@@ -149,11 +149,11 @@ endfunction
 function gamm = atog(a)
 
   // Ensure that we have a column vector.
-  a=a(:);
+  a = a(:);
 
-  p=length(a);
+  p = length(a);
 
-  a=a(2:p)/a(1);
+  a = a(2:p)/a(1);
 
   gamm(p-1) = a(p-1);
   
@@ -190,11 +190,11 @@ endfunction
 //**********************************************************************
 function r = gtor(gamm,epsilon)
 
-  p=length(gamm);
+  p = length(gamm);
 
-  aa=gamm(1);
+  aa = gamm(1);
 
-  r=[1 -gamm(1)];
+  r = [1 -gamm(1)];
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct autocorrelation sequence.
@@ -289,16 +289,16 @@ function x = glev(r,b)
   // Force a column vector.
   r = r(:);
 
-  p =length(b);
+  p = length(b);
 
   // a0(0) = 1.
-  a=1;
+  a = 1;
 
   // x0(0) = b(0) / rx(0).
-  x=b(1)/  r(1);
+  x = b(1) /  r(1);
 
   // e0 = rx(0).
-  epsilon=r(1);
+  epsilon = r(1);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct data sequence.
