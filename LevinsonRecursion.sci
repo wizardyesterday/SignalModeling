@@ -315,3 +315,94 @@ function x = glev(r,b)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 endfunction
+
+//**********************************************************************
+//
+//  Name: shur
+//
+//  The purpose of this function is to apply the Shur recursion to a
+//  sequence of autocorrelation values and the generate a sequence of
+//  reflection coefficients.
+//
+//  Calling Sequence: [gamm,epsilon] = shur(r)
+//
+//  Inputs:
+//
+//    r - The autocorrelation sequence for which the model parameters
+//    are to be constructed.
+//
+//  Outputs:
+//
+//   gamm - The reflection coefficients.
+//
+//    epsilon - The mean square error eP.
+//
+//**********************************************************************
+function [gamm,epsilon] = shur(r)
+
+  // Ensure that we have a column vector.
+  r = r(:);
+
+  // Upper loop index.
+  p = length(r) - 1;
+
+  // g0(k) = r(k).
+  g = r;
+
+  // gR(k) = r(k).
+  gR = r;
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Construct reflection coefficient
+  // sequence.  Note that the indices
+  // differ from the algorithm in the
+  // book since the book assumes
+  // zero-based arrays, whereas
+  // Scilab assumes one-based arrays.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  for j = 0:p-1
+    // Update gamma
+    gamm(j+1) = -g(j+2) / gR(j+1);
+
+    //-------------------------------
+    // Double buffering is needed so
+    // that the past incarnations
+    // of g(k) and gR(k) can be
+    // utilized.  This is not so
+    // obvious when looking at the
+    // algorithm.
+    //-------------------------------
+    gPrev = g;
+    gRPrev = gR;
+    //-------------------------------
+
+    //----------------------------------------------------
+    // Let's vectorize this stuff for speed.  I still
+    // want to keep the for loops around as comments so
+    // that the spirit of the algorithm is not lost.
+    // Vectorizing without these comments would make the
+    // code unmaintainable since the loops are implicite
+    // in the vectorized statements.
+    //----------------------------------------------------
+    //for k = j+2:p
+    //  g(k+1) = gPrev(k+1) + gamm(j+1) * gRPrev(k);
+    //end
+
+    // Vectorized version of above loop.
+    g(j+3:p+1) = gPrev(j+3:p+1) + gamm(j+1) .* gRPrev(j+2:p);
+
+    //for k = j+1:p
+    //  gR(k+1) = gRPrev(k) + conj(gamm(j+1)) * gPrev(k+1);
+    //end
+
+    // Vectorized version of above loop.
+    gR(j+2:p+1) = gRPrev(j+1:p) + conj(gamm(j+1)) .* gPrev(j+2:p+1);
+    //----------------------------------------------------
+  end
+ //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  // eP = gP^(R)(p).
+  epsilon= gR(p+1);
+ 
+endfunction
+
