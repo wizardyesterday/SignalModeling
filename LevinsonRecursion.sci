@@ -33,7 +33,7 @@ function [a,epsilon] = rtoa(r)
   // Ensure that we have a column vector.
   r = r(:);
 
-  p = length(r)-1;
+  p = length(r) - 1;
 
   // a0(0) = 1.
   a = 1;
@@ -153,7 +153,7 @@ function gamm = atog(a)
 
   p = length(a);
 
-  a = a(2:p)/a(1);
+  a = a(2:p) / a(1);
 
   gamm(p-1) = a(p-1);
   
@@ -162,7 +162,7 @@ function gamm = atog(a)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   for j = p-1:-1:2
     a= (a(1:j-1) - gamm(j) * flipud(conj(a(1:j-1)))) ./ (1 - abs(gamm(j))^2);
-    gamm(j-1)=a(j-1);
+    gamm(j-1) = a(j-1);
   end
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
@@ -309,7 +309,7 @@ function x = glev(r,b)
     a = [a; 0] + gamm(j-1) * [0; conj(flipud(a))]
     epsilon = epsilon * (1 - abs(gamm(j-1))^2)
     delta =r(2:j)' * flipud(x)
-    q = (b(j) -delta) / epsilon
+    q = (b(j) - delta) / epsilon
     x = [x; 0] + q * [conj(flipud(a))]
   end
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
