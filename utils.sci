@@ -171,8 +171,6 @@ function X = convm(x,p)
 
 endfunction
 
-exec('SignalModeling.sci',-1);
-
 //**********************************************************************
 //
 //  Name: flipud
