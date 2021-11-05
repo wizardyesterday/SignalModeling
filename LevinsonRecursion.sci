@@ -265,7 +265,7 @@ endfunction
 
 //**********************************************************************
 //
-//  Name: ator
+//  Name: glev
 //
 //  The purpose of this function is to solve the Toeplitz equations,
 //  R*x = b, where R = toeplitz(r), and b is an arbitrary vector.  This
