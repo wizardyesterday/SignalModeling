@@ -13,9 +13,6 @@ exec('utils.sci',-1);
 //  way of retrieving an autocorrelation sequence from the model
 //  coefficients and the modeling error.
 //
-//  NOTE: Let's specialize this to a model of order 4 for now.  There
-//  seems to be no regular structure that I can see.... yet.
-//
 //  Calling Sequence: r = newAtoR(a,e)
 //
 //  Inputs:
@@ -35,27 +32,8 @@ function [r,A] = newAtoR(a,e)
   n = length(a);
   p = n - 1;
 
-  // Do this until the function is generalized.
-  if p <> 4
-    error('Model order must be 4');
-  end
-
   // Preallocate the matrix.
   A = zeros(p+1,p+1);
-
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Construct the diagonal.
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  A(1,1) = 1;
-
-  for i = 2:p
-    A(i,i) = 1 + a(i+1);
-  end
-
-  for i = p:p+1
-    A(i,i) = 1;
-  end
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct the first row, first column, and last row.
@@ -68,19 +46,47 @@ function [r,A] = newAtoR(a,e)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Kludge the rest of the entries for a 5x5 matrix.
+  // Construct the diagonal and lower trangular portion.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  A(2,3) =  a(4);
-  A(2,4) = a(5);
-  A(3,2) = A(2,1) + a(4);
-  A(4,2) = A(3,1) + a(5);
-  A(4,3) = a(2);
+  // Iterate through the rows.
+  for i = 1:p
+    // Iterate through the columns.
+    for j = 2:p+1-i;
+      aIndex= i + 2 * (j - 1);
 
-  A(3,2) = a(2) + a(4);
-  A(3,3) = 1 + a(5);
+      if (aIndex > p+1)
+          A(i+j-1,j) = A(i,1);
+//printf(">  A(%d,%d): %f\n",i+j-1,j,A(i+j-1,j));
+      else
+          A(i+j-1,j) = A(i,1) + a(aIndex);
+//printf("<= A(%d,%d): %f\n",i+j-1,j,A(i+j-1,j));
+      end
+    end
+  end
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-  r = A \ e;
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Construct the upper trangular portion.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Iterate throught the columns.
+  for i = 2:p
+    // Iterate through the rows.
+    for j = 2:p-1
+printf("(i,j): (%d,%d)\n",i,j);
+      column = i + j - 1;
+      if j <> i
+printf("In j: (i,column): (%d,%d)\n",i,j);
+
+        A(j,column) = A(i,1);
+      end    
+    end
+  end
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+
+
+
+//  r = A \ e;
 
 endfunction
 
