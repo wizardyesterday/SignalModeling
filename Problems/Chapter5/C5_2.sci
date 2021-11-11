@@ -63,7 +63,7 @@ function r = newAtoR(a,e)
     // Iterate through the columns.
     for j = 2:p+1-i;
       // Compute index into a(n).
-      aIndex= i + 2 * (j - 1);
+      aIndex = i + 2 * (j - 1);
 
       if (aIndex > p+1)
         A(i+j-1,j) = A(i,1);
@@ -84,7 +84,7 @@ function r = newAtoR(a,e)
     // Iterate through the rows.
     for j = 2:p
       // Compute index into a(n).
-      aIndex= i + 2 * (j - 1);
+      aIndex = i + 2 * (j - 1);
 
       // Ensure that accesses are within bounds.
       if aIndex <= length(a)
