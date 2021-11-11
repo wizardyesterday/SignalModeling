@@ -46,21 +46,20 @@ function [r,A] = newAtoR(a,e)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Construct the diagonal and lower trangular portion.
+  // Construct the main diagonal and lower trangular portion.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Iterate through the rows.
   for i = 1:p
     // Iterate through the columns.
     for j = 2:p+1-i;
+      // Compute index into a(n).
       aIndex= i + 2 * (j - 1);
 
       if (aIndex > p+1)
-          A(i+j-1,j) = A(i,1);
-//printf(">  A(%d,%d): %f\n",i+j-1,j,A(i+j-1,j));
+        A(i+j-1,j) = A(i,1);
       else
-          A(i+j-1,j) = A(i,1) + a(aIndex);
-//printf("<= A(%d,%d): %f\n",i+j-1,j,A(i+j-1,j));
-      end
+        A(i+j-1,j) = A(i,1) + a(aIndex);
+     end
     end
   end
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -69,22 +68,18 @@ function [r,A] = newAtoR(a,e)
   // Construct the upper trangular portion.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Iterate throught the columns.
-  for i = 2:p
+  for i = 2:p-1
     // Iterate through the rows.
-    for j = 2:p-1
-printf("(i,j): (%d,%d)\n",i,j);
-      column = i + j - 1;
-      if j <> i
-printf("In j: (i,column): (%d,%d)\n",i,j);
+    for j = 2:p-2
+      // Compute index into a(n).
+      aIndex= i + 2 * (j - 1);
 
-        A(j,column) = A(i,1);
-      end    
+      if aIndex <= length(a)
+        A(j,j+i-1) = a(aIndex);
+      end
     end
   end
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-
-
-
 
 //  r = A \ e;
 
@@ -95,7 +90,7 @@ endfunction
 //**********************************************************************
 
 // Select a simple autocorrelation sequence.
-r = [1 .5 .2 .1 .09]';
+r = [1 .5 .2 .1 .09 .05 .01]';
 
 [a,e] = rtoa(r);
 
