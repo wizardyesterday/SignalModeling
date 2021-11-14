@@ -361,7 +361,7 @@ function [gamm,epsilon] = shur(r)
   // Scilab assumes one-based arrays.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   for j = 0:p-1
-    // Update gamma
+    // Update gamma.
     gamm(j+1) = -g(j+2) / gR(j+1);
 
     //-------------------------------
