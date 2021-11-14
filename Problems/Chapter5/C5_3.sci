@@ -81,12 +81,8 @@ function [gamm,epsilon] = shurInv(r)
 //      g(k+1) = gPrev(k+1) + gamm(j+1) * gRPrev(k);
 //    end
 
-    if (j == 0)
-      g(2:$) = 0;
-      g(1) = g(1) * (1 - gamm(j+1)^2);
-    else
-      g(1:$) = 0;
-    end
+g(1:$) = 0;
+
     // Vectorized version of above loop.
     g(j+3:p+1) = gPrev(j+3:p+1) + gamm(j+1) .* gRPrev(j+2:p);
 
