@@ -104,7 +104,15 @@ v = (g - gamm(j+1)*gR) / (1 - gamm(j+1)^2);
  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // eP = gP^(R)(p).
-  epsilon= gR(p+1);
+  epsilon = gR(p+1);
+
+  d = 1;
+  for j = 1:p
+    d = d * (1 - gamm(j)^2);
+  end
+
+  r0 = epsilon / d;
+  disp(r0);
  
 endfunction
 
