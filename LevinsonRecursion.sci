@@ -328,12 +328,12 @@ endfunction
 //
 //  Inputs:
 //
-//    r - The autocorrelation sequence for which the model parameters
-//    are to be constructed.
+//    r - The autocorrelation sequence for which the reflection
+//    coefficients are to be constructed.
 //
 //  Outputs:
 //
-//   gamm - The reflection coefficients.
+//    gamm - The reflection coefficients.
 //
 //    epsilon - The mean square error eP.
 //
