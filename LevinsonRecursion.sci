@@ -381,7 +381,7 @@ function [gamm,epsilon] = shur(r)
     // want to keep the for loops around as comments so
     // that the spirit of the algorithm is not lost.
     // Vectorizing without these comments would make the
-    // code unmaintainable since the loops are implicite
+    // code unmaintainable since the loops are implicit
     // in the vectorized statements.
     //----------------------------------------------------
     //for k = j+2:p
