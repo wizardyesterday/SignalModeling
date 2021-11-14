@@ -402,7 +402,7 @@ function [gamm,epsilon] = shur(r)
  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // eP = gP^(R)(p).
-  epsilon= gR(p+1);
+  epsilon = gR(p+1);
  
 endfunction
 
