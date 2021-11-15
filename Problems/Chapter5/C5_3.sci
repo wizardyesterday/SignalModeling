@@ -7,15 +7,14 @@ exec('utils.sci',-1);
 
 //**********************************************************************
 //
-//  Name: newAtoR
+//  Name: inverseShur
 //
-//  Purpose: The purpose of this function is to provide an alternate
-//  way of retrieving an autocorrelation sequence from the model
-//  coefficients and the modeling error.  Matrix, Ap, is first
-//  constructed, and once constructed, the autocorrelation sequence
-//  is computed from Ap and the modeling error, e.
+//  Purpose: The purpose of this function is to compute the
+//  autocorrelation sequency given the reflection coefficients and the
+//  modeling error.  A backwards recursion is performed to recover the
+//  autocorrelation sequence.
 //
-//  Calling Sequence: r = newAtoR(a,e)
+//  Calling Sequence: r = inverseShur(gamm,epsilon)
 //
 //  Inputs:
 //
@@ -25,25 +24,25 @@ exec('utils.sci',-1);
 //
 //  Outputs:
 //
-//    r - The input autocorrelation sequence.
+//    r - The output autocorrelation sequence.
 //
 //**********************************************************************
-function [gamm,epsilon] = shurInv(r)
-
-  // Ensure that we have a column vector.
-  r = r(:);
+function r = inverseShur(gamm,epsilon)
 
   // Upper loop index.
-  p = length(r) - 1;
+  p = length(gamm);
 
-  // g0(k) = r(k).
-  g = r;
+  // Create initial vectors.
+  g = zeros(1:p+1)';
+  gR = zeros(1,p+1)';
+  gR(p+1) = epsilon;
 
-  // gR(k) = r(k).
-  gR = r;
+  a = [0.7 0.17 0.1789474 0.1888889]';
 
-  disp(0);
   disp([g gR]);
+
+  // Compute |gamm|^2.
+  gammSquared = gamm .* conj(gamm);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct reflection coefficient
@@ -53,9 +52,7 @@ function [gamm,epsilon] = shurInv(r)
   // zero-based arrays, whereas
   // Scilab assumes one-based arrays.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  for j = 0:p-1
-    // Update gamma
-    gamm(j+1) = -g(j+2) / gR(j+1);
+  for j = p-1:-1:0
 
     //-------------------------------
     // Double buffering is needed so
@@ -69,50 +66,39 @@ function [gamm,epsilon] = shurInv(r)
     gRPrev = gR;
     //-------------------------------
 
-    //----------------------------------------------------
-    // Let's vectorize this stuff for speed.  I still
-    // want to keep the for loops around as comments so
-    // that the spirit of the algorithm is not lost.
-    // Vectorizing without these comments would make the
-    // code unmaintainable since the loops are implicit
-    // in the vectorized statements.
-    //----------------------------------------------------
-//    for k = j+2:p
-//      g(k+1) = gPrev(k+1) + gamm(j+1) * gRPrev(k);
-//    end
-
-g(1:$) = 0;
-
-    // Vectorized version of above loop.
-    g(j+3:p+1) = gPrev(j+3:p+1) + gamm(j+1) .* gRPrev(j+2:p);
+    g = (gPrev - gamm(j+1)*gRPrev) / (1 - gammSquared(j+1));
 
 //    for k = j+1:p
 //      gR(k+1) = gRPrev(k) + conj(gamm(j+1)) * gPrev(k+1);
 //    end
 
-gR(1:$) = 0;
-    // Vectorized version of above loop.
-    gR(j+2:p+1) = gRPrev(j+1:p) + conj(gamm(j+1)) .* gPrev(j+2:p+1);
+    for k = p:-1:j+1
+      gR(k) = ...
+        (gRPrev(k+1) - conj(gamma(j+1))*gPrev(k)) / (1 - gammSquared(j+1));
+    end  
 
-v = (g - gamm(j+1)*gR) / (1 - gamm(j+1)^2);
+    // Update the last element of the vector.
+    gR(p+1) = ...
+      (gRPrev(p+1) - conj(gamma(j+1))*gPrev(p)) / (1 - gammSquared(j+1));
 
-    disp(j+1);
-    disp([v g gR]);
+//    gR = (gRPrev - conj(gamma(j+1))*gPrev) / (1 - gammSquared(j+1));
+
+    printf("\nj: %d",j);
+    disp([g gR]);
 
     //----------------------------------------------------
   end
  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-  // eP = gP^(R)(p).
-  epsilon = gR(p+1);
-
   d = 1;
   for j = 1:p
-    d = d * (1 - gamm(j)^2);
+    d = d * (1 - gammSquared(j));
   end
 
-  r0 = epsilon / d;
-  disp(r0);
+  g(1) = epsilon / d;
+//  disp(g);
+
+  r = g;
  
 endfunction
 
@@ -122,9 +108,11 @@ endfunction
 // Mainline code.
 //**********************************************************************
 
-r = [1 .9 .8 .7];
+r = [1 .9 .8 .7]';
 
-[g,e] = shurInv(r);
+[g,e] = shur(r);
+
+r1 = inverseShur(g,e);
 
 
 
