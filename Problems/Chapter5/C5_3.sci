@@ -74,12 +74,9 @@ function r = inverseShur(gamm,epsilon)
 
     for k = p:-1:j+1
       gR(k) = ...
-        (gRPrev(k+1) - conj(gamma(j+1))*gPrev(k)) / (1 - gammSquared(j+1));
+        (gRPrev(k+1) - conj(gamma(j+1))*gPrev(k+1)) / (1 - gammSquared(j+1));
     end  
 
-    // Update the last element of the vector.
-    gR(p+1) = ...
-      (gRPrev(p+1) - conj(gamma(j+1))*gPrev(p)) / (1 - gammSquared(j+1));
 
 //    gR = (gRPrev - conj(gamma(j+1))*gPrev) / (1 - gammSquared(j+1));
 
