@@ -72,13 +72,13 @@ function r = inverseShur(gamm,epsilon)
     //----------------------------------------------------
     for k = p:-1:j+1
       gR(k) = ...
-        (gRPrev(k+1) - conj(gamma(j+1))*gPrev(k+1)) / (1 - gammSquared(j+1));
+        (gRPrev(k+1) - conj(gamm(j+1))*gPrev(k+1)) / (1 - gammSquared(j+1));
     end  
     //----------------------------------------------------
 
     // This cannot be computed since we don't know future values of the
     // right hand side.
-    //gR = (gRPrev - conj(gamma(j+1))*gPrev) / (1 - gammSquared(j+1));
+    //gR = (gRPrev - conj(gamm(j+1))*gPrev) / (1 - gammSquared(j+1));
 
     //----------------------------------------------------
   end
