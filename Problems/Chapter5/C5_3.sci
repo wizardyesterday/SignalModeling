@@ -13,8 +13,10 @@ exec('utils.sci',-1);
 //  autocorrelation sequency given the reflection coefficients and the
 //  modeling error.  A backwards recursion is performed to recover the
 //  autocorrelation sequence.
-//  Presently something needs to be figured out how to determine
-//  gR.j-1(p).  This function still has some use for benchmark purposes.
+//  Presently, reflection coefficients lengths of 3 are supported.
+//  This is still adequate for benchmark purposes.
+//  This function will be enhanced in the fugure to handle any length
+//  of reflection coefficient sequence.
 //
 //  Calling Sequence: r = inverseShur(gamm,epsilon)
 //
@@ -33,70 +35,32 @@ function r = inverseShur(gamm,epsilon)
 
   // Upper loop index.
   p = length(gamm);
+  p1 = p + 1;
 
-  // Create initial vectors.
-  g = zeros(1:p+1)';
-  gR = zeros(1,p+1)';
-  gR(p+1) = epsilon;
+  if p <> 3
+    error("Only sequence lengths of 3 are handled.");
+  end
+
+  r = zeros(1,p1)';
 
  // Compute |gamm|^2.
   gammSquared = gamm .* conj(gamm);
 
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Compute g.j-1(k) and gR.j-1(k).
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  for j = p-1:-1:0
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // compute first autocorrelation value.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  r(1) = e / prod(1 - gamm .* gamm);
 
-    //-------------------------------
-    // Double buffering is needed so
-    // that the past incarnations
-    // of g(k) and gR(k) can be
-    // utilized.  This is not so
-    // obvious when looking at the
-    // algorithm.
-    //-------------------------------
-    gPrev = g;
-    gRPrev = gR;
-    //-------------------------------
+  // Compute remaining autocorrelation values.
+  r(2) = -gamm(1)*r(1);
 
-    // Compute g.j+1(k).
-    g = (gPrev - gamm(j+1)*gRPrev) / (1 - gammSquared(j+1));
+  r(3) = -gamm(2)*r(1) - (gamm(1) + gamm(2)*gamm(1))*r(2);
 
-    //----------------------------------------------------
-    // Compute all values of gR(k), k = 1, 2,...,p.  The
-    // (p+1)st value cannot be computed since future
-    // values of gRPrev(p+2) and gPrev(p+2) would be
-    // needed.  These values do not exist in our finite
-    // sequences.  Perhaps, this can be reconciled in the
-    // future.
-    //----------------------------------------------------
-    for k = p:-1:j+1
-      gR(k) = ...
-        (gRPrev(k+1) - conj(gamm(j+1))*gPrev(k+1)) / (1 - gammSquared(j+1));
-    end  
-    //----------------------------------------------------
-
-    // This cannot be computed since we don't know future values of the
-    // right hand side.
-    //gR = (gRPrev - conj(gamm(j+1))*gPrev) / (1 - gammSquared(j+1));
-
-    //----------------------------------------------------
-  end
- //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-
-  // Initialize the running product.
-  d = 1;
-
-  // Compute the denominator for computation of r(0).
-  for j = 1:p
-    d = d * (1 - gammSquared(j));
-  end
-
-  // Fill in what could not be computed in previous processing. 
-  g(1) = epsilon / d;
-
-  // Set returned value as the autocorrelation sequence.
-  r = g;
+  r(4) = -g(3)*r(1) ...
+         - (g(2) + g(3)*g(1) + g(3)*g(2)*g(1))*r(2) ...
+         - (g(1) + g(2)*g(1) + g(3)*g(2))*r(3);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+ 
  
 endfunction
 
