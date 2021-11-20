@@ -18,11 +18,11 @@ exec('utils.sci',-1);
 //  This function will be enhanced in the fugure to handle any length
 //  of reflection coefficient sequence.
 //
-//  Calling Sequence: r = inverseShur(gamm,epsilon)
+//  Calling Sequence: r = inverseShur(g,epsilon)
 //
 //  Inputs:
 //
-//    a - The model coefficients.
+//    g - The reflection coefficient sequence.
 //
 //    e - The modeing error.
 //
@@ -31,10 +31,10 @@ exec('utils.sci',-1);
 //    r - The output autocorrelation sequence.
 //
 //**********************************************************************
-function r = inverseShur(gamm,epsilon)
+function r = inverseShur(g,epsilon)
 
   // Upper loop index.
-  p = length(gamm);
+  p = length(g);
   p1 = p + 1;
 
   if p <> 3
@@ -43,19 +43,16 @@ function r = inverseShur(gamm,epsilon)
 
   r = zeros(1,p1)';
 
- // Compute |gamm|^2.
-  gammSquared = gamm .* conj(gamm);
-
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // compute the autocorrelation values.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Compute the first autocorrelation value.
-  r(1) = e / prod(1 - gamm .* gamm);
+  r(1) = e / prod(1 - g .* g);
 
   // Compute the remaining autocorrelation values.
-  r(2) = -gamm(1)*r(1);
+  r(2) = -g(1)*r(1);
 
-  r(3) = -gamm(2)*r(1) - (gamm(1) + gamm(2)*gamm(1))*r(2);
+  r(3) = -g(2)*r(1) - (g(1) + g(2)*g(1))*r(2);
 
   r(4) = -g(3)*r(1) ...
          - (g(2) + g(3)*g(1) + g(3)*g(2)*g(1))*r(2) ...
