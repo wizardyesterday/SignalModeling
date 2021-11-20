@@ -47,11 +47,12 @@ function r = inverseShur(gamm,epsilon)
   gammSquared = gamm .* conj(gamm);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // compute first autocorrelation value.
+  // compute the autocorrelation values.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Compute the first autocorrelation value.
   r(1) = e / prod(1 - gamm .* gamm);
 
-  // Compute remaining autocorrelation values.
+  // Compute the remaining autocorrelation values.
   r(2) = -gamm(1)*r(1);
 
   r(3) = -gamm(2)*r(1) - (gamm(1) + gamm(2)*gamm(1))*r(2);
