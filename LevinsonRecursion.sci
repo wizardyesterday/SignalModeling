@@ -406,3 +406,88 @@ function [gamm,epsilon] = shur(r)
  
 endfunction
 
+//**********************************************************************
+//
+//  Name: gtod
+//
+//  Purpose: The purpose of this function is to compute the split
+//  Levinson coefficient sequence given the reflection coefficient
+//  sequence.
+//
+//  Calling Sequence: d = gtod(g)
+//
+//  Inputs:
+//
+//    g - The reflection coefficient sequence.
+//
+//
+//  Outputs:
+//
+//    d - The split Levinson coefficient sequence.
+//
+//**********************************************************************
+function d = gtod(g)
+
+  // Force a column vector.
+  g = g(:);
+
+  // Compute the number of coefficients
+  p = length(g);
+
+  // Set initial d(j) assuming gamma(0) = 0.
+  d(1) = 1 - g(1);
+
+  // Construct split Levenson sequence.
+  for j = 2:p
+    d(j) = (1 - g(j))*(1 + g(j-1));
+  end
+ 
+endfunction
+
+//**********************************************************************
+//
+//  Name: dtog
+//
+//  Purpose: The purpose of this function is to compute the reflection
+//  coefficient sequence given the split Levinson coefficient sequence.
+///
+//  Calling Sequence: g = dtog(d)
+//
+//  Inputs:
+//
+//    d - The split Levinson coefficient sequence.
+//
+//  Outputs:
+//
+//    g - The reflection coefficient sequence.
+//
+//**********************************************************************
+function g = dtog(d)
+
+  // Force a column vector.
+  d = d(:);
+
+  // Compute the number of coefficients
+  p = length(d);
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Search for '-1' values in g, and adjust the values,
+  // This avoids division by zero later on.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  n = find(g == -1);
+  g(n) = g(n) + 1e-6;
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  // Extend the sequence to insert gamma(0) = 0.
+  g = [0; g];
+
+  // Construct reflection coefficient sequence.
+  for j = 2:p+1
+    g(j) = 1 - d(j-1) / (1 + g(j-1));
+  end
+
+  // Remove the initial condition.
+  g(1) = [];
+ 
+endfunction
+
