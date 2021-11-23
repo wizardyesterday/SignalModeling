@@ -491,3 +491,99 @@ function g = dtog(d)
  
 endfunction
 
+//**********************************************************************
+//
+//  Name: slev
+//
+//  The purpose of this function is to solve for the linear predictor
+//  coefficients, given the autocorrelation sequence, using the
+//  split Levinson recursion algorithm.
+//
+//  Calling Sequence: [a,s] = slev(r)
+//
+//  Inputs:
+//
+//    r - An autocorrelation sequence.
+//
+//
+//  Outputs:
+//
+//    a - The linear predictor coefficients.
+//
+//    s - The singular predictor polynomial coefficients.
+//
+//**********************************************************************
+function [a,s] = slev(r)
+
+  // Force a column vector.
+  r = r(:);
+
+  p = length(r) - 1;
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Preallocate vectors.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  tau = zeros(1,p+1);
+
+  sjm1 = zeros(1,p+1)';
+  sj = zeros(1,p+1)';
+  sjp1 = zeros(1,p+1)';
+
+  a = zeros(1,p)';
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Set initial conditions.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  //-------------------------------------
+  // Initialize pipeline.
+  //-------------------------------------
+  // s0 = 2.
+  sjm1(1) = 2;
+
+  // s1 = [1 1]';
+  sj(1) = 1;
+  sj(2) = 1;
+  //-------------------------------------
+
+  // Note that tauJ = epsilonJ / (1 + gammaJ).
+  tau(1) = r(1);
+
+  // Initialize the first linear predictor coefficient.
+  a(1) = 1;
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  for j = 1:p
+
+    // Generate tau
+    for i = 0:j
+      tau(j+1) = tau(j+1) + r(i+1)*sj(i+1);
+    end
+
+    delta = tau(j+1) / tau(j);
+
+    // Initialize.
+    sjp1(1) = 1;
+    sjp1(j+2) = 1;
+
+    // Compute the next singular predictor coefficients.    
+    for k = 1:j
+      sjp1(k+1) = sj(k+1) + sj(k) - delta*sjm1(k);
+    end
+
+    // Update the pipeline for the next recursion.
+    sjm1 = sj;
+    sj = sjp1;
+  end
+
+  onePlusGammaP = sum(sj) / sum(sjm1);
+
+  // Compute the linear predictor coefficients.
+  for j = 1:p
+    a(j+1) = a(j) + sjp1(j+1) - onePlusGammaP*sjm1(j);
+  end
+
+  // Set returned value.
+  s = sj;
+
+endfunction
