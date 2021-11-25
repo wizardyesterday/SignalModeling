@@ -499,7 +499,7 @@ endfunction
 //  coefficients, given the autocorrelation sequence, using the
 //  split Levinson recursion algorithm.
 //
-//  Calling Sequence: [a,s] = slev(r)
+//  Calling Sequence: a = slev(r)
 //
 //  Inputs:
 //
@@ -510,10 +510,8 @@ endfunction
 //
 //    a - The linear predictor coefficients.
 //
-//    s - The singular predictor polynomial coefficients.
-//
 //**********************************************************************
-function [a,s] = slev(r)
+function a = slev(r)
 
   // Force a column vector.
   r = r(:);
@@ -582,8 +580,5 @@ function [a,s] = slev(r)
   for j = 1:p
     a(j+1) = a(j) + sjp1(j+1) - onePlusGammaP*sjm1(j);
   end
-
-  // Set returned value.
-  s = sj;
 
 endfunction
