@@ -38,7 +38,7 @@ function [sS,sA] = atos(a)
 
   // Construct antisymmetric singular predictor values.
   sA = [a; 0] - flipud([a; 0]);
- 
+
 endfunction
 
 
@@ -57,12 +57,25 @@ rA1 = roots(sA1);
 aS1 = atan(imag(rS1),real(rS1)) * 180 / %pi;
 aA1 = atan(imag(rA1),real(rA1)) * 180 / %pi;
 
+pS1 = poly(rS1,"z");
+pA1 = poly(rA1,"z");
+
+// Compute frequency responses.
+[h1,fr] = frmag(1,a1,1000);
+[hS1,fr] = frmag(sS1,1,1000);
+[hA1,fr] = frmag(sA1,1,1000);
+
 a2 = [1 .5 -.2];
 [sS2,sA2] = atos(a2);
 rS2 = roots(sS2);
 rA2 = roots(sA2);
 aS2 = atan(imag(rS2),real(rS2)) * 180 / %pi;
 aA2 = atan(imag(rA2),real(rA2)) * 180 / %pi;
+
+// Compute frequency responses.
+[h2,fr] = frmag(1,a2,1000);
+[hS2,fr] = frmag(sS2,1,1000);
+[hA2,fr] = frmag(sA2,1,1000);
 
 a3 = [1 -1/3 -1/3 2/3]'
 [sS3,sA3] = atos(a3);
@@ -89,8 +102,8 @@ rS4 = roots(sS4);
 rA4 = roots(sA4);
 aS4 = atan(imag(rS4),real(rS4)) * 180 / %pi;
 aA4 = atan(imag(rA4),real(rA4)) * 180 / %pi;
-disp([aS4 aA4]);
-disp(roots(a4_2));
+//disp([aS4 aA4]);
+//disp(roots(a4_2));
 
 // Compute frequency response.
 [h4_2,fr] = frmag(1,a4_2,1000);
