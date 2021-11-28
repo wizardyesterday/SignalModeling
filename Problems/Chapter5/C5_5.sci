@@ -10,14 +10,13 @@ exec('utils.sci',-1);
 //  Name: atos
 //
 //  Purpose: The purpose of this function is to compute the singular
-//  prediction polynomials given the linear prediction coefficients.
+//  predictor polynomials given the linear prediction coefficients.
 //
 //  Calling Sequence: [sS,sA] = atos(a)
 //
 //  Inputs:
 //
 //    a - The linear prediction coefficients.
-//
 //
 //  Outputs:
 //
@@ -43,25 +42,67 @@ endfunction
 
 //**********************************************************************
 //
-//  Name: atos
+//  Name: lpctolsp
 //
-//  Purpose: The purpose of this function is to compute the singular
-//  prediction polynomials given the linear prediction coefficients.
+//  Purpose: The purpose of this function is to compute the
+//  frequencies associated with the singular predictor polynomials
+//  given the linear prediction coefficients.
 //
-//  Calling Sequence: [sS,sA] = atos(a)
+//  Calling Sequence: [sS,sA] = lpctolsp(a)
 //
 //  Inputs:
 //
 //    a - The linear prediction coefficients.
 //
+//  Outputs:
+//
+//  freqS - The frequencies associated with the symmetric singular
+//  predictor polynomial.
+//
+//  freqS - The frequencies associated with the antisymmetric singular
+//  predictor polynomial.
+//
+//**********************************************************************
+function [freqS,freqA] = lpctolsp(a)
+
+  // Force a column vector.
+  a = a(:);
+
+  // Compute singular predictor polynomials.
+  [sS,sA] = atos(a);
+
+  // Compute roots of singular predictor polynomials.
+  rS = roots(sS);
+  rA = roots(sA);
+
+  // Compute frequency vectors.
+  freqS = atan(imag(rS),real(rS));
+  freqA = atan(imag(rA),real(rA));
+
+endfunction
+
+//**********************************************************************
+//
+//  Name: atos
+//
+//  Purpose: The purpose of this function is to compute the linear
+//  prediction coefficients given the line spectral pair frequencies
+//  associated with the symmetric and antisymmetric singular predictor
+//  polynomials.
+//
+//  Calling Sequence: a = lsptolpc(freqS,freqA)
+//
+//  Inputs:
+//
+//  freqS - The frequencies associated with the symmetric singular
+//  predictor polynomial.
+//
+//  freqS - The frequencies associated with the antisymmetric singular
+//  predictor polynomial.
 //
 //  Outputs:
 //
-//    sS - The singular predictor polynomial that represents the
-//    symmetric part of a(n).
-//
-//    sA - The singular predictor polynomial that represents the
-//    antisymmetric part of a(n).
+//    a - The linear prediction coefficients.
 //
 //**********************************************************************
 function a = lsptolpc(freqS,freqA)
@@ -70,22 +111,32 @@ function a = lsptolpc(freqS,freqA)
   freqS = freqS(:);
   freqA = freqA(:);
 
-  // Compute roots in Cartesian form.
+  // Compute roots of the singular predictor polynomials.
   rS = exp(%i*freqS);
   rA = exp(%i*freqA);
 
+  // Construct the singular predictor polynomials from the roots.
   sS = poly(rS,'z');
   sA = poly(rA,'z');
 
+  // Retrieve the coefficients of the polynomials.
   sS = coeff(sS);
   sA = coeff(sA);
 
+  // Compensate for the poly() function produces assending order.
   sS = fliplr(sS);
   sA = fliplr(sA);
 
+  // Compute the linear predictor coefficients.
   a = (sS + sA) / 2;
+
+  // Remove the extraneous element.
   a($) = [];
+
+  // Remove any undesired imaginary part due to roundoff error.
   a = real(a);
+
+  // Force a column vector.
   a = a(:);
 
 endfunction
@@ -98,35 +149,22 @@ endfunction
 // singular predictor polynomials, and
 // compute the angle of their roots.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// System of order 1.
 a1 = [1 -.2]';
-[sS1,sA1] = atos(a1);
-rS1 = roots(sS1);
-rA1 = roots(sA1);
-aS1 = atan(imag(rS1),real(rS1));
-aA1 = atan(imag(rA1),real(rA1));
+[freq1S,freq1A] = lpctolsp(a1)
 
-a1hat = lsptolpc(aS1,aA1);
-
+// System of order 2.
 a2 = [1 .5 -.2]';
-[sS2,sA2] = atos(a2);
-rS2 = roots(sS2);
-rA2 = roots(sA2);
-aS2 = atan(imag(rS2),real(rS2));
-aA2 = atan(imag(rA2),real(rA2));
+[freq2S,freq2A] = lpctolsp(a2)
 
-a2hat = lsptolpc(aS2,aA2);
-
+// System of order 3.
 a3 = [1 -1/3 -1/3 2/3]';
-[sS3,sA3] = atos(a3);
-rS3 = roots(sS3);
-rA3 = roots(sA3);
-aS3 = atan(imag(rS3),real(rS3));
-aA3 = atan(imag(rA3),real(rA3));
+[freq3S,freq3A] = lpctolsp(a3)
 
-a3hat = lsptolpc(aS3,aA3);
-
+// System of order 5.
+a5 = [1 -1/3 -1/3 2/3 1/2]';
+[freq5S,freq5A] = lpctolsp(a5)
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (b): See what happens when a zero of
@@ -135,20 +173,33 @@ a3hat = lsptolpc(aS3,aA3);
 // closer and closer together for the
 // second order case.  The result is a
 // strong resonant peak in the frequency
-// response of A(z).
+// response of 1/A(z).
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 a4_2 = [1 1.999 1]';
 //a4_2 = [1 1 1]';
-[sS4,sA4] = atos(a4_2);
-rS4 = roots(sS4);
-rA4 = roots(sA4);
-aS4 = atan(imag(rS4),real(rS4));
-aA4 = atan(imag(rA4),real(rA4));
-
-a4_2hat = lsptolpc(aS4,aA4);
+[freq4_2S,freq4_2A] = lpctolsp(a4_2)
 
 // Compute frequency response.
 [h4_2,fr] = frmag(1,a4_2,1000);
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (c): compute the linear prediction
+// filter coefficients given the frequencies
+// associated with the singular predictor
+// coefficients.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+a1hat = lsptolpc(freq1S,freq1A);
+a2hat = lsptolpc(freq2S,freq2A);
+a3hat = lsptolpc(freq3S,freq3A);
+a5hat = lsptolpc(freq5S,freq5A);
+a4_2hat = lsptolpc(freq4_2S,freq4_2A);
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (d): Investigate quantization.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 
