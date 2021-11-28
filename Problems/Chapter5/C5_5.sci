@@ -120,12 +120,8 @@ function a = lsptolpc(freqS,freqA)
   sA = poly(rA,'z');
 
   // Retrieve the coefficients of the polynomials.
-  sS = coeff(sS);
-  sA = coeff(sA);
-
-  // Compensate for the poly() function produces assending order.
-  sS = fliplr(sS);
-  sA = fliplr(sA);
+  sS = fliplr(coeff(sS));
+  sA = fliplr(coeff(sA));
 
   // Compute the linear predictor coefficients.
   a = (sS + sA) / 2;
@@ -197,8 +193,36 @@ a4_2hat = lsptolpc(freq4_2S,freq4_2A);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (d): Investigate quantization.
+// Part (d): Investigate quantization.  A
+// 12-pole filter will be driven by white
+// noise in order to generate a random
+// process.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Generate time vector.
+n = 0:11;
+rk = [0.95 0.9 0.89 0.88 0.85 0.84];
+rk = [rk fliplr(rk)];
+
+// Compute frequency increment.
+deltaf = %pi/6;
+
+// Compute phase angle vector.
+phi = deltaf * (n + 0.5);
+
+// Generate complex conjugate roots.
+Roots = rk.*exp(%i*phi);
+
+// Generate filter of order 12.
+a12 = poly(Roots,"z");
+
+// Remove residual imaginary part.
+a12 = real(a12);
+
+// Retrieve the coefficients
+ac12 = fliplr(coeff(a12));
+
+// Compute the frequency response.
+[h12,fr] = frmag(1,ac12,1000);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
