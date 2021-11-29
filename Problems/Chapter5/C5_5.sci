@@ -11,6 +11,25 @@ exec('utils.sci',-1);
 //
 //  Purpose: The purpose of this function is to compute the singular
 //  predictor polynomials given the linear prediction coefficients.
+//  The vector sS represents Sp+1(z), and the vector sA represents the
+//  vector S*p+1(z), where,
+//
+//  Sp+1(z) = Ap(z) + [1/z^(p+1)]*Ap(1/z)
+//  S*p+1(z) = Ap(z) - [1/z^(p+1)]*Ap(1/z)
+//
+//  Here are the propertities of Sp+1(z) and S*p+1(z), noting that
+//  Sp+1(z) is the symmetric polynomial, and S*p+1(z) is the
+//  antisymmetric polynomial (from "Optimal Quantization of LSP Parameters"
+//  by Frank K. Soonig and Biing-Hwang Jaung.
+//
+//  1. All zeros of LSP polynomials are on the unit circle.
+//  2. Zeros of Sp+1(z) and S*P+1(z) are interlaced.
+//  3. The minimum phase property of Ap(z) are preserved if the first
+//  two properties are intact after quantization.
+//
+//  When p is even, S*p+1(z) has a trivial zero at z = 1, and Sp+1(z)
+//  has a trivial zero at z = -1.  When p is odd, there are two trivial
+//  zeros, z = 1 and -1, associated with S*p+1(z).
 //
 //  Calling Sequence: [sS,sA] = atos(a)
 //
@@ -21,10 +40,10 @@ exec('utils.sci',-1);
 //  Outputs:
 //
 //    sS - The singular predictor polynomial that represents the
-//    symmetric part of a(n).
+//    symmetric part of A(z).
 //
 //    sA - The singular predictor polynomial that represents the
-//    antisymmetric part of a(n).
+//    antisymmetric part of A(z).
 //
 //**********************************************************************
 function [sS,sA] = atos(a)
@@ -57,10 +76,12 @@ endfunction
 //  Outputs:
 //
 //  freqS - The frequencies associated with the symmetric singular
-//  predictor polynomial.
+//  predictor polynomial.  See the comment block for the atos()
+//  function for a detailed description of what freqS represents.
 //
 //  freqS - The frequencies associated with the antisymmetric singular
-//  predictor polynomial.
+//  predictor polynomial.  See the comment block for the atos()
+//  function for a detailed description of what freqA represents.
 //
 //**********************************************************************
 function [freqS,freqA] = lpctolsp(a)
@@ -68,8 +89,15 @@ function [freqS,freqA] = lpctolsp(a)
   // Force a column vector.
   a = a(:);
 
-  // Compute singular predictor polynomials.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Compute singular predictor polynomials.  Note
+  // that sS represents Sp+1(z) and sA represents
+  // S*p+1(z), where,
+  // Sp+1(z) = Ap(z) + [1/z^(p+1)]*Ap(1/z)
+  // S*p+1(z) = Ap(z) - [1/z^(p+1)]*Ap(1/z)
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   [sS,sA] = atos(a);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Compute roots of singular predictor polynomials.
   rS = roots(sS);
@@ -157,8 +185,12 @@ a2 = [1 .5 -.2]';
 a3 = [1 -1/3 -1/3 2/3]';
 [freq3S,freq3A] = lpctolsp(a3)
 
+// System of order 4.
+a4 = [1 -1/3 -1/3 2/3 3/4]';
+[freq4S,freq4A] = lpctolsp(a4)
+
 // System of order 5.
-a5 = [1 -1/3 -1/3 2/3 1/2]';
+a5 = [1 -1/3 -1/3 2/3 1/2 1/4]';
 [freq5S,freq5A] = lpctolsp(a5)
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
@@ -189,6 +221,7 @@ a1hat = lsptolpc(freq1S,freq1A);
 a2hat = lsptolpc(freq2S,freq2A);
 a3hat = lsptolpc(freq3S,freq3A);
 a5hat = lsptolpc(freq5S,freq5A);
+a4hat = lsptolpc(freq4S,freq4A);
 a4_2hat = lsptolpc(freq4_2S,freq4_2A);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
@@ -220,6 +253,9 @@ a12 = real(a12);
 
 // Retrieve the coefficients
 ac12 = fliplr(coeff(a12));
+
+// Generate line spectral frequencies.
+[freq12S,freq12A] = lpctolsp(ac12);
 
 // Compute the frequency response.
 [h12,fr] = frmag(1,ac12,1000);
