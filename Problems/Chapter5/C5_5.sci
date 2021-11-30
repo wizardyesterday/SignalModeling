@@ -205,6 +205,14 @@ a4 = [1 -1/3 -1/3 2/3 3/4]';
 // System of order 5.
 a5 = [1 -1/3 -1/3 2/3 1/2 1/4]';
 [freq5S,freq5A] = lpctolsp(a5)
+
+// System of order 6.
+a6 = [1 -1/3 -1/3 2/3 1/2 1/4 1/5]';
+[freq6S,freq6A] = lpctolsp(a6)
+
+// System of order 7.
+a7 = [1 -1/3 -1/3 2/3 1/2 1/4 1/5 1/6]';
+[freq7S,freq7A] = lpctolsp(a7)
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -235,6 +243,8 @@ a2hat = lsptolpc(freq2S,freq2A);
 a3hat = lsptolpc(freq3S,freq3A);
 a4hat = lsptolpc(freq4S,freq4A);
 a5hat = lsptolpc(freq5S,freq5A);
+a6hat = lsptolpc(freq6S,freq6A);
+a7hat = lsptolpc(freq7S,freq7A);
 a4_2hat = lsptolpc(freq4_2S,freq4_2A);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
