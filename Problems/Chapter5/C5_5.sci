@@ -275,7 +275,7 @@ a12 = poly(Roots,"z");
 a12 = real(a12);
 
 // Retrieve the coefficients
-ac12 = coeff(a12);
+ac12 = fliplr(coeff(a12));
 
 // Generate line spectral frequencies.
 [freq12S,freq12A] = lpctolsp(ac12);
