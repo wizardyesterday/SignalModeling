@@ -66,8 +66,21 @@ endfunction
 //  Purpose: The purpose of this function is to compute the
 //  frequencies associated with the singular predictor polynomials
 //  given the linear prediction coefficients.
+//  Note that it is quite simple to compute the frequency differences
+//  between roots.  First, the vector of frequencies is sorted, and next,
+//  frequency differences are computed.  To restore the original
+//  frequencies, it is assummed that the first entry in the output
+//  vector has a value of 0.  The remaining entries are computed as an
+//  accumulation of their previous entries.  Here is the problem: When
+//  the frequencies are sorted, the roots of S(z) and S*(z) are not
+//  interleaved as dictated by the ascending order of frequencies.
+//  More investigation needs to be carried out before an algorithm that
+//  meets the demands of the problem statement can be devised.  For now,
+//  I will be happy with *all* the frequencies separated on a per
+//  polynomial basis.  Allocation of frequencies to each of the two
+//  polynomial roots will be a future exercise.
 //
-//  Calling Sequence: [sS,sA] = lpctolsp(a)
+//  Calling Sequence: [freqS,freqA] = lpctolsp(a)
 //
 //  Inputs:
 //
@@ -111,7 +124,7 @@ endfunction
 
 //**********************************************************************
 //
-//  Name: atos
+//  Name: lsptolpc
 //
 //  Purpose: The purpose of this function is to compute the linear
 //  prediction coefficients given the line spectral pair frequencies
@@ -125,7 +138,7 @@ endfunction
 //  freqS - The frequencies associated with the symmetric singular
 //  predictor polynomial.
 //
-//  freqS - The frequencies associated with the antisymmetric singular
+//  freqA - The frequencies associated with the antisymmetric singular
 //  predictor polynomial.
 //
 //  Outputs:
@@ -220,8 +233,8 @@ a4_2 = [1 1.999 1]';
 a1hat = lsptolpc(freq1S,freq1A);
 a2hat = lsptolpc(freq2S,freq2A);
 a3hat = lsptolpc(freq3S,freq3A);
-a5hat = lsptolpc(freq5S,freq5A);
 a4hat = lsptolpc(freq4S,freq4A);
+a5hat = lsptolpc(freq5S,freq5A);
 a4_2hat = lsptolpc(freq4_2S,freq4_2A);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
@@ -252,7 +265,7 @@ a12 = poly(Roots,"z");
 a12 = real(a12);
 
 // Retrieve the coefficients
-ac12 = fliplr(coeff(a12));
+ac12 = coeff(a12);
 
 // Generate line spectral frequencies.
 [freq12S,freq12A] = lpctolsp(ac12);
