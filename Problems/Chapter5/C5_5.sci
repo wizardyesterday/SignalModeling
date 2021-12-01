@@ -31,6 +31,14 @@ exec('utils.sci',-1);
 //  has a trivial zero at z = -1.  When p is odd, there are two trivial
 //  zeros, z = 1 and -1, associated with S*p+1(z).
 //
+//  Note that items 1 and 2 occur if Ap(z) is minimum phase.  I have
+//  constructed polynomials that have forced the roots of Sp+1(z) to
+//  have equal phases that have magnitudes greater than 1 and less than 1.
+//  We are not interested in these cases for application of line spectral
+//  pairs though.  The rule to follow here is to make sure you start with
+//  a minimum phase polynomial, otherwise, you might be chasing down
+//  problems that don't really exist.
+//
 //  Calling Sequence: [sS,sA] = atos(a)
 //
 //  Inputs:
@@ -348,14 +356,14 @@ psd4r = makeRandomProcess(v4,ac12r);
 // resulted in useless data.
 //++++++++++++++++++++++++++++++++++++++++
 subplot(211);
-title('Original Filter');
+title('Random Process Spectrum, Original Filter');
 plot(psd1);
 plot(psd2);
 plot(psd3);
 plot(psd4);
 
 subplot(212)
-title('Quantized Filter From LSP Frequencies');
+title('Random Process Spectrum, Quantized Filter From LSP Frequencies');
 plot(psd1r);
 plot(psd2r);
 plot(psd3r);
