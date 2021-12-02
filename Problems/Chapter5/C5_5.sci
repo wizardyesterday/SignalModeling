@@ -287,31 +287,33 @@ a4_2hat = lsptolpc(freq4_2S,freq4_2A);
 // Part (d): Investigate quantization.  A
 // 12-pole filter will be driven by white
 // noise in order to generate a random
-// process.  Note: I went with a 6th-order
-// filter since it was difficult to determine
-// a 12-th order filter that would actually
-// work.  I may revisit this.
+// process..
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-rx12 = [1 0.8 0.5 0.3 0.2 0.1 0.2];
-ac12 = rtoa(rx6);
-[freq12S,freq12A] = lpctolsp(ac12);
+a12 = zeros(1,13);
+a12(1) = 1;
+a12($) = (0.8)^12;
+[freq12S,freq12A] = lpctolsp(a12);
 
 // Quantize the coefficients to 16 bits.
-ac12q = ac12 * 32768;
-ac12q = round(ac12q);
+a12q = a12 * 32768;
+a12q = round(a12q);
+a12q = a12q / 32768;
+
 
 // Generate line spectral frequencies.
-[freq12S,freq12A] = lpctolsp(ac12);
+[freq12S,freq12A] = lpctolsp(a12);
 
 // Quantize the line spectral frequencies.
 freq12Sq = freq12S * 32768;
 freq12Sq = round(freq12Sq);
+freq12Sq = freq12Sq / 32768;
 freq12Aq = freq12A * 32768;
 freq12Aq = round(freq12Aq);
+freq12Aq = freq12Aq / 32768;
 
 // Create 12-pole filter from line spectral pairs.
-ac12r = lsptolpc(freq12Sq,freq12Aq);
+a12r = lsptolpc(freq12Sq,freq12Aq);
 
 //---------------------------------------------------------------
 // Generate 400 samples of Gaussian noise with unity variance.
@@ -325,44 +327,47 @@ ac12r = lsptolpc(freq12Sq,freq12Aq);
 noisegen(1,400,1);
 
 // Construct noise source.
-v1 = feval([1:100],Noise) / 32768;
-v2 = feval([101:200],Noise) / 32768;
-v3 = feval([201:300],Noise) / 32768;
-v4 = feval([301:400],Noise) / 32768;
+v1 = feval([1:100],Noise);
+v2 = feval([101:200],Noise);
+v3 = feval([201:300],Noise);
+v4 = feval([301:400],Noise);
 
 // Create ransom processes from original filter.
-psd1 = makeRandomProcess(v1,ac12);
-psd2 = makeRandomProcess(v2,ac12);
-psd3 = makeRandomProcess(v3,ac12);
-psd4 = makeRandomProcess(v4,ac12);
+psd1 = makeRandomProcess(v1,a12);
+psd2 = makeRandomProcess(v2,a12);
+psd3 = makeRandomProcess(v3,a12);
+psd4 = makeRandomProcess(v4,a12);
 
 // Create random processes from quantized filter.
-psd1q = makeRandomProcess(v1/1000,ac12q);
-psd2q = makeRandomProcess(v2/1000,ac12q);
-psd3q = makeRandomProcess(v3/1000,ac12q);
-psd4q = makeRandomProcess(v4/1000,ac12q);
+psd1q = makeRandomProcess(v1,a12q);
+psd2q = makeRandomProcess(v2,a12q);
+psd3q = makeRandomProcess(v3,a12q);
+psd4q = makeRandomProcess(v4,a12q);
 
 // Create random processes from reconstructed filter.
-psd1r = makeRandomProcess(v1,ac12r);
-psd2r = makeRandomProcess(v2,ac12r);
-psd3r = makeRandomProcess(v3,ac12r);
-psd4r = makeRandomProcess(v4,ac12r);
+psd1r = makeRandomProcess(v1,a12r);
+psd2r = makeRandomProcess(v2,a12r);
+psd3r = makeRandomProcess(v3,a12r);
+psd4r = makeRandomProcess(v4,a12r);
 
 //++++++++++++++++++++++++++++++++++++++++
-// Plot the spectral densities.  Don't
-// bother plotting the spectral densities
-// that resulted from the quantized
-// filter. There were overflows that
-// resulted in useless data.
+// Plot the spectral densities.
 //++++++++++++++++++++++++++++++++++++++++
-subplot(211);
+subplot(311);
 title('Random Process Spectrum, Original Filter');
 plot(psd1);
 plot(psd2);
 plot(psd3);
 plot(psd4);
 
-subplot(212)
+subplot(312);
+title('Random Process Spectrum, Quantized Filter');
+plot(psd1q);
+plot(psd2q);
+plot(psd3q);
+plot(psd4q);
+
+subplot(313)
 title('Random Process Spectrum, Quantized Filter From LSP Frequencies');
 plot(psd1r);
 plot(psd2r);
