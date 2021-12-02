@@ -69,7 +69,7 @@ endfunction
 
 //**********************************************************************
 //
-//  Name: lpctolsp
+//  Name: lpcToLsp
 //
 //  Purpose: The purpose of this function is to compute the
 //  frequencies associated with the singular predictor polynomials
@@ -88,7 +88,7 @@ endfunction
 //  polynomial basis.  Allocation of frequencies to each of the two
 //  polynomial roots will be a future exercise.
 //
-//  Calling Sequence: [freqS,freqA] = lpctolsp(a)
+//  Calling Sequence: [freqS,freqA] = lpcToLsp(a)
 //
 //  Inputs:
 //
@@ -105,7 +105,7 @@ endfunction
 //  function for a detailed description of what freqA represents.
 //
 //**********************************************************************
-function [freqS,freqA] = lpctolsp(a)
+function [freqS,freqA] = lpcToLsp(a)
 
   // Force a column vector.
   a = a(:);
@@ -132,14 +132,14 @@ endfunction
 
 //**********************************************************************
 //
-//  Name: lsptolpc
+//  Name: lspToLpc
 //
 //  Purpose: The purpose of this function is to compute the linear
 //  prediction coefficients given the line spectral pair frequencies
 //  associated with the symmetric and antisymmetric singular predictor
 //  polynomials.
 //
-//  Calling Sequence: a = lsptolpc(freqS,freqA)
+//  Calling Sequence: a = lspToLpc(freqS,freqA)
 //
 //  Inputs:
 //
@@ -154,7 +154,7 @@ endfunction
 //    a - The linear prediction coefficients.
 //
 //**********************************************************************
-function a = lsptolpc(freqS,freqA)
+function a = lspToLpc(freqS,freqA)
 
   // Force a column vectors.
   freqS = freqS(:);
@@ -227,28 +227,28 @@ endfunction
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // System of order 1.
 a1 = [1 -.2]';
-[freq1S,freq1A] = lpctolsp(a1)
+[freq1S,freq1A] = lpcToLsp(a1)
 
 // System of order 2.
 a2 = [1 .5 -.2]';
-[freq2S,freq2A] = lpctolsp(a2)
+[freq2S,freq2A] = lpcToLsp(a2)
 
 // System of order 3.
 a3 = [1 -1/3 -1/3 2/3]';
-[freq3S,freq3A] = lpctolsp(a3)
+[freq3S,freq3A] = lpcToLsp(a3)
 
 // System of order 4.
 a4 = [1 -1/3 -1/3 2/3 3/4]';
-[freq4S,freq4A] = lpctolsp(a4)
+[freq4S,freq4A] = lpcToLsp(a4)
 
 // System of order 5.
 a5 = [1 -1/3 -1/3 2/3 1/2 1/4]';
-[freq5S,freq5A] = lpctolsp(a5)
+[freq5S,freq5A] = lpcToLsp(a5)
 
 // System of order 6.
 rx6 = [1 0.8 0.5 0.3 0.2 0.1 0.2];
 a6 = rtoa(rx6);
-[freq6S,freq6A] = lpctolsp(a6)
+[freq6S,freq6A] = lpcToLsp(a6)
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -262,7 +262,7 @@ a6 = rtoa(rx6);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 a4_2 = [1 1.999 1]';
 //a4_2 = [1 1 1]';
-[freq4_2S,freq4_2A] = lpctolsp(a4_2)
+[freq4_2S,freq4_2A] = lpcToLsp(a4_2)
 
 // Compute frequency response.
 [h4_2,fr] = frmag(1,a4_2,1000);
@@ -274,35 +274,32 @@ a4_2 = [1 1.999 1]';
 // associated with the singular predictor
 // coefficients.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-a1hat = lsptolpc(freq1S,freq1A);
-a2hat = lsptolpc(freq2S,freq2A);
-a3hat = lsptolpc(freq3S,freq3A);
-a4hat = lsptolpc(freq4S,freq4A);
-a5hat = lsptolpc(freq5S,freq5A);
-a6hat = lsptolpc(freq6S,freq6A);
-a4_2hat = lsptolpc(freq4_2S,freq4_2A);
+a1hat = lspToLpc(freq1S,freq1A);
+a2hat = lspToLpc(freq2S,freq2A);
+a3hat = lspToLpc(freq3S,freq3A);
+a4hat = lspToLpc(freq4S,freq4A);
+a5hat = lspToLpc(freq5S,freq5A);
+a6hat = lspToLpc(freq6S,freq6A);
+a4_2hat = lspToLpc(freq4_2S,freq4_2A);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (d): Investigate quantization.  A
 // 12-pole filter will be driven by white
 // noise in order to generate a random
-// process..
+// process.  This filter is defined as,
+// A12(z) = z^12 + 0.8^12.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 a12 = zeros(1,13);
 a12(1) = 1;
 a12($) = (0.8)^12;
-[freq12S,freq12A] = lpctolsp(a12);
+[freq12S,freq12A] = lpcToLsp(a12);
 
 // Quantize the coefficients to 16 bits.
 a12q = a12 * 32768;
 a12q = round(a12q);
 a12q = a12q / 32768;
-
-
-// Generate line spectral frequencies.
-[freq12S,freq12A] = lpctolsp(a12);
 
 // Quantize the line spectral frequencies.
 freq12Sq = freq12S * 32768;
@@ -313,7 +310,7 @@ freq12Aq = round(freq12Aq);
 freq12Aq = freq12Aq / 32768;
 
 // Create 12-pole filter from line spectral pairs.
-a12r = lsptolpc(freq12Sq,freq12Aq);
+a12r = lspToLpc(freq12Sq,freq12Aq);
 
 //---------------------------------------------------------------
 // Generate 400 samples of Gaussian noise with unity variance.
