@@ -223,4 +223,5 @@ endfunction
 
 exec('SignalModeling.sci',-1);
 exec('LevinsonRecursion.sci',-1);
+exec('Lsp.sci',-1);
 
