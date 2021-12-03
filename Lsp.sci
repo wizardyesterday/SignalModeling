@@ -277,7 +277,6 @@ function a = deltaLspToLpc(deltaFreq)
   k = 1;
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Fill in all of the frequencies associated with
   // S(z) and S*(z).  The antisymmetric flag, when
@@ -288,12 +287,15 @@ function a = deltaLspToLpc(deltaFreq)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   for i = 1:n
     if antisymmetric == 1
-      // Working with the roots of S*(z).
+      // Working with the frequencies of S*(z).
       if i == 1 | i == n
+        // Working with the trivial frequencies of S*(z).
         freqA(j) = f(i);
+
+        // Reference the next entry.
         j = j + 1;
       else
-        // Working with the roots of S(z).
+        // Working with the frequency pairs of S*(z).
         freqA(j) = f(i);
         freqA(j+1) = -f(i);
 
@@ -301,9 +303,12 @@ function a = deltaLspToLpc(deltaFreq)
         j = j + 2;
       end
     else
+      // Working with the frequencies of S(z).
       if i == n
+        // Working with the trivial frequency of S(z).
         freqS(k) = f(i);
       else
+        // Working with the frequency pairs of S(z).
         freqS(k) = f(i);
         freqS(k+1) = -f(i);
 
@@ -312,7 +317,7 @@ function a = deltaLspToLpc(deltaFreq)
       end
     end
 
-    // Toggle to process the other polynomial.
+    // Toggle to process the other polynomial roots.
     antisymmetric = -antisymmetric;
   end
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
