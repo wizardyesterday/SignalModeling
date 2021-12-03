@@ -221,6 +221,52 @@ function b = fliplr(a)
 
 endfunction
 
+//**********************************************************************
+//
+//  Name: quantize
+//
+//  Purpose: The purpose of this function is to quantize a number to
+//  a finite number of integer bits.
+//
+//  Calling Sequence: aQ = quantize(a,b)
+//
+//  Inputs:
+//
+//    a - The input vector.
+//
+//    b - The number integer bits of precision.
+//
+//  Outputs:
+//
+//    aQ - The quantized output vector.
+//
+//**********************************************************************
+function aQ = quantize(a,b)
+
+  // Force a column vector.
+  a = a(:)
+
+  if a <> 0
+    positiveLimit = 2^(b - 1) - 1;
+    negativeLimit = 2^(b - 1);
+
+    // Locate negative values.
+    n = find(a < 0);
+
+    // Compute the quantized value.
+    aQ = a * positiveLimit;
+    aQ(n) = a(n) * negativeLimit;
+
+    // Remove any fractional part.
+    aQ = round(aQ)
+  else
+    // Handle the zero vector case.
+    aQ = a;
+  end
+
+endfunction
+
+
 exec('SignalModeling.sci',-1);
 exec('LevinsonRecursion.sci',-1);
 exec('Lsp.sci',-1);
