@@ -71,22 +71,8 @@ endfunction
 //
 //  Name: lpcToLsp
 //
-//  Purpose: The purpose of this function is to compute the
-//  frequencies associated with the singular predictor polynomials
-//  given the linear prediction coefficients.
-//  Note that it is quite simple to compute the frequency differences
-//  between roots.  First, the vector of frequencies is sorted, and next,
-//  frequency differences are computed.  To restore the original
-//  frequencies, it is assummed that the first entry in the output
-//  vector has a value of 0.  The remaining entries are computed as an
-//  accumulation of their previous entries.  Here is the problem: When
-//  the frequencies are sorted, the roots of S(z) and S*(z) are not
-//  interleaved as dictated by the ascending order of frequencies.
-//  More investigation needs to be carried out before an algorithm that
-//  meets the demands of the problem statement can be devised.  For now,
-//  I will be happy with *all* the frequencies separated on a per
-//  polynomial basis.  Allocation of frequencies to each of the two
-//  polynomial roots will be a future exercise.
+//  Purpose: The purpose of this function is to compute the line
+//  spectral pairs given the linear prediction coefficients.
 //
 //  Calling Sequence: [freqS,freqA] = lpcToLsp(a)
 //
@@ -156,7 +142,7 @@ endfunction
 //**********************************************************************
 function a = lspToLpc(freqS,freqA)
 
-  // Force a column vectors.
+  // Force column vectors.
   freqS = freqS(:);
   freqA = freqA(:);
 
@@ -185,13 +171,185 @@ function a = lspToLpc(freqS,freqA)
   a = a(:);
 
 endfunction
+
+//**********************************************************************
+//
+//  Name: lpcToDeltaLsp
+//
+//  Purpose: The purpose of this function is to compute the
+//  line spectral pair frequency differences associated with the
+//  singular predictor polynomials given the linear prediction
+//  coefficients.
+//
+//  Calling Sequence: lpcToDeltaLsp = lpcToLsp(a)
+//
+//  Inputs:
+//
+//    a - The linear prediction coefficients.
+//
+//  Outputs:
+//
+//  deltaFreq- The frequencies differences associated with the roots
+//  of the symmetric singular predictor polynomial and the
+//  antisymmetric singular predictor polynomial.
+//
+//**********************************************************************
+function deltaFreq = lpcToDeltaLsp(a)
+
+  // Force a column vector.
+  a = a(:);
+
+  // Compute the line spectral pair.
+  [freqS,freqA] = lpcToLsp(a);
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Find and remove all negative frequencies.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  n = find(freqS < 0);
+  freqS(n) = [];
+
+  n = find(freqA < 0)
+  freqA(n) = [];
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  // Combine the spectral frequencies.
+  freqSA = [freqS; freqA];
+
+  // Sort the frequencies in ascending order.
+  freqSA = flipud(sort(freqSA));
+
+  // Compute the frequency differences.
+  deltaFreq = freqSA(2:$) - freqSA(1:$-1);
+  
+endfunction
+
+//**********************************************************************
+//
+//  Name: deltaLspToLpc
+//
+//  Purpose: The purpose of this function is to compute the linear
+//  prediction coefficients given the line spectral pair frequency
+//  differences associated with the symmetric and antisymmetric
+//  singular predictor polynomials.
+//
+//  Calling Sequence: a = deltaLspToLpc(deltaFreq)
+//
+//  Inputs:
+//
+//  deltaFreq- The frequencies differences associated with the roots
+//  of the symmetric singular predictor polynomial and the
+//  antisymmetric singular predictor polynomial.
+//
+//  Outputs:
+//
+//    a - The linear prediction coefficients.
+//
+//**********************************************************************
+function a = deltaLspToLpc(deltaFreq)
+
+  // Force a column vector.
+  deltaFreq = deltaFreq(:);
+
+  n = length(deltaFreq) + 1;
+
+  // Preallocate vectors.
+  freqS = [0 0]';
+  freqA = [0 0]';
+  f = [0 0]';
+
+  // Construct line spectral frequencies.
+  for i = 2:n
+    f(i) = f(i-1) + deltaFreq(i-1);
+  end
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Initialize control and index variables for the
+  // loop that follows. The index, j, is used for
+  // access to the frequencies associated with S*(z),
+  // and the index, k, is used for access to the
+  // roots associated with S(z).
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Start out filling in the frequencies for S*(z).
+  antisymmetric = 1;
+
+  // Initialize indices.
+  j = 1;
+  k = 1;
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Fill in all of the frequencies associated with
+  // S(z) and S*(z).  The antisymmetric flag, when
+  // set to 1, indicates that the frequencies,
+  // associated with S*(z) are to be filled in,
+  // whereas, when set to -1, the frequencies
+  // associated with S(z) are to be filled in.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  for i = 1:n
+    if antisymmetric == 1
+      // Working with the roots of S*(z).
+      if i == 1 | i == n
+        freqA(j) = f(i);
+        j = j + 1;
+      else
+        // Working with the roots of S(z).
+        freqA(j) = f(i);
+        freqA(j+1) = -f(i);
+
+        // Reference the next entry.
+        j = j + 2;
+      end
+    else
+      if i == n
+        freqS(k) = f(i);
+      else
+        freqS(k) = f(i);
+        freqS(k+1) = -f(i);
+
+        // Reference the next entry.
+        k = k + 2;
+      end
+    end
+
+    // Toggle to process the other polynomial.
+    antisymmetric = -antisymmetric;
+  end
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  // Compute roots from the spectra.
+  rS = exp(%i*freqS);
+  rA = exp(%i*freqA);
+
+  // Construct S(z) and S*(z) in ascending order of z.
+  sS = poly(rS,"z");
+  sA = poly(rA,"z");
+
+  // Retrieve coefficients of S(z).
+  cS = fliplr(coeff(sS));
+
+  // Retrieve coefficients of S*(z).
+  cA = fliplr(coeff(sA));
+
+  // Compute linear predictor coefficients.
+  a = (cS + cA)/2;
+
+  // Remove the imaginary part (due to roundoff error).
+  a = real(a);
+
+  // Remove extended portion.
+  a($) = [];
+
+endfunction
+
 //**********************************************************************
 //
 //  Name: makeRandomProcess
 //
 //  Purpose: The purpose of this function is to construct the power
 //  spectral density of a random process driving a filter with white
-//  noise.
+//  noise.  We're really cheating here since the proper way to compute
+//  the power spectral density is to 
 //
 //  Calling Sequence: psd = makeRandomProcess(v,a)
 //
@@ -211,7 +369,7 @@ function psd = makeRandomProcess(v,a)
 // Filter the noise.
 y = filterBlock(v,1,a);
 
-// Compute the power spectral densith.
+// Compute the power spectral density.
 Y = fft(y,-1);
 psd = Y .* conj(Y);
 
@@ -294,7 +452,7 @@ a4_2hat = lspToLpc(freq4_2S,freq4_2A);
 a12 = zeros(1,13);
 a12(1) = 1;
 a12($) = (0.8)^12;
-[freq12S,freq12A] = lpcToLsp(a12);
+deltaFreq12 = lpcToDeltaLsp(a12);
 
 // Quantize the coefficients to 16 bits.
 a12q = a12 * 32768;
@@ -302,32 +460,30 @@ a12q = round(a12q);
 a12q = a12q / 32768;
 
 // Quantize the line spectral frequencies.
-freq12Sq = freq12S * 32768;
-freq12Sq = round(freq12Sq);
-freq12Sq = freq12Sq / 32768;
-freq12Aq = freq12A * 32768;
-freq12Aq = round(freq12Aq);
-freq12Aq = freq12Aq / 32768;
+deltaFreq12q = deltaFreq12 * 32768;
+deltaFreq12q = round(deltaFreq12q);
+deltaFreq12q = deltaFreq12q / 32768;
 
 // Create 12-pole filter from line spectral pairs.
-a12r = lspToLpc(freq12Sq,freq12Aq);
+a12r = deltaLspToLpc(deltaFreq12q);
 
 //---------------------------------------------------------------
-// Generate 400 samples of Gaussian noise with unity variance.
+// Generate 4000 samples of Gaussian noise with unity variance.
 // Pass segments of the sequence to the 12-pole filter with
-// quantized coefficients.  Next, use the line spectral pairs to
-// construct its idea of the 12-pole filter. Pass blocks of 100
-// samples to each filter so that results can be compared in
-// plots of the random process that is created.
+// quantized coefficients.  Next, use the line spectral pair
+// differences to construct its idea of the 12-pole filter.
+// Pass blocks of 1090 samples to each filter so that results
+// can be compared in plots of the random process that is
+// created.
 //---------------------------------------------------------------
 // Run the noise generation function.
-noisegen(1,400,1);
+noisegen(1,4000,1);
 
 // Construct noise source.
 v1 = feval([1:100],Noise);
-v2 = feval([101:200],Noise);
-v3 = feval([201:300],Noise);
-v4 = feval([301:400],Noise);
+v2 = feval([1001:2000],Noise);
+v3 = feval([2001:3000],Noise);
+v4 = feval([3001:4000],Noise);
 
 // Create ransom processes from original filter.
 psd1 = makeRandomProcess(v1,a12);
@@ -365,7 +521,7 @@ plot(psd3q);
 plot(psd4q);
 
 subplot(313)
-title('Random Process Spectrum, Quantized Filter From LSP Frequencies');
+title('Random Process Spectrum, Quantized Filter From LSP Differences');
 plot(psd1r);
 plot(psd2r);
 plot(psd3r);
