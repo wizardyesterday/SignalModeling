@@ -246,7 +246,17 @@ function aQ = quantize(a,b)
   // Force a column vector.
   a = a(:)
 
-  if a <> 0
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Search for any numbers whose magnitude matches or
+  // exceeds unity.  Due to the fact that this function
+  // processes fractional numbers, if numbers greater
+  // than or equal to 1 in magnitude, the vector, a', is
+  // not a candidate for conversion.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  bigIndex = find(abs(a) >= 1);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  if a <> 0 & bigIndex == [];
     positiveLimit = 2^(b - 1) - 1;
     negativeLimit = 2^(b - 1);
 
