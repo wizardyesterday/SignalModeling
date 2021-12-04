@@ -261,16 +261,10 @@ function [aQ,success] = quantize(a,b)
   // than or equal to 1 in magnitude, the vector, a', is
   // not a candidate for conversion.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  bigIndex = find(abs(a) >= 1);
+  indexOfBigNumbers = find(abs(a) >= 1);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Determine if the vector is a zero vector.
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  zeroIndex = find(a == 0);
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-
-  if length(zeroIndex) <> length(a) & bigIndex == [];
+  if indexOfBigNumbers == [];
     positiveLimit = 2^(b - 1) - 1;
     negativeLimit = 2^(b - 1);
 
