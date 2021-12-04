@@ -225,8 +225,8 @@ endfunction
 //
 //  Name: quantize
 //
-//  Purpose: The purpose of this function is to quantize a number to
-//  a finite number of integer bits.
+//  Purpose: The purpose of this function is to quantize a fractional
+//  number to a finite number of integer bits.
 //
 //  Calling Sequence: aQ = quantize(a,b)
 //
@@ -238,13 +238,21 @@ endfunction
 //
 //  Outputs:
 //
-//    aQ - The quantized output vector.
+//    aQ - The quantized output vector, if the quantization was
+//    successful, otherwise, the original vector is returned.
+//
+//    success - An indicator of the outcome of the operation.  A value
+//    of 1 implies that quantization had occurred, and a value of 0
+//    implies that the quantization has not occurred.
 //
 //**********************************************************************
-function aQ = quantize(a,b)
+function [aQ,success] = quantize(a,b)
 
   // Force a column vector.
   a = a(:)
+
+  // Default to failure.
+  success = 0;
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Search for any numbers whose magnitude matches or
@@ -256,7 +264,13 @@ function aQ = quantize(a,b)
   bigIndex = find(abs(a) >= 1);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-  if a <> 0 & bigIndex == [];
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Determine if the vector is a zero vector.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  zeroIndex = find(a == 0);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  if length(zeroIndex) <> length(a) & bigIndex == [];
     positiveLimit = 2^(b - 1) - 1;
     negativeLimit = 2^(b - 1);
 
@@ -268,7 +282,10 @@ function aQ = quantize(a,b)
     aQ(n) = a(n) * negativeLimit;
 
     // Remove any fractional part.
-    aQ = round(aQ)
+    aQ = round(aQ);
+
+    // Indicate a successful quantization.
+    success = 1;
   else
     // Handle the zero vector case.
     aQ = a;
