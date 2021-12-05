@@ -29,7 +29,7 @@ exec('utils.sci',-1);
 function psd = makeRandomProcess(v,a)
 
   // Filter the noise.
-  y = filterBlock(v,1,a);
+  y = filterBlock(v,1,a(2:$));
 
   // Compute the power spectral density.
   Y = fft(y,-1);
@@ -138,7 +138,7 @@ a12r = deltaLspToLpc(deltaFreq12q);
 noisegen(1,4000,1);
 
 // Construct noise source.
-v1 = feval([1:100],Noise);
+v1 = feval([1:1000],Noise);
 v2 = feval([1001:2000],Noise);
 v3 = feval([2001:3000],Noise);
 v4 = feval([3001:4000],Noise);
