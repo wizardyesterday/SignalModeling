@@ -281,8 +281,82 @@ function [aQ,success] = quantize(a,b)
     // Indicate a successful quantization.
     success = 1;
   else
-    // Handle the zero vector case.
+    // Handle the big number case.
     aQ = a;
+  end
+
+endfunction
+
+//**********************************************************************
+//
+//  Name: unQuantize
+//
+//  Purpose: The purpose of this function is to unquantize an integer
+//  number into a signed fractional representation.  Due to the fact,
+//  that the input is quantized, the output will be an approximation
+//  to the original fractional number since processing is constrained
+//  to negative powers of two in the fractional representation.
+//
+//  Calling Sequence: a = unquantize(aQ,b)
+//
+//  Inputs:
+//
+//    b - The number integer bits of precision.
+//
+//   aQ - The quantized output vector, if the quantization was
+//    successful, otherwise, the original vector is returned.
+//
+//  Outputs:
+//
+//    a - The input vector.
+//
+//    success - An indicator of the outcome of the operation.  A value
+//    of 1 implies that unquantization had occurred, and a value of 0
+//    implies that the unquantization has not occurred.
+//
+//**********************************************************************
+function [a,success] = unquantize(aQ,b)
+
+  // Force a column vector.
+  aQ = aQ(:)
+
+  // Default to failure.
+  success = 0;
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Search for any numbers whose is less than unity and
+  // not equal to zero. Due to the fact that this
+  // function processes integer numbers, if nonzero
+  // numbers less than 1 in magnitude occur,the vector,
+  // aQ', is not a candidate for conversion.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Create a working copy of aQ.
+  c = aQ;
+
+  // Remove zero entries.
+  indexOfZeroNumbers = find(c == 0);
+  c(indexOfZeroNumbers) = [];
+
+  // Now, search for numbers less than unity.
+  indexOfFractionalNumbers = find(abs(c) < 1);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  if indexOfFractionalNumbers == [];
+    positiveLimit = 2^(b - 1) - 1;
+    negativeLimit = 2^(b - 1);
+
+    // Locate negative values.
+    n = find(aQ < 0);
+
+    // Compute the unquantized value.
+    a = aQ / positiveLimit;
+    a(n) = aQ(n) / negativeLimit;
+
+    // Indicate a successful quantization.
+    success = 1;
+  else
+    // Handle the fractional number case.
+    a = aQ;
   end
 
 endfunction
