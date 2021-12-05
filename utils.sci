@@ -58,7 +58,11 @@ endfunction
 //
 //    b - The numerator (feedforward) coefficients of the filter.
 //
-//    a - The denominator (feedback) coefficients of the filter.
+//    a - The denominator (feedback) coefficients of the filter.  Note that
+//    the unity term (leading zero power coefficient) is not expected to
+//    be passed to this function.  If a = [1 0.5 -0.1], only [0.5 -0.1]
+//    would be passed to the function, and the calling sequence would be
+//    [y,bState,aState = iirFilter(x,b,a(2:$),bState,aState).
 //
 //    bState - The pipeline for the nonrecursive portion of the filter.
 //
@@ -114,7 +118,11 @@ endfunction
 //
 //    b - The numerator coefficients of the filter.
 //
-//    a - The denominator coefficients of the filter.
+//    a - The denominator coefficients of the filter.  Note that
+//    the unity term (leading zero power coefficient) is not expected to
+//    be passed to this function.  If a = [1 0.5 -0.1], only [0.5 -0.1]
+//    would be passed to the function, and the calling sequence would be
+//    y = filterBlock(x,b,a(2:$).
 //
 //  Outputs:
 //
