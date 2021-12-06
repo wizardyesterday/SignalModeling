@@ -164,25 +164,52 @@ psd4r = makeRandomProcess(v4,a12r);
 //++++++++++++++++++++++++++++++++++++++++
 // Plot the spectral densities.
 //++++++++++++++++++++++++++++++++++++++++
-subplot(311);
-title('Random Process Spectrum, Original Filter');
+subplot(3,4,1);
+title('Original Psd1');
 plot(psd1);
+
+subplot(3,4,2);
+title('Original Psd2');
 plot(psd2);
+
+subplot(3,4,3);
+title('Original Psd3');
 plot(psd3);
+
+subplot(3,4,4);
+title('Original Psd4');
 plot(psd4);
 
-subplot(312);
-title('Random Process Spectrum, Quantized Filter');
+subplot(3,4,5);
+title('Quantized Psd1');
 plot(psd1q);
+
+subplot(3,4,6);
+title('Quantized Psd2');
 plot(psd2q);
+
+subplot(3,4,7);
+title('Quantized Psd3');
 plot(psd3q);
+
+subplot(3,4,8);
+title('Quantized Psd4');
 plot(psd4q);
 
-subplot(313)
-title('Random Process Spectrum, Quantized Filter From LSP Differences');
+subplot(3,4,9)
+title('Recovered Psd1');
 plot(psd1r);
+
+subplot(3,4,10);
+title('Recovered Psd2');
 plot(psd2r);
+
+subplot(3,4,11);
+title('Recovered Psd3');
 plot(psd3r);
+
+subplot(3,4,12);
+title('Recovered Psd4');
 plot(psd4r);
 //++++++++++++++++++++++++++++++++++++++++
 
