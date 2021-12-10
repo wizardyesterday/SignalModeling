@@ -161,7 +161,7 @@ function gamm = atog(a)
   // Construct reflection coefficients.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   for j = p-1:-1:2
-    a= (a(1:j-1) - gamm(j) * flipud(conj(a(1:j-1)))) ./ (1 - abs(gamm(j))^2);
+    a = (a(1:j-1) - gamm(j) * flipud(conj(a(1:j-1)))) ./ (1 - abs(gamm(j))^2);
     gamm(j-1) = a(j-1);
   end
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
