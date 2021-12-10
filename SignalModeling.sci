@@ -496,11 +496,73 @@ endfunction
 
 //**********************************************************************
 //
+//  Name: fcov
+//
+//  Purpose: The purpose of this function is to compute an all-pole
+//  model for the input sequence, x(n), using the forward covariance
+//  method.
+//
+//  Calling Sequence: [gamn,err] = fcov(x,p)
+//
+//  Inputs:
+//
+//    x - A vector of signal values that are to be modeled.
+//
+//    p - The order of the model.
+//
+//  Outputs:
+//
+//    gamm - The vector of reflection coefficients.
+//
+//   err - The vector of modeling errors.
+//
+//**********************************************************************
+function [gamm,err] = fcov(x,p)
+
+  // Force column vector.
+  x = x(:);
+
+  N = length(x);
+
+  // Initialize forward prediction error.
+  eplus = x(2:N);
+
+  // Initialize backward prediction error.
+  eminus = x(1:N-1);
+
+  N = N - 1;
+
+  for j=1:p;
+    // Compute reflection coefficient.
+    gamm(j) = -eminus'*eplus/(eminus'*eminus);
+
+    // eplus{j}(n) = eplus{j-1}(n) + gamms{j}*eminus{j-1}(n-1).
+    temp1 = eplus  + gamm(j)*eminus;
+
+    // eminus{j}(n) = eminus{j-1}(n-1) + gamma*{j}*eplus{j-1}(n).
+    temp2 = eminus + conj(gamm(j))*eplus;
+
+    // Update error.
+    err(j) = temp1'*temp1;
+
+    // Update forward prediction error.
+    eplus = temp1(2:N);
+
+    // Update backward prediction error.
+    eminus = temp2(1:N-1);
+
+    N = N - 1;
+  end
+
+endfunction
+
+//**********************************************************************
+//
 //  Name: burg
 //
 //  Purpose: The purpose of this function is to compute an all-pole
 //  model for the input sequence, x(n).
-////
+//
 //  Calling Sequence: [gamn,err] = burg(x,p)
 //
 //  Inputs:
@@ -535,10 +597,10 @@ function [gamm,err] = burg(x,p)
     // Compute reflection coefficient.
     gamm(j) = -2*eminus'*eplus/(eplus'*eplus + eminus'*eminus);
 
-    // eplus{j}(n) = eplus{j-1}(n) + gamms{j}*eminus{j-1}(n-1)
+    // eplus{j}(n) = eplus{j-1}(n) + gamms{j}*eminus{j-1}(n-1).
     temp1 = eplus  + gamm(j)*eminus;
 
-    // eminus{j}(n) = eminus{j-1}(n-1) + gamma*{j}*eplus{j-1}(n)
+    // eminus{j}(n) = eminus{j-1}(n-1) + gamma*{j}*eplus{j-1}(n).
     temp2 = eminus + conj(gamm(j))*eplus;
 
     // Update error.
