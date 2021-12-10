@@ -558,6 +558,68 @@ endfunction
 
 //**********************************************************************
 //
+//  Name: bcov
+//
+//  Purpose: The purpose of this function is to compute an all-pole
+//  model for the input sequence, x(n), using the backward covariance
+//  method.
+//
+//  Calling Sequence: [gamn,err] = bcov(x,p)
+//
+//  Inputs:
+//
+//    x - A vector of signal values that are to be modeled.
+//
+//    p - The order of the model.
+//
+//  Outputs:
+//
+//    gamm - The vector of reflection coefficients.
+//
+//   err - The vector of modeling errors.
+//
+//**********************************************************************
+function [gamm,err] = bcov(x,p)
+
+  // Force column vector.
+  x = x(:);
+
+  N = length(x);
+
+  // Initialize forward prediction error.
+  eplus = x(2:N);
+
+  // Initialize backward prediction error.
+  eminus = x(1:N-1);
+
+  N = N - 1;
+
+  for j=1:p;
+    // Compute reflection coefficient.
+    gamm(j) = -eminus'*eplus/(eplus'*eplus);
+
+    // eplus{j}(n) = eplus{j-1}(n) + gamms{j}*eminus{j-1}(n-1).
+    temp1 = eplus  + gamm(j)*eminus;
+
+    // eminus{j}(n) = eminus{j-1}(n-1) + gamma*{j}*eplus{j-1}(n).
+    temp2 = eminus + conj(gamm(j))*eplus;
+
+    // Update error.
+    err(j) = eminus'*eminus;
+
+    // Update forward prediction error.
+    eplus = temp1(2:N);
+
+    // Update backward prediction error.
+    eminus = temp2(1:N-1);
+
+    N = N - 1;
+  end
+
+endfunction
+
+//**********************************************************************
+//
 //  Name: burg
 //
 //  Purpose: The purpose of this function is to compute an all-pole
