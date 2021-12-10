@@ -679,4 +679,56 @@ function [gamm,err] = burg(x,p)
 
 endfunction
 
+//**********************************************************************
+//
+//  Name: mcov
+//
+//  Purpose: The purpose of this function is to compute an all-pole
+//  model for the input sequence, x(n), using the modified covariance
+//  method.  The model is of the form H(z) = b(0)/A(z).
+//
+//  Calling Sequence: [a,err] = mcov(x,p)
+//
+//  Inputs:
+//
+//    x - A vector of signal values that are to be modeled.
+//
+//    p - The order of the model.
+//
+//  Outputs:
+//
+//    a - The model parameters.
+//
+//    err - The modeling error.
+//
+//**********************************************************************
+function [a,err] = mcov(x,p)
+
+  // Force column vector.
+  x   = x(:);
+
+  N   = length(x);
+
+ if p < length(x)
+    // Construct the data matrix.
+    X  = toeplitz(x(p+1:N),flipud(x(1:p+1)));
+
+    // Construct the autocorrelation matrix.
+    R  = X'*X;
+
+    R1 = R(2:p+1,2:p+1);
+    R2 = flipud(fliplr(R(1:p,1:p)));
+    b1 = R(2:p+1,1);
+    b2 = flipud(R(1:p,p+1));
+
+    // Compute model coeeficients.
+    a = [1 ; -(R1 + R2) \ (b1 + b2)];
+
+    // Compute modeling error.
+    err = R(1,:)*a + fliplr(R(p+1,:))*a;
+  else
+    error('Model order too large');
+  end
+
+endfunction
 

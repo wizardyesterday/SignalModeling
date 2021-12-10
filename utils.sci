@@ -184,23 +184,32 @@ endfunction
 //  Name: flipud
 //
 //  Purpose: The purpose of this function is to reverse the order of
-//  the entries of a vector.
+//  each column of a matrix.
 //
 //  Calling Sequence: b = flipud(a)
 //
 //  Inputs:
 //
-//    a - The input vector.
+//    a - The input matrix.
 //
 //  Outputs:
 //
-//    b - The vector that contains reversed entries of a.
+//    b - The matrix for which all of the columns of a have been
+//    reversed.
 //
 //**********************************************************************
 function b = flipud(a)
 
-  // Reverse the order of a.
-  b = a($:-1:1);
+  // Determine the number of rows and columns
+  s = size(a);
+
+  // Create working copy.
+  b = a;
+
+  for i = 1:s(2)
+    // Reverse the tontents of the current column.
+    b(1:$,i) = a($:-1:1,i);
+  end
 
 endfunction
 
@@ -209,23 +218,32 @@ endfunction
 //  Name: fliplr
 //
 //  Purpose: The purpose of this function is to reverse the order of
-//  the entries of a vector.
+//  each row of a matrix.
 //
 //  Calling Sequence: b = fliplr(a)
 //
 //  Inputs:
 //
-//    a - The input vector.
+//    a - The input matrix.
 //
 //  Outputs:
 //
-//    b - The vector that contains reversed entries of a.
+//    b - The matrix for which all of the rows of a have been
+//    reversed.
 //
 //**********************************************************************
 function b = fliplr(a)
 
-  // Reverse the order of a.
-  b = a($:-1:1);
+  // Determine the number of rows and columns
+  s = size(a);
+
+  // Create working copy.
+  b = a;
+
+  for i = 1:s(1)
+    // Reverse the tontents of the current row.
+    b(i,1:$) = a(i,$:-1:1);
+  end
 
 endfunction
 
