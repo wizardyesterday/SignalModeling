@@ -605,7 +605,7 @@ function [gamm,err] = bcov(x,p)
     temp2 = eminus + conj(gamm(j))*eplus;
 
     // Update error.
-    err(j) = eminus'*eminus;
+    err(j) = temp2'*temp2;
 
     // Update forward prediction error.
     eplus = temp1(2:N);
