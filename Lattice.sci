@@ -372,3 +372,72 @@ function c = btoc(b,g)
   end
 
 endfunction
+
+//**********************************************************************
+//
+//  Name: directFormToLattice
+//
+//  Purpose: The purpose of this function is to convert the direct
+//  form coefficients, of the filter H(z) = B(z)/A(z) into the
+//  coefficients of the lattice filter, c and g.
+//
+//  Calling Sequence: c = [c,g] = directFormToLattice(b,a)
+//
+//  Inputs:
+//
+//    b - The numerator coefficients of H(z).
+//
+//    a - The denominator coefficients of H(z).
+//
+//  Outputs:
+//
+//    c - The coefficients of the feedforward path of the lattice
+//    filter.
+//
+//    g - The reflection coefficients of the lattice filter.
+//
+//**********************************************************************
+function [c,g] = directFormToLattice(b,a)
+
+  // Compute the reflection coefficients.  
+  g = atog(a);
+
+  // Compute the feedforward coefficients.
+  c = btoc(b,g);
+
+endfunction
+
+//**********************************************************************
+//
+//  Name: latticeToDirectForm
+//
+//  Purpose: The purpose of this function is to convert the
+//  coefficients of the lattice filter, c and g, into the direct form
+//  coefficients, of the filter H(z) = B(z)/A(z).
+//
+//  Calling Sequence: c = [b,a] = latticeToDirectForm(c,g)
+//
+//  Inputs:
+//
+//    c - The coefficients of the feedforward path of the lattice
+//    filter.
+//
+//    g - The reflection coefficients of the lattice filter.
+//
+//  Outputs:
+//
+//    b - The numerator coefficients of H(z).
+//
+//    a - The denominator coefficients of H(z).
+//
+//**********************************************************************
+function [b,a] = latticeToDirectForm(c,g)
+
+  // Compute the numerator coefficients.
+  b = ctob(c,g);
+
+  // Compute the denominator coefficients.
+  a = gtoa(g);
+
+endfunction
+
