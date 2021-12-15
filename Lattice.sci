@@ -269,17 +269,18 @@ function b = ctob(c,g)
   c = c(:);
   g = g(:);
 
-  q = length(g);
+  p = length(g);
+  q = length(c);
 
   // Preallocate storage.
-  b = zeros(1,q+1)';
-  A = zeros(q+1,q);
+  b = zeros(1,q)';
+  A = zeros(p+1,p);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct matrix, A, such that,
   // A = [a1 a2 a3 ... ap].
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  for i = 1:q
+  for i = 1:p
     a = gtoa([g(1:i)]);
     A(1:length(a),i) = a;
   end
@@ -288,7 +289,7 @@ function b = ctob(c,g)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Add a0 so that A = [a0 a1 a2 a3 ... ap].
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  v = zeros(1:q+1)';
+  v = zeros(1:p+1)';
   v(1) = 1;
   A = [v A];
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -296,8 +297,8 @@ function b = ctob(c,g)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct b.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  for k = 1:q+1
-    for j = k:q+1
+  for k = 1:q
+    for j = k:q
       b(k) = b(k) + c(j)*conj(A(j - k + 1,j));
     end
   end
@@ -311,6 +312,8 @@ endfunction
 //  Purpose: The purpose of this function is to convert numerator
 //  polynomial of, H(z) = B(z) / A(z) into the feedforward polynomial
 //  of the corresponding lattice filter.
+//
+//  Calling Sequence: c = btoc(b,g)
 //
 //  Inputs:
 //
@@ -330,17 +333,18 @@ function c = btoc(b,g)
   b = b(:);
   g = g(:);
 
-  q = length(g);
+  p = length(g);
+  q = length(b);
 
   // Preallocate storage.
-  c = zeros(1,q+1)';
-  A = zeros(q+1,q);
+  c = zeros(1,q)';
+  A = zeros(p+1,p);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct matrix, A, such that,
   // A = [a1 a2 a3 ... ap].
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  for i = 1:q
+  for i = 1:p
     a = gtoa([g(1:i)]);
     A(1:length(a),i) = a;
   end
@@ -349,7 +353,7 @@ function c = btoc(b,g)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Add a0 so that A = [a0 a1 a2 a3 ... ap].
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  v = zeros(1:q+1)';
+  v = zeros(1:p+1)';
   v(1) = 1;
   A = [v A];
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -357,12 +361,12 @@ function c = btoc(b,g)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct c.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  for k = q+1:-1:1
+  for k = q:-1:1
     // Initial value of sum.
     c(k) = b(k);
 
     // Complete the recursion.
-    for j = k+1:q+1
+    for j = k+1:q
       c(k) = c(k) - c(j)*conj(A(j - k + 1,j));
     end
   end
