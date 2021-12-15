@@ -387,8 +387,9 @@ function [a,success] = unquantize(aQ,b)
 
 endfunction
 
-
+// Bring in the rest of the files.
 exec('SignalModeling.sci',-1);
 exec('LevinsonRecursion.sci',-1);
 exec('Lsp.sci',-1);
+exec('Lattice.sci',-1);
 
