@@ -40,7 +40,7 @@ function [gamm,err] = fcov(x,p)
 
   N = N - 1;
 
-  for j=1:p;
+  for j = 1:p;
     // Compute reflection coefficient.
     gamm(j) = -eminus'*eplus/(eminus'*eminus);
 
@@ -102,7 +102,7 @@ function [gamm,err] = bcov(x,p)
 
   N = N - 1;
 
-  for j=1:p;
+  for j = 1:p;
     // Compute reflection coefficient.
     gamm(j) = -eminus'*eplus/(eplus'*eplus);
 
@@ -252,10 +252,10 @@ endfunction
 //
 //  Inputs:
 //
-//    g - The reflection coefficients of the lattice filter.
-//
 //    c - The coefficients of the feedforward path of the lattice
 //    filter.
+//
+//    g - The reflection coefficients of the lattice filter.
 //
 //  Outputs:
 //
@@ -299,6 +299,71 @@ function b = ctob(c,g)
   for k = 1:q+1
     for j = k:q+1
       b(k) = b(k) + c(j)*conj(A(j - k + 1,j));
+    end
+  end
+
+endfunction
+
+//**********************************************************************
+//
+//  Name: btoc
+//
+//  Purpose: The purpose of this function is to convert numerator
+//  polynomial of, H(z) = B(z) / A(z) into the feedforward polynomial
+//  of the corresponding lattice filter.
+//
+//  Inputs:
+//
+//    b - The numerator coefficients of H(z).
+//
+//    g - The reflection coefficients of the lattice filter.
+//
+//  Outputs:
+//
+//    c - The coefficients of the feedforward path of the lattice
+//    filter.
+//
+//**********************************************************************
+function c = btoc(b,g)
+
+  // Force column vectors.
+  b = b(:);
+  g = g(:);
+
+  q = length(g);
+
+  // Preallocate storage.
+  c = zeros(1,q+1)';
+  A = zeros(q+1,q);
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Construct matrix, A, such that,
+  // A = [a1 a2 a3 ... ap].
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  for i = 1:q
+    a = gtoa([g(1:i)]);
+    A(1:length(a),i) = a;
+  end
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Add a0 so that A = [a0 a1 a2 a3 ... ap].
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  v = zeros(1:q+1)';
+  v(1) = 1;
+  A = [v A];
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+ 
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Construct c.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  for k = q+1:-1:1
+    // Initial value of sum.
+    c(k) = b(k);
+
+    // Complete the recursion.
+    for j = k+1:q+1
+      c(k) = c(k) - c(j)*conj(A(j - k + 1,j));
     end
   end
 
