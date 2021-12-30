@@ -57,19 +57,45 @@ endfunction
 //  Name: estimateFrequency
 //
 //  Purpose: The purpose of this function is to estimate the frequency
+//  of a sinusoid.
+//
+//  Calling Sequence: f0 = estimateFrequency(y,algorithmPtr)
+//
+//  Inputs:
+//
+//    y - A sinusoid combined with noise.
+//
+//    algorithmPtr - A pointer to the algorithm function that is to be
+//    used for frequency estimation.
+//
+//  Outputs:
+//
+//    f0 - The frequency of the sinusoid in cycles per sample.
+//
+//**********************************************************************
+function f0 = estimateFrequency(y,algorithmPtr)
+
+  // Invoke the appropriate algorithm.
+  f0 = algorithmPtr(y);
+
+endfunction
+
+//**********************************************************************
+//
+//  Name: constrainedLattic
+//
+//  Purpose: The purpose of this function is to estimate the frequency
 //  of a sinusoid.  The sinusoid may or may not be combined with noise.
 //  What's interesting about this function is that it uses a second-
 //  order FIR lattice with Gamma2 set equal to 1. This places the zeros
 //  of A(z) on the unit circle.  To estimate the frequency of the
 //  sinusoid, all that is needed is to construct a2 = [1 2*Gamma2 1]',
-//  solve for the roots, and compute the Arg() of the first of the two
-//  roots.  The frequency f0 is set equal to w0 / (2pi), and we're
-//  almost there.  The actual frequency is the computed frequency
-//  subtracted from 0.5 (half the sampling frequency). I would like to
-//  investigate why this needs to be done.  Either way, we have a working
-//  estimator.
+//  solve for the roots, and compute the Arg() of PI - the first of
+//  of the two roots.  The frequency f0 is set equal to w0 / (2pi).  The
+//  fact that Gamma2 has a value of unit ensures that all roots of the
+//  predictor polynomial, A2(z), will lie on the unit circle.
 //
-//  Calling Sequence: f0 = estimateFrequency(y)
+//  Calling Sequence: f0 = constrainedLattice(y)
 //
 //  Inputs:
 //
@@ -80,7 +106,7 @@ endfunction
 //    f0 - The frequency of the sinusoid in cycles per sample.
 //
 //**********************************************************************
-function f0 = estimateFrequency(y)
+function f0 = constrainedLattice(y)
 
   N = length(y);
 
@@ -109,13 +135,10 @@ function f0 = estimateFrequency(y)
   r = roots(a);
 
   // Compute estimated frequency in radians/sample.
-  w0 = atan(imag(r(1)),real(r(1)));
+  w0 = %pi - atan(imag(r(1)),real(r(1)));
 
   // Convert to cycles/sample.
   f0 = w0 / (2 * %pi);
-
-  // Okay, we have to adjust the result.
-  f0 = .5 - f0;
 
 endfunction
 
@@ -140,7 +163,7 @@ len = [100 500 1000 5000];
 for k = 1:length(v)
   for i = 1:length(f0)
     y = generateCosineWithNoise(1,f0(i),0,v(k),100);
-    fhatnoisy(k,i) = estimateFrequency(y);
+    fhatnoisy(k,i) = estimateFrequency(y,constrainedLattice);
   end
 end
 
@@ -148,7 +171,7 @@ end
 for k = 1:length(len)
   for i = 1:length(f0)
     y = generateCosineWithNoise(1,f0(i),0,0.5,len(k));
-    fhatlen(k,i) = estimateFrequency(y);
+    fhatlen(k,i) = estimateFrequency(y,constrainedLattice);
   end
 end
 
@@ -156,47 +179,47 @@ end
 // Plot results.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 subplot(421);
-title('Len: 100, Noise:0');
+title('Constrained, Noise: 0, Len: 100');
 plot(f0,fhatnoisy(1,:));
 
 subplot(422);
-s1 = sprintf("Noise: %f, ",v(1));
+s1 = sprintf("Constrained, Noise: %f, ",v(1));
 s2 = s1 + 'Len: 100';
 title(s2);
 plot(f0,fhatnoisy(2,:));
 
 subplot(423);
-s1 = sprintf("Noise: %f, ",v(2));
+s1 = sprintf("Constrained, Noise: %f, ",v(2));
 s2 = s1 + 'Len: 100';
 title(s2);
 plot(f0,fhatnoisy(3,:));
 
 subplot(424);
-s1 = sprintf("Noise: %f, ",v(4));
+s1 = sprintf("Constrained, Noise: %f, ",v(4));
 s2 = s1 + 'Len: 100';
 title(s2);
 plot(f0,fhatnoisy(4,:));
 
 subplot(425);
-s1 = sprintf("Len: %d, ",len(1));
+s1 = sprintf("Constrained, Len: %d, ",len(1));
 s2 = s1 + 'Noise: 0.5';
 title(s2);
 plot(f0,fhatlen(1,:));
 
 subplot(426);
-s1 = sprintf("Len: %d, ",len(2));
+s1 = sprintf("Constrained, Len: %d, ",len(2));
 s2 = s1 + 'Noise: 0.5';
 title(s2);
 plot(f0,fhatlen(2,:));
 
 subplot(427);
-s1 = sprintf("Len: %d, ",len(3));
+s1 = sprintf("Constrained, Len: %d, ",len(3));
 s2 = s1 + 'Noise: 0.5';
 title(s2);
 plot(f0,fhatlen(3,:));
 
 subplot(428);
-s1 = sprintf("Len: %d, ",len(4));
+s1 = sprintf("Constrained, Len: %d, ",len(4));
 s2 = s1 + 'Noise: 0.5';
 title(s2);
 plot(f0,fhatlen(4,:));
