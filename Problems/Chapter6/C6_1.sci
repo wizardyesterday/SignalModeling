@@ -82,7 +82,7 @@ endfunction
 
 //**********************************************************************
 //
-//  Name: constrainedLattic
+//  Name: constrainedLattice
 //
 //  Purpose: The purpose of this function is to estimate the frequency
 //  of a sinusoid using the constrained lattice structure.  The
