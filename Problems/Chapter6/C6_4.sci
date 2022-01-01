@@ -45,7 +45,16 @@ a2Bcov = gtoa(g);
 a2Burg = gtoa(g);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (e), repeate Part (a) and Part (b)
+// Part (d), determine Burg error as order
+// increases beyond 2.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+for p = 1:10
+  [g,e] = burg(x,p);
+  printf("Order: %d  Error: %f\n",p,e(p));
+end
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (e), repeat Part (a) and Part (b)
 // for different input sequence.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
