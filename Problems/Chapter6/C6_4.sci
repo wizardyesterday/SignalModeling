@@ -7,7 +7,6 @@ exec('utils.sci',-1);
 //**********************************************************************
 // Mainline code.
 //**********************************************************************
-
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (a), generate first-order models.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -85,10 +84,11 @@ printf("\n");
 // Part (d), determine Burg error as order
 // increases beyond 2.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-for p = 1:10
+for p = 1:4
   [g,e] = burg(x1,p);
-//  printf("Order: %d  Error: %f\n",p,e(p));
+  printf("Order: %d  Error: %f\n",p,e(p));
 end
+printf("\n");
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (e), repeat parts (a) and (b) for
