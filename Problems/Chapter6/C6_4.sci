@@ -12,22 +12,31 @@ exec('utils.sci',-1);
 // Part (a), generate first-order models.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Generate input sequence, x(n) = (n+1)u(n).
-x = 1:60;
+x1 = 1:60;
 
-[a1Covm,e1Covm] = covm(x,1);
+// Generate a unit sample sequence.
+delta = zeros(1,60);
+delta(1) = 1;
+
+[a1Covm,e1Covm] = covm(x1,1);
 g1Covm = atog(a1Covm);
+xhat1Covm = filterBlock(delta,1,a1Covm(2:$));
 
-[g1Fcov,e1Fcov] = fcov(x,1);
+[g1Fcov,e1Fcov] = fcov(x1,1);
 a1Fcov = gtoa(g1Fcov);
+xhat1Fcov = filterBlock(delta,1,a1Fcov(2:$));
 
-[g1Bcov,e1Bcov] = bcov(x,1);
+[g1Bcov,e1Bcov] = bcov(x1,1);
 a1Bcov = gtoa(g1Bcov);
+xhat1Bcov = filterBlock(delta,1,a1Bcov(2:$));
 
-[g1Burg,e1Burg] = burg(x,1);
+[g1Burg,e1Burg] = burg(x1,1);
 a1Burg = gtoa(g1Burg);
+xhat1Burg = filterBlock(delta,1,a1Burg(2:$));
 
-[a1Mcov,e1Mcov] = mcov(x,1);
+[a1Mcov,e1Mcov] = mcov(x1,1);
 g1Mcov = atog(a1Mcov);
+xhat1Mcov = filterBlock(delta,1,a1Mcov(2:$));
 
 printf("First Order Reflection Coefficients, x1(n)\n");
 printf("Covm Fcov Bcov Burg Mcov\n");
@@ -42,20 +51,25 @@ printf("\n");
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (b), generate second-order models.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-[a2Covm,e2Covm] = covm(x,2);
+[a2Covm,e2Covm] = covm(x1,2);
 g2Covm = atog(a2Covm);
+xhat2Covm = filterBlock(delta,1,a2Covm(2:$));
 
-[g2Fcov,e2Fcov] = fcov(x,2);
+[g2Fcov,e2Fcov] = fcov(x1,2);
 a2Fcov = gtoa(g2Fcov);
+xhat2Fcov = filterBlock(delta,1,a2Fcov(2:$));
 
-[g2Bcov,e2Bcov] = bcov(x,2);
+[g2Bcov,e2Bcov] = bcov(x1,2);
 a2Bcov = gtoa(g2Bcov);
+xhat2Bcov = filterBlock(delta,1,a2Bcov(2:$));
 
-[g2Burg,e2Burg] = burg(x,2);
+[g2Burg,e2Burg] = burg(x1,2);
 a2Burg = gtoa(g2Burg);
+xhat2Burg = filterBlock(delta,1,a2Burg(2:$));
 
-[a2Mcov,e2Mcov] = mcov(x,2);
+[a2Mcov,e2Mcov] = mcov(x1,2);
 //g2Mcov = atog(a2Mcov);
+xhat2Mcov = filterBlock(delta,1,a2Mcov(2:$));
 
 printf("Second Order Reflection Coefficients, x1(n)\n");
 printf("Covm Fcov Bcov Burg Mcov\n");
@@ -72,13 +86,13 @@ printf("\n");
 // increases beyond 2.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 for p = 1:10
-  [g,e] = burg(x,p);
+  [g,e] = burg(x1,p);
 //  printf("Order: %d  Error: %f\n",p,e(p));
 end
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (e), repeat Part (a) and Part (b)
-// for different input sequence.
+// Part (e), repeat parts (a) and (b) for
+// different input sequence.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Generate noise sequence.
 noisegen(1,60,0.1);
@@ -86,42 +100,42 @@ v = feval(1:60,Noise);
 
 // Generate time vector.
 n = 1:60;
-x = n .* (0.9).^n;
+x2 = n .* (0.9).^n;
 
 // Generate corrupted sequence.
-y = x + v;
+y = x2 + v;
 
 //----------------------------------------------
 // Generate noise-free models.
 //----------------------------------------------
-[a1eCovm,e1eCovm] = covm(x,1);
+[a1eCovm,e1eCovm] = covm(x2,1);
 g1eCovm = atog(a1eCovm);
 
-[g1eFcov,e1eFcov] = fcov(x,1);
+[g1eFcov,e1eFcov] = fcov(x2,1);
 a1eFcov = gtoa(g1eFcov);
 
-[g1eBcov,e1eBcov] = bcov(x,1);
+[g1eBcov,e1eBcov] = bcov(x2,1);
 a1eBcov = gtoa(g1eBcov);
 
-[g1eBurg,e1eBurg] = burg(x,1);
+[g1eBurg,e1eBurg] = burg(x2,1);
 a1eBurg = gtoa(g1eBurg);
 
-[a1eMcov,e1eMcov] = mcov(x,1);
+[a1eMcov,e1eMcov] = mcov(x2,1);
 g1eMcov = atog(a1eMcov);
 
-[a2eCovm,e2eCovm] = covm(x,2);
+[a2eCovm,e2eCovm] = covm(x2,2);
 g2eCovm = atog(a2eCovm);
 
-[g2eFcov,e2eFcov] = fcov(x,2);
+[g2eFcov,e2eFcov] = fcov(x2,2);
 a2eFcov = gtoa(g2eFcov);
 
-[g2eBcov,e2eBcov] = bcov(x,2);
+[g2eBcov,e2eBcov] = bcov(x2,2);
 a2eBcov = gtoa(g2eBcov);
 
-[g2eBurg,e2eBurg] = burg(x,2);
+[g2eBurg,e2eBurg] = burg(x2,2);
 a2eBurg = gtoa(g2eBurg);
 
-[a2eMcov,e2eMcov] = mcov(x,2);
+[a2eMcov,e2eMcov] = mcov(x2,2);
 g2eMcov = atog(a2eBurg);
 
 printf("First Order Reflection Coefficients, x2(n)\n");
@@ -196,3 +210,57 @@ printf("Second Order Errors, y(n)\n");
 printf("Covm Fcov Bcov Burg Mcov\n");
 disp([e2yCovm e2yFcov(2) e2yBcov(2) e2yBurg(2) e2yMcov]);
 printf("\n");
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Plot results from parts (a) and (b).
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+subplot(5,2,1);
+title('xhat(n), First-Order Covm');
+plot(xhat1Covm);
+xgrid();
+
+subplot(5,2,3);
+title('xhat(n), First-Order Fcov');
+plot(xhat1Fcov);
+xgrid();
+
+subplot(5,2,5);
+title('xhat(n), First-Order Bcov');
+plot(xhat1Bcov);
+xgrid();
+
+subplot(5,2,7);
+title('xhat(n), First-Order Burg');
+plot(xhat1Burg);
+xgrid();
+
+subplot(5,2,9);
+title('xhat(n), First-Order Mcov');
+plot(xhat1Mcov);
+xgrid();
+
+subplot(5,2,2);
+title('xhat(n), Second-Order Covm');
+plot(xhat2Covm);
+xgrid();
+
+subplot(5,2,4);
+title('xhat(n), Second-Order Fcov');
+plot(xhat2Fcov);
+xgrid();
+
+subplot(5,2,6);
+title('xhat(n), Second-Order Bcov');
+plot(xhat2Bcov);
+xgrid();
+
+subplot(5,2,8);
+title('xhat(n), Second-Order Burg');
+plot(xhat2Burg);
+xgrid();
+
+subplot(5,2,10);
+title('xhat(n), Second-Order Mcov');
+plot(xhat2Mcov);
+xgrid();
+
