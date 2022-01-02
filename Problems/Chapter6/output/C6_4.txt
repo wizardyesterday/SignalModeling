@@ -19,10 +19,10 @@ Covm Fcov Bcov Burg Mcov
  
     4.099E-11    12.494785    12.266024    0.0942451    0.  
 
-Order: 1  Error: 117.975830
-Order: 2  Error: 0.094245
-Order: 3  Error: 0.000303
-Order: 4  Error: 0.000001
+Burg Order: 1  Error: 117.975830
+Burg Order: 2  Error: 0.094245
+Burg Order: 3  Error: 0.000303
+Burg Order: 4  Error: 0.000001
 
 First Order Reflection Coefficients, x2(n)
 Covm Fcov Bcov Burg Mcov

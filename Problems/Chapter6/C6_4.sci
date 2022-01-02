@@ -75,9 +75,10 @@ printf("Covm Fcov Bcov Burg Mcov\n");
 disp([g2Covm g2Fcov g2Bcov g2Burg]);
 printf("\n");
 
-printf("Second Order Errors, x1(n)\n");
+printf("Second Order Errors, x1(n) YO\n");
 printf("Covm Fcov Bcov Burg Mcov\n");
-disp([e2Covm e2Fcov(2) e2Bcov(2) e2Burg(2) e2Mcov]);
+
+
 printf("\n");
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -86,7 +87,7 @@ printf("\n");
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 for p = 1:4
   [g,e] = burg(x1,p);
-  printf("Order: %d  Error: %f\n",p,e(p));
+  printf("Burg Order: %d  Error: %f\n",p,e(p));
 end
 printf("\n");
 
