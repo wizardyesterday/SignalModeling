@@ -107,7 +107,7 @@ endfunction
 //    a - The model coefficients.
 //
 //**********************************************************************
-function a=gtoa(gamm)
+function a = gtoa(gamm)
 
   // Ensure that we have a column vector.
   gamm = gamm(:);
