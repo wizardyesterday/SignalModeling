@@ -69,7 +69,7 @@ endfunction
 
 //**********************************************************************
 //
-//  Name: burgi
+//  Name: burgImproved
 //
 //  Purpose: The purpose of this function is to compute an all-pole
 //  model for the input sequence, x(n).  The difference between this
@@ -78,7 +78,7 @@ endfunction
 //  coefficient is performed recursively so that CPU cycles can be
 //  saved.
 //
-//  Calling Sequence: [gamn,err] = burgi(x,p)
+//  Calling Sequence: [gamn,err] = burgImproved(x,p)
 //
 //  Inputs:
 //
@@ -93,7 +93,7 @@ endfunction
 //   err - The vector of modeling errors.
 //
 //**********************************************************************
-function [gamm,err] = burgi(x,p)
+function [gamm,err] = burgImproved(x,p)
 
   // Force column vector.
   x = x(:);
@@ -106,7 +106,7 @@ function [gamm,err] = burgi(x,p)
   // Initialize backward prediction error.
   eminus = x(1:N-1);
 
-  // Set initial value of denominator.
+  // D1 = |eplus_0|^2 + |eminus_0|^2.
   D = eplus'*eplus + eminus'*eminus;
 
   N = N - 1;
@@ -130,7 +130,7 @@ function [gamm,err] = burgi(x,p)
     // Update backward prediction error.
     eminus = temp2(1:N-1);
 
-    // Update denominator.
+    // D_j+1 = D_j(1 - |gamma_j|^2) - |eplus_j(j)|^2 - |eminus_j(N)|^2.
     D = D * (1 - gamm(j) * conj(gamm(j))) - eplus(j) * conj(eplus(j)) ...
         - eminus($) * conj(eminus($));
 
@@ -152,10 +152,10 @@ A = generateSignals(0.1,60);
 [g4Burg,e4Burg] = burg(A(:,4),2);
 
 // Generate more efficient Burg models.
-[g1Burgi,e1Burgi] = burgi(A(:,1),2);
-[g2Burgi,e2Burgi] = burgi(A(:,2),2);
-[g3Burgi,e3Burgi] = burgi(A(:,3),2);
-[g4Burgi,e4Burgi] = burgi(A(:,4),2);
+[g1Burgi,e1Burgi] = burgImproved(A(:,1),2);
+[g2Burgi,e2Burgi] = burgImproved(A(:,2),2);
+[g3Burgi,e3Burgi] = burgImproved(A(:,3),2);
+[g4Burgi,e4Burgi] = burgImproved(A(:,4),2);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Print results.
@@ -172,31 +172,28 @@ printf("Burg g: %3.2e  Burgi g: %3.2e\n", ...
 printf("\n--------------------------------------------------------\n");
 printf("          x(n) = cos(2*pi*0.35*n) + w(n), sigma = 0.1\n");
 printf("--------------------------------------------------------\n");
-printf("Burg e: %3.2e  Burgi e: %3.2e\n", ...
+printf("Burg e: %3.2e  Burg Improved e: %3.2e\n", ...
         e2Burg($),e2Burgi($));
 
-printf("Burg g: %3.2e  Burgi g: %3.2e\n", ...
+printf("Burg g: %3.2e  Burg Improved g: %3.2e\n", ...
         g2Burg,g2Burgi);
 
 
 printf("\n--------------------------------------------------------\n");
 printf("          x(n) = exp(-0.05*n)\n");
 printf("--------------------------------------------------------\n");
-printf("Burg e: %3.2e  Burgi e: %3.2e\n", ...
+printf("Burg e: %3.2e  Burg Improved e: %3.2e\n", ...
         e3Burg($),e3Burgi($));
 
-printf("Burg g: %3.2e  Burgi g: %3.2e\n", ...
+printf("Burg g: %3.2e  Burg Improved g: %3.2e\n", ...
         g3Burg,g3Burgi);
 
 
 printf("\n--------------------------------------------------------\n");
 printf("          x(n) = (n+1)*exp(-0.05*n)\n");
 printf("--------------------------------------------------------\n");
-printf("Burg e: %3.2e  Burgi e: %3.2e\n", ...
+printf("Burg e: %3.2e  Burg Improvede: %3.2e\n", ...
         e4Burg($),e4Burgi($));
 
-printf("Burg g: %3.2e  Burgi g: %3.2e\n", ...
+printf("Burg g: %3.2e  Burg Improved g: %3.2e\n", ...
         g4Burg,g4Burgi);
-
-
-
