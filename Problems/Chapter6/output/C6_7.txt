@@ -26,6 +26,6 @@ Burg g: 9.95e-01  Burg Improved g: 9.91e-01
 --------------------------------------------------------
           x(n) = (n+1)*exp(-0.05*n)
 --------------------------------------------------------
-Burg e: 7.93e-02  Burg Improvede: 8.22e-02
+Burg e: 7.93e-02  Burg Improved e: 8.22e-02
 Burg g: -9.99e-01  Burg Improved g: -9.99e-01
 Burg g: 9.95e-01  Burg Improved g: 9.76e-01
