@@ -167,7 +167,7 @@ function [gamm,err] = burg(x,p)
     // Compute reflection coefficient.
     gamm(j) = -2*eminus'*eplus/(eplus'*eplus + eminus'*eminus);
 
-    // eplus{j}(n) = eplus{j-1}(n) + gamms{j}*eminus{j-1}(n-1).
+    // eplus{j}(n) = eplus{j-1}(n) + gamma{j}*eminus{j-1}(n-1).
     temp1 = eplus  + gamm(j)*eminus;
 
     // eminus{j}(n) = eminus{j-1}(n-1) + gamma*{j}*eplus{j-1}(n).
