@@ -39,6 +39,12 @@ end
 printf("p, eb(p)\n");
 disp([p' eb']);
 
+// Plot the results.
+subplot(211);
+title("Mean-square error Versus p (rd(k) = alpha^k) for Fir Wiener Filter");
+
+plot(p,eb);
+
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (c): With p = 10, plot the mean-square error versus alpha
 // for alpha = 0.1,0.2,...,0.9. 
@@ -58,8 +64,9 @@ for i = 1:9
 end
 
 // Plot the results.
+subplot(212);
+title("Mean-square error Versus Alpha (rd(k) = alpha^k) for Fir Wiener Filter");
 plot(alpha,ec);
-title("Mean-square error Versus Alpha (rd(k) = alpha^k)for Fir Wiener Filter");
 
 
 
