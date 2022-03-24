@@ -387,9 +387,55 @@ function [a,success] = unquantize(aQ,b)
 
 endfunction
 
+//**********************************************************************
+//
+//  Name: generateWhiteNoise
+//
+//  Purpose: The purpose of this function is to generate a white noise
+//  sequence for which the random variable is uniformly distributed
+//  between [-amplitude,amplitude].
+//
+//  Calling Sequence: w = generateBipolarNoise(amplitude,
+//                                                  numberOfSamples)
+//
+//  Inputs:
+//
+//    amplitude - The maximum amplitude of the bipolar signal.
+//
+//    numberOfSampels - The number of random numbers to generate.
+//
+//  Outputs:
+//
+//    w - A uniformly distributed white noise sequence.
+//
+//**********************************************************************
+function w = generateBipolarNoise(amplitude,numberOfSamples)
+
+  // Ensure that we have a uniform distribution.
+  rand('uniform');
+
+  for i = 1:numberOfSamples
+    // Generate the next random number.
+    a = rand();
+
+    // Translate for symmetry about 0.
+    a = a - .5;
+
+    // Scale so that -amplitude <= a <= amplitude.
+    a = a * 2 * amplitude;
+
+    // Save in returned vector.
+    w(i) = a;
+  end
+
+endfunction
+
+
 // Bring in the rest of the files.
 exec('SignalModeling.sci',-1);
 exec('LevinsonRecursion.sci',-1);
 exec('Lsp.sci',-1);
 exec('Lattice.sci',-1);
+exec('OptimumFilters.sci',-1);
+
 
