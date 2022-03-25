@@ -17,6 +17,8 @@ exec('utils.sci',-1);
 // where w0 = 0.05*pi, and phi is a random variable that is
 // uniformly distributed between -pi and pi.  Assume that g(n) is
 // unit variance white noise.
+// The noise signal, measured from the secondary sensor is,
+// v2(n) = 0.8*v2(n) + g(n).
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Generate time vector.
 n = 0:499;
@@ -38,4 +40,7 @@ d = d(:);
 
 // Construct measured signal.
 x = d + g;
+
+// Generate the noise signal that is measured by the secondary sensor.
+v2 = filterBlock(g,1,-0.8);
 
