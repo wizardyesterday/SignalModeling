@@ -55,12 +55,12 @@ endfunction
 
 //**********************************************************************
 //
-//  Name: NoiseCanceller
+//  Name: WienerNoiseCanceller
 //
 //  Purpose: The purpose of this function is to design a pth-order FIR
 //  Wiener filter.
 //
-//  Calling Sequence: [w,e] = NoiseCanceller(x,v1,v2,p)
+//  Calling Sequence: [w,e] = WienerNoiseCanceller(x,v1,v2,p)
 //
 //  Inputs:
 //
@@ -79,7 +79,7 @@ endfunction
 //    e - The mean-square error associated with the filter.
 //
 //**********************************************************************
-function [dhat,v1hat,e] = NoiseCanceller(x,v1,v2,p)
+function [dhat,v1hat,e] = WienerNoiseCanceller(x,v1,v2,p)
 
   //Force column vectors.
   x = x(:);

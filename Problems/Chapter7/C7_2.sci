@@ -51,9 +51,9 @@ v2 = filterBlock(g,1,-0.8);
 // squared errors for each filter.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Generate corrected signal.
-[dhat2,ghat2,e2] = NoiseCanceller(x,g,v2,2);
-[dhat4,ghat4,e4] = NoiseCanceller(x,g,v2,4);
-[dhat6,ghat6,e6] = NoiseCanceller(x,g,v2,6);
+[dhat2,ghat2,e2] = WienerNoiseCanceller(x,g,v2,2);
+[dhat4,ghat4,e4] = WienerNoiseCanceller(x,g,v2,4);
+[dhat6,ghat6,e6] = WienerNoiseCanceller(x,g,v2,6);
 
 //*********************************************
 // Plot results.
@@ -108,9 +108,9 @@ d1 = d1(:);
 x1 = d1 + g;
 
 // Generate corrected signal.
-[dhat2_1,ghat2_1,e2_] = NoiseCanceller(x1,g,v2,2);
-[dhat4_1,ghat4_1,e4_1] = NoiseCanceller(x1,g,v2,4);
-[dhat6_1,ghat6_1,e6_1] = NoiseCanceller(x1,g,v2,6);
+[dhat2_1,ghat2_1,e2_] = WienerNoiseCanceller(x1,g,v2,2);
+[dhat4_1,ghat4_1,e4_1] = WienerNoiseCanceller(x1,g,v2,4);
+[dhat6_1,ghat6_1,e6_1] = WienerNoiseCanceller(x1,g,v2,6);
 
 //*********************************************
 // Plot results.
@@ -137,3 +137,10 @@ plot(dhat4_1);
 subplot(515);
 title('Signal Estimate with Wiener Filter of Order 6');
 plot(dhat6_1);
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (d): Using filters of order p = 2,4, and 6, design and
+// implement the Wiener noise cancellation filters.  Make plots
+// of the estimated process ghat(n), and compare the average
+// squared errors for each filter.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
