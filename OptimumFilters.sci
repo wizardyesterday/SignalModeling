@@ -58,7 +58,20 @@ endfunction
 //  Name: WienerNoiseCanceller
 //
 //  Purpose: The purpose of this function is to design a pth-order FIR
-//  Wiener filter.
+//  Wiener filter.  Here's how things work.  There exists a desired
+//  signal, d(n), that is measured in the presence of noise, this
+//  signal being x(n) = d(n) + v(n), such that v1(n) is white noise.
+//  This tainted signal might represent a voice signal, d(n) in a
+//  cockpit of a fighter jet, and v1(n) might represent wind noise and
+//  engine noise.  A secondary sensor is placed away from the desired
+//  signal with the purpose of measuring the background noise. Let it
+//  be supposed that this signal is called v2(n), and although v2(n)
+//  is correlated with v1(n), the signals are not the same.  Now,
+//  v2(n) is passed through a Wiener filter, and the output of the filter
+//  is an estimate of v1(n).  Let's calle it v1hat(n).  Finally,
+//  v2hat(n) is subtracted from x(n), and this provides an estimate of
+//  d(n).  Let's call this estimate dhat(n).
+//  noise signal from the secondary sensor is pas
 //
 //  Calling Sequence: [w,e] = WienerNoiseCanceller(x,v1,v2,p)
 //
@@ -88,7 +101,13 @@ function [dhat,v1hat,e] = WienerNoiseCanceller(x,v1,v2,p)
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Compute autocorrelation sequences, and cross-
-  // correlation sequences.
+  // correlation sequences.  Note that v1(n) is
+  // not really available in a real system.  We're
+  // keeping it available only so that the mean-
+  // square error can be computed.  Note also, that
+  // v2(n) is measured from a secondary sensor
+  // whose sole purpose is for the measurement of
+  // noise.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Compute autocorrelation of v1(n).
   rv1 = convol(v1,v1($:-1:1));
@@ -100,6 +119,11 @@ function [dhat,v1hat,e] = WienerNoiseCanceller(x,v1,v2,p)
   kmax = find(rv2 == max(rv2));
   rv2 = rv2(kmax:kmax+p-1);
 
+  // Compute autocorrelation of d(n);
+  rd = convol(d,d($:-1:1));
+  kmax = find(rd == max(rd));
+  rd = rd(kmax:$);
+
   // Construct cross-correlation of x(n) and v2(n).
   rv1v2 = convol(x,v2($:-1:1));
   kmax = find(rv1v2 == max(rv1v2));
@@ -110,19 +134,29 @@ function [dhat,v1hat,e] = WienerNoiseCanceller(x,v1,v2,p)
   // Construct autocorrelation matrix.
   Rv2 = toeplitz(rv2);
 
-  // Compute Wiener filter coefficients.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // In this block of code, the Wiener filter
+  // coefficients are first computed.  Once
+  // computed, the noise signal, v2(n), from the
+  // secondary sensor is filtered by the Weiner
+  // filter.  The result is an estimate of v1(n),
+  // called v1hat(n).
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Compute the Wiener filter coefficients.
   w = Rv2 \ rv1v2(1:p);
-
-  // Compute autocorrelation of d(n);
-  rd = convol(d,d($:-1:1));
-  kmax = find(rd == max(rd));
-  rd = rd(kmax:$);
 
   // Compute estimate of v1(n).
   v1hat = filterBlock(v2,w,0);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-  // Compute estimate of d(n).
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // The estimate of d(n) is next computed by
+  // subtracting the estimate of d1(n) from x(n).
+  // The result is the desired signal with noise
+  // removed.  This signal is called dhat(n).
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   dhat = x - v1hat;
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Compute mean-square error.
   e = rv1(1) - w' * rv1v2(1:p);

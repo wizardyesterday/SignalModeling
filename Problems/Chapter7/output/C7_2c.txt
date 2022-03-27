@@ -1,0 +1,9 @@
+Mean-square error recovered signal with phase jitter, and perturbed
+by noise: Part (c).
+
+-->[e2; e4; e6]
+ ans  =
+ 
+    32.918719  
+    31.890533  
+    30.688834  

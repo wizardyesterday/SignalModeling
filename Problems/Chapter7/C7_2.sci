@@ -139,8 +139,54 @@ title('Signal Estimate with Wiener Filter of Order 6');
 plot(dhat6_1);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (d): Using filters of order p = 2,4, and 6, design and
-// implement the Wiener noise cancellation filters.  Make plots
-// of the estimated process ghat(n), and compare the average
-// squared errors for each filter.
+// Part (d): For this part, the desired signal has leaked into
+// the secondary sensor.  The input to the Wiener filter is now,
+// v0(n) = v2(n) + alpha*d(n).  The performance is to be evaluated
+// for alpha = {0.1,0.5} for filter orders of p = 2, 4, and
+// 6.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Compute the three perturbed noise measurements.
+v01 = v2 + 0.1*d;
+v02 = v2 + 0.7*d;
+
+// Alpha = 0.1.
+[dhat2_d1,ghat2_d1,e2_d1] = WienerNoiseCanceller(x1,g,v01,2);
+[dhat4_d1,ghat4_d1,e4_d1] = WienerNoiseCanceller(x1,g,v01,4);
+[dhat6_d1,ghat6_d1,e6_d1] = WienerNoiseCanceller(x1,g,v01,6);
+
+// Alpha = 0.7.
+[dhat2_d2,ghat2_d2,e2_d2] = WienerNoiseCanceller(x1,g,v02,2);
+[dhat4_d2,ghat4_d2,e4_d2] = WienerNoiseCanceller(x1,g,v02,4);
+[dhat6_d2,ghat6_d2,e6_d2] = WienerNoiseCanceller(x1,g,v02,6);
+//*********************************************
+
+// Plot results.
+//*********************************************
+// Select window 3.
+scf(3);
+
+subplot(321);
+title('Tainted Noise, Alpha = 0.1, with Wiener Filter of Order 2');
+plot(dhat2_d1);
+
+subplot(322);
+title('Tainted Noise, Alpha = 0.1, with Wiener Filter of Order 4');
+plot(dhat4_d1);
+
+subplot(323);
+title('Tainted Noise, Alpha = 0.1, with Wiener Filter of Order 6');
+plot(dhat6_d1);
+
+subplot(324);
+title('Tainted Noise, Alpha = 0.7, with Wiener Filter of Order 2');
+plot(dhat2_d2);
+
+subplot(325);
+title('Tainted Noise, Alpha = 0.7, with Wiener Filter of Order 4');
+plot(dhat4_d2);
+
+subplot(326);
+title('Tainted Noise, Alpha = 0.7, with Wiener Filter of Order 6');
+plot(dhat6_d2);
+
+
