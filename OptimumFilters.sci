@@ -170,7 +170,7 @@ endfunction
 //  Purpose: The purpose of this function is to perform Kalman
 //  filtering.
 //
-//  Calling Sequence: xhat = kalmanFilter(N,A,C,Qv,Qw,P_0_0)
+//  Calling Sequence: z = kalmanFilter(N,A,C,Qv,Qw,P_0_0)
 //
 //  Inputs:
 //
@@ -180,20 +180,26 @@ endfunction
 //
 //    A - The state transition matrix.
 //
-//    C - The observation matrix.
+//    C - The observation matrix.  This matrix contains weights that
+//    will be used to compute the output as a weight sum of selected
+//    state components.
 //
-//    Qv - The measurement noise.
+//    Qv - The measurement noise.  A larger value will resoult in a
+//    larger correction on each update, and a smaller value will result
+//    in a smaller correction on each update.
 //
-//    Qw - The process noise.
+//    Qw - The process noise.  A larger value will result in a smaller
+//    correction on each update, and a smaller value will result in a
+//    a larger correction on each update.
 //
 //    P_0_0 - The initial covariance estimate, P(0|0).
 //
 //  Outputs:
 //
-//    xhat - The estimated values.
+//    z - The output value of the Kalman filter.
 //
 //**********************************************************************
-function xhat = kalmanFilter(y,N,A,C,Qv,Qw,x_0_0,P_0_0)
+function z = kalmanFilter(y,N,A,C,Qv,Qw,x_0_0,P_0_0)
 
   // Retrieve the initial values.
   x = x_0_0;
@@ -215,8 +221,8 @@ function xhat = kalmanFilter(y,N,A,C,Qv,Qw,x_0_0,P_0_0)
     // Update P(n|n).
     P = P_n_nm1 - (K * C * P_n_nm1);
 
-    // Construct returned estimate.
-    xhat(n-1) = x(1);
+    // Construct output value.
+    z(n-1) = C * x;
   end
 
 endfunction
