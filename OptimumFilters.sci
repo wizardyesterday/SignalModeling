@@ -167,11 +167,10 @@ endfunction
 //
 //  Name: kalmanFilter
 //
-//  Purpose: The purpose of this function is to create lowpass filters
-//  using the Pade approximation.  Plots are created for various values
-//  of p and q.  The heavy lifting is performed by the pade() function.
+//  Purpose: The purpose of this function is to perform Kalman
+//  filtering.
 //
-//  Calling Sequence: K = computeKalmanGain(N,A,C,Qv,Qw,P_0_0)
+//  Calling Sequence: xhat = kalmanFilter(N,A,C,Qv,Qw,P_0_0)
 //
 //  Inputs:
 //
@@ -191,10 +190,10 @@ endfunction
 //
 //  Outputs:
 //
-//    x - The estimated values.
+//    xhat - The estimated values.
 //
 //**********************************************************************
-function x = kalmanFilter(y,N,A,C,Qv,Qw,x_0_0,P_0_0)
+function xhat = kalmanFilter(y,N,A,C,Qv,Qw,x_0_0,P_0_0)
 
   // Retrieve the initial values.
   x = x_0_0;
@@ -217,17 +216,20 @@ function x = kalmanFilter(y,N,A,C,Qv,Qw,x_0_0,P_0_0)
     P = P_n_nm1 - (K* C * P_n_nm1);
   end
 
+  // Set returned value.
+  xhat = x;
+
 endfunction
 
 //**********************************************************************
 //
-//  Name: createStateTransitionMat
+//  Name: stateTransitionMatrix
 //
 //  Purpose: The purpose of this function is to create the state
 //  transition matrix that corresponds to a set of recursive filter
 //  coefficients.
 //
-//  Calling Sequence: A = createStateTransitionMatrix(a)
+//  Calling Sequence: A = stateTransitionMatrix(a)
 //
 //  Inputs:
 //
@@ -240,7 +242,7 @@ endfunction
 //    input vector, a.
 //
 //**********************************************************************
-function A = createStateTransitionMat(a)
+function A = stateTransitionMatrix(a)
 
   // Force a colunn vector.
   a = a(:);
