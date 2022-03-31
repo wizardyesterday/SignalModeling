@@ -214,10 +214,10 @@ function xhat = kalmanFilter(y,N,A,C,Qv,Qw,x_0_0,P_0_0)
 
     // Update P(n|n).
     P = P_n_nm1 - (K * C * P_n_nm1);
-  end
 
-  // Set returned value.
-  xhat = x;
+    // Construct returned estimate.
+    xhat(n-1) = x(1);
+  end
 
 endfunction
 

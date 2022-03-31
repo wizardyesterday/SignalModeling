@@ -67,6 +67,8 @@ A3 = stateTransitionMatrix(a3);
 C3 = [1 0 0];
 Qv = 0.64;
 Qw = 1;
+
+// Set initial conditions.
 x3_0_0 = [1 0 0]';
 P3_0_0 = [1 0 0; 0 0 0; 0 0 0];
 
@@ -79,8 +81,8 @@ K = computeKalmanGain(11,A3,C3,Qv,Qw,P3_0_0);
 K2 = computeKalmanGain(11,A3,C3,Qv,Qw,2*P3_0_0);
 K3 = computeKalmanGain(11,A3,C3,Qv,Qw,4*P3_0_0);
 
-disp('K K2 K3');
-disp([K K2 K3]);
+//disp('K K2 K3');
+//disp([K K2 K3]);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (d): Generate:
@@ -109,4 +111,11 @@ x = filterBlock(w,1,a1) + w;
 
 // Compute observations.
 y = x + v;
+
+// Set initial conditions.
+x3_0_0 = [1 0 0]';
+P3_0_0 = [1 0 0; 0 0 0; 0 0 0];
+
+xhat3 = kalmanFilter(y,500,A3,C3,Qv,Qw,x3_0_0,P3_0_0);
+
 
