@@ -207,7 +207,7 @@ function xhat = kalmanFilter(y,N,A,C,Qv,Qw,x_0_0,P_0_0)
     P_n_nm1 = (A * P * A') + Qw;
 
     // Update the Kalman gain.
-    K = (P_n_nm1 * C') / ((C *P_n_nm1 *C') + Qv);
+    K = (P_n_nm1 * C') / ((C * P_n_nm1 *C') + Qv);
 
     // Update x(n|n).
     x = x_n_nm1 + K * (y(n) - (C * x_n_nm1));
