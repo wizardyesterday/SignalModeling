@@ -163,3 +163,101 @@ function [dhat,v1hat,e] = WienerNoiseCanceller(x,v1,v2,p)
 
 endfunction
 
+//**********************************************************************
+//
+//  Name: kalmanFilter
+//
+//  Purpose: The purpose of this function is to create lowpass filters
+//  using the Pade approximation.  Plots are created for various values
+//  of p and q.  The heavy lifting is performed by the pade() function.
+//
+//  Calling Sequence: K = computeKalmanGain(N,A,C,Qv,Qw,P_0_0)
+//
+//  Inputs:
+//
+//    Y - A signal that contains x(n) + noise, v(n).
+//
+//    N - The number of iterations for the Kalman gain computation.
+//
+//    A - The state transition matrix.
+//
+//    C - The observation matrix.
+//
+//    Qv - The measurement noise.
+//
+//    Qw - The process noise.
+//
+//    P_0_0 - The initial covariance estimate, P(0|0).
+//
+//  Outputs:
+//
+//    x - The estimated values.
+//
+//**********************************************************************
+function x = kalmanFilter(y,N,A,C,Qv,Qw,x_0_0,P_0_0)
+
+  // Retrieve the initial values.
+  x = x_0_0;
+  P = P_0_0;
+
+  for n = 2:N
+    // Compute x(n|n-1).
+    x_n_nm1 = A * x;
+
+    // Compute P(n|n-1).
+    P_n_nm1 = (A * P * A') + Qw;
+
+    // Compute the Kalman gain.
+    K = (P_n_nm1 * C') / (C*P_n_nm1*C' + Qv);
+
+    // Compute x(n|n).
+    x = x_n_nm1 + K * (y(n) - (C * x_n_nm1));
+
+    // Compute P(n|n).
+    P = P_n_nm1 - (K* C * P_n_nm1);
+  end
+
+endfunction
+
+//**********************************************************************
+//
+//  Name: createStateTransitionMat
+//
+//  Purpose: The purpose of this function is to create the state
+//  transition matrix that corresponds to a set of recursive filter
+//  coefficients.
+//
+//  Calling Sequence: A = createStateTransitionMatrix(a)
+//
+//  Inputs:
+//
+//    a - An input vector of recursive coefficients of a difference
+//    equation.
+//
+//  Outputs:
+//
+//    A - The state transision matrix that is constructed from the
+//    input vector, a.
+//
+//**********************************************************************
+function A = createStateTransitionMat(a)
+
+  // Force a colunn vector.
+  a = a(:);
+
+  // Convert to a row vector.
+  a = a';
+
+  n = length(a) - 1;
+
+  // Create an identify submatrix.
+  Ia = eye(n,n);
+
+  // Add a column of zeros to the identity matrix.
+  Ia = [Ia zeros(n,1)];
+
+  // Construct the final matrix.
+  A = [a; Ia];
+
+endfunction
+
