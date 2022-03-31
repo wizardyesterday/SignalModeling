@@ -168,7 +168,11 @@ endfunction
 //  Name: kalmanFilter
 //
 //  Purpose: The purpose of this function is to perform Kalman
-//  filtering.
+//  filtering.  A really good paper that provides a Kalman filter
+//  tutorial is, "A Kalman Filtering Tutorial for Undergraduate
+//  Students" by Matthew B. Rhudy, Roger A. Salguero, and Keaton
+//  Holappa; Division of Engineering, Pennsylvania State University,
+//  Reading, Pa, 19610, USA.
 //
 //  Calling Sequence: z = kalmanFilter(N,A,C,Qv,Qw,P_0_0)
 //
