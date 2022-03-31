@@ -200,20 +200,20 @@ function xhat = kalmanFilter(y,N,A,C,Qv,Qw,x_0_0,P_0_0)
   P = P_0_0;
 
   for n = 2:N
-    // Compute x(n|n-1).
+    // Update x(n|n-1).
     x_n_nm1 = A * x;
 
-    // Compute P(n|n-1).
+    // Update P(n|n-1).
     P_n_nm1 = (A * P * A') + Qw;
 
-    // Compute the Kalman gain.
-    K = (P_n_nm1 * C') / (C*P_n_nm1*C' + Qv);
+    // Update the Kalman gain.
+    K = (P_n_nm1 * C') / ((C *P_n_nm1 *C') + Qv);
 
-    // Compute x(n|n).
+    // Update x(n|n).
     x = x_n_nm1 + K * (y(n) - (C * x_n_nm1));
 
-    // Compute P(n|n).
-    P = P_n_nm1 - (K* C * P_n_nm1);
+    // Update P(n|n).
+    P = P_n_nm1 - (K * C * P_n_nm1);
   end
 
   // Set returned value.
