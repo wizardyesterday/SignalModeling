@@ -57,7 +57,7 @@ endfunction
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (b): Compute the Kalman gain for for the process,
 // x(n) = -0.1x(n-1) - 0.09x(n-2) + 0.648x(n-3) + w(n)
-// Both w(n) is a white noise process withsigmaW^2 = 1.
+// w(n) is a white noise process withsigmaW^2 = 1.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Filter coefficient for AR(3) process.
 a3 = [0.1 0.09 -0.648];
@@ -72,17 +72,14 @@ Qw = 1;
 x3_0_0 = [1 0 0]';
 P3_0_0 = [1 0 0; 0 0 0; 0 0 0];
 
-K = computeKalmanGain(11,A3,C3,Qv,Qw,P3_0_0);
+K3 = computeKalmanGain(11,A3,C3,Qv,Qw,P3_0_0);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (c): Determine steady-state value for the Kalman gain.
 // Try different values of P(0|0).
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-K2 = computeKalmanGain(11,A3,C3,Qv,Qw,2*P3_0_0);
-K3 = computeKalmanGain(11,A3,C3,Qv,Qw,4*P3_0_0);
-
-//disp('K K2 K3');
-//disp([K K2 K3]);
+Ktry2 = computeKalmanGain(11,A3,C3,Qv,Qw,2*P3_0_0);
+Ktry3 = computeKalmanGain(11,A3,C3,Qv,Qw,4*P3_0_0);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (d): Generate:
@@ -91,7 +88,6 @@ K3 = computeKalmanGain(11,A3,C3,Qv,Qw,4*P3_0_0);
 // Both w(n) and v(n) are white noise sequences with
 // sigmaW^2 = 1 and sigmaV^2 = 0.64, respectively.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Generate time vector.
 // Generate time vector.
 n = 0:499;
 
@@ -106,16 +102,69 @@ v = feval([1:500],Noise);
 v = v(:);
 
 // Generate third-order autoregressive process.
-a1 = [0.1 0.09 -0.648];
-x = filterBlock(w,1,a1) + w;
+x3 = filterBlock(w,1,a3) + w;
 
 // Compute observations.
-y = x + v;
+y3 = x3 + v;
 
 // Set initial conditions.
 x3_0_0 = [1 0 0]';
 P3_0_0 = [1 0 0; 0 0 0; 0 0 0];
 
-xhat3 = kalmanFilter(y,500,A3,C3,Qv,Qw,x3_0_0,P3_0_0);
+xhat3 = kalmanFilter(y3,500,A3,C3,Qv,Qw,x3_0_0,P3_0_0);
 
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (e): Generate:
+// x(n) = -0.95x(n-1) - 0.9025x(n-2) + w(n) - w(n-1)
+// y(n) = x(n) + v(n).
+// Both w(n) and v(n) are white noise sequences with
+// sigmaW^2 = 1 and sigmaV^2 = 0.8, respectively.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Generate white noise sequence with a variance of 0.64;
+noisegen(1,500,sqrt(0.8));
+ve = feval([1:500],Noise);
+ve = ve(:);
+
+// Filter coefficient for AR(2,2) process.
+a2 = [0.95 0.9025];
+b2 = [1 -1];
+
+// Generate third-order autoregressive process.
+x2_2 = filterBlock(w,b2,a2) + w;
+
+// Compute observations.
+y2_2 = x2_2 + ve;
+
+// Set parameters.
+A2 = stateTransitionMatrix(a2);
+C2 = [1 0];
+Qv = 0.8;
+Qw = 1;
+
+// Set initial conditions.
+x2_2_0_0 = [1 0 ]';
+P2_2_0_0 = [1 0 ; 0 0 ];
+
+K2_2 = computeKalmanGain(11,A2,C2,Qv,Qw,P2_2_0_0);
+
+xhat2_2 = kalmanFilter(y2_2,500,A2,C2,Qv,Qw,x2_2_0_0,P2_2_0_0);
+
+//**********************************************************
+// Plot results.
+//**********************************************************
+subplot(221)
+title('Original AR(3) Process');
+plot(x3);
+
+subplot(223)
+title('Estimate of AR(3) Process');
+plot(xhat3);
+
+subplot(222)
+title('Original AR(2,2) Process');
+plot(x2_2);
+
+subplot(224)
+title('Estimate of AR(2,2) Process');
+plot(xhat2_2);
 
