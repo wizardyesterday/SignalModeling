@@ -174,19 +174,20 @@ endfunction
 //  Holappa; Division of Engineering, Pennsylvania State University,
 //  Reading, Pa, 19610, USA.
 //
-//  Calling Sequence: z = kalmanFilter(N,A,C,Qv,Qw,P_0_0)
+//  Calling Sequence: z = kalmanFilter(y,N,A,C,Qv,Qw,x_0_0,P_0_0)
 //
 //  Inputs:
 //
-//    Y - A signal that contains x(n) + noise, v(n).
+//    y - A signal that contains x(n) + noise, v(n).
 //
-//    N - The number of iterations for the Kalman gain computation.
+//    N - The number of iterations for which the filter should run.
 //
-//    A - The state transition matrix.
+//    A - The state transition matrix.  The dimension of this matrix
+//    is p x p.  (Note that the dimension of the state vector is p x 1).
 //
 //    C - The observation matrix.  This matrix contains weights that
 //    will be used to compute the output as a weight sum of selected
-//    state components.
+//    state components.  The dimension of this matrix is p x q.
 //
 //    Qv - The measurement noise.  A larger value will resoult in a
 //    larger correction on each update, and a smaller value will result
@@ -196,7 +197,8 @@ endfunction
 //    correction on each update, and a smaller value will result in a
 //    a larger correction on each update.
 //
-//    P_0_0 - The initial covariance estimate, P(0|0).
+//    P_0_0 - The initial covariance estimate, P(0|0).  The dimension
+//    of this matrix is p x p.
 //
 //  Outputs:
 //
