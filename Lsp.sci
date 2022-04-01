@@ -86,7 +86,7 @@ endfunction
 //  predictor polynomial.  See the comment block for the atos()
 //  function for a detailed description of what freqS represents.
 //
-//  freqS - The frequencies associated with the antisymmetric singular
+//  freqA - The frequencies associated with the antisymmetric singular
 //  predictor polynomial.  See the comment block for the atos()
 //  function for a detailed description of what freqA represents.
 //
