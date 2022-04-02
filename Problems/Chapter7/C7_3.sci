@@ -74,6 +74,13 @@ P3_0_0 = [1 0 0; 0 0 0; 0 0 0];
 
 K3 = computeKalmanGain(11,A3,C3,Qv,Qw,P3_0_0);
 
+printf("AR(3) Kalman Gains\n");
+for j = 1:11
+  printf("%f ",K3(:,:,j));
+  printf("\n");
+end
+printf("\n");
+
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (c): Determine steady-state value for the Kalman gain.
 // Try different values of P(0|0).
@@ -146,6 +153,13 @@ x2_2_0_0 = [1 0 ]';
 P2_2_0_0 = [1 0 ; 0 0 ];
 
 K2_2 = computeKalmanGain(11,A2,C2,Qv,Qw,P2_2_0_0);
+
+printf("AR(2,2) Kalman Gains\n");
+for j = 1:11
+  printf("%f ",K2_2(:,:,j));
+  printf("\n");
+end
+printf("\n");
 
 xhat2_2 = kalmanFilter(y2_2,500,A2,C2,Qv,Qw,x2_2_0_0,P2_2_0_0);
 
