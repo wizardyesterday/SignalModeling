@@ -132,7 +132,7 @@ noisegen(1,500,sqrt(0.8));
 ve = feval([1:500],Noise);
 ve = ve(:);
 
-// Filter coefficient for AR(2,2) process.
+// Filter coefficient for AR(1,2) process.
 a2 = [0.95 0.9025];
 b2 = [1 -1];
 
@@ -154,7 +154,7 @@ P2_2_0_0 = [1 0 ; 0 0 ];
 
 K2_2 = computeKalmanGain(11,A2,C2,Qv,Qw,P2_2_0_0);
 
-printf("AR(2,2) Kalman Gains\n");
+printf("AR(1,2) Kalman Gains\n");
 for j = 1:11
   printf("%f ",K2_2(:,:,j));
   printf("\n");
@@ -175,10 +175,10 @@ title('Estimate of AR(3) Process');
 plot(xhat3);
 
 subplot(222)
-title('Original AR(2,2) Process');
+title('Original AR(1,2) Process');
 plot(x2_2);
 
 subplot(224)
-title('Estimate of AR(2,2) Process');
+title('Estimate of AR(1,2) Process');
 plot(xhat2_2);
 
