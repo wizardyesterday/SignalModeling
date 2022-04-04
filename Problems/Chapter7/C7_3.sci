@@ -59,7 +59,7 @@ endfunction
 // x(n) = -0.1x(n-1) - 0.09x(n-2) + 0.648x(n-3) + w(n)
 // w(n) is a white noise process withsigmaW^2 = 1.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Filter coefficient for AR(3) process.
+// Filter coefficients for AR(3) process.
 a3 = [0.1 0.09 -0.648];
 
 // Set parameters.
@@ -132,15 +132,15 @@ noisegen(1,500,sqrt(0.8));
 ve = feval([1:500],Noise);
 ve = ve(:);
 
-// Filter coefficient for AR(1,2) process.
+// Filter coefficients for ARMA(2,1) process.
 a2 = [0.95 0.9025];
 b2 = [1 -1];
 
-// Generate third-order autoregressive process.
-x2_2 = filterBlock(w,b2,a2) + w;
+// Generate autoregressive process.
+x2_1 = filterBlock(w,b2,a2) + w;
 
 // Compute observations.
-y2_2 = x2_2 + ve;
+y2_1 = x2_1 + ve;
 
 // Set parameters.
 A2 = stateTransitionMatrix(a2);
@@ -149,19 +149,19 @@ Qv = 0.8;
 Qw = 1;
 
 // Set initial conditions.
-x2_2_0_0 = [1 0 ]';
-P2_2_0_0 = [1 0 ; 0 0 ];
+x2_1_0_0 = [1 0 ]';
+P2_1_0_0 = [1 0 ; 0 0 ];
 
-K2_2 = computeKalmanGain(11,A2,C2,Qv,Qw,P2_2_0_0);
+K2_1 = computeKalmanGain(11,A2,C2,Qv,Qw,P2_1_0_0);
 
-printf("AR(1,2) Kalman Gains\n");
+printf("ARMA(2,1) Kalman Gains\n");
 for j = 1:11
-  printf("%f ",K2_2(:,:,j));
+  printf("%f ",K2_1(:,:,j));
   printf("\n");
 end
 printf("\n");
 
-xhat2_2 = kalmanFilter(y2_2,500,A2,C2,Qv,Qw,x2_2_0_0,P2_2_0_0);
+xhat2_1 = kalmanFilter(y2_1,500,A2,C2,Qv,Qw,x2_1_0_0,P2_1_0_0);
 
 //**********************************************************
 // Plot results.
@@ -175,10 +175,10 @@ title('Estimate of AR(3) Process');
 plot(xhat3);
 
 subplot(222)
-title('Original AR(1,2) Process');
-plot(x2_2);
+title('Original ARMA(2,1) Process');
+plot(x2_1);
 
 subplot(224)
-title('Estimate of AR(1,2) Process');
-plot(xhat2_2);
+title('Estimate of ARMA(2,1) Process');
+plot(xhat2_1);
 
