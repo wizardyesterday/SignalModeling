@@ -6,9 +6,47 @@
 //
 //  Name: per
 //
+///  The purpose of this function is to compute the Blackman window.
+//
+//  Calling Sequence: w = blackman(n)
+//
+//  Inputs:
+//
+//    n - The number of samples of the Blackman window.
+//
+//  Outputs:
+//
+//    w = The sequence that represents the Blackman window function.
+//
+//**********************************************************************
+function w = blackman(n)
+
+  // Setup time indices.
+  k = 0:n-1;
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Set the coefficients for the Blackman window.
+  // These coefficients are from "Multirate Signal
+  // Processing for Communication Systems" by Fredric
+  // J. Harris, Table 3-1, Page 48.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  a0 = 0.42659;
+  a1 = -0.49656;
+  a2 = 0.07685;
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  // Compute the window function.
+  w = a0 + a1*cos(2*%pi*k / (n - 1)) + a2*cos(4*%pi*k / (n - 1));
+
+endfunction
+
+//**********************************************************************
+//
+//  Name: per
+//
 ///  The purpose of this function is to compute the spectrum of a
 //   process using the periodogram.
-
+//
 //  Calling Sequence: Px = per(x,n1,n2)
 //
 //  Inputs:
@@ -26,7 +64,7 @@
 //    Px - The periodogram estimate of the power spectrum of x(n).
 //
 //**********************************************************************
-function Px = per(x,n1,n2)
+function Px = per(n)
 
   // Force a column vector.
   x = x(:);
@@ -60,11 +98,11 @@ endfunction
 
 //**********************************************************************
 //
-//  Name: per
+//  Name: mper
 //
 ///  The purpose of this function is to compute the spectrum of a
 //   process using the modified periodogram.
-
+//
 //  Calling Sequence: Px = mper(x,win,n1,n2)
 //
 //  Inputs:
@@ -131,17 +169,13 @@ function Px = mper(x,win,n1,n2)
 
     case 5
       // Select Blackman window.
-      k = 0:N-1;
-      w = 0.42 - 0.5*cos(2*%pi*k / (N - 1)) + 0.08*cos(4*%pi*k / (N - 1));
+      w = blackman(N);
 
   end // select
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Compute L2 norm of w(n).
   U  = norm(w)^2 / N;
-
-  disp(size(x(n1:n2)));
-  disp(size(w));
 
   // Compute windowed sequence.
   xw = x(n1:n2).*w';
