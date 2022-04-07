@@ -6,7 +6,7 @@
 //
 //  Name: per
 //
-///  The purpose of this function is to compute the Blackman window.
+//  The purpose of this function is to compute the Blackman window. 
 //
 //  Calling Sequence: w = blackman(n)
 //
@@ -44,7 +44,7 @@ endfunction
 //
 //  Name: per
 //
-///  The purpose of this function is to compute the spectrum of a
+//  The purpose of this function is to compute the spectrum of a
 //   process using the periodogram.
 //
 //  Calling Sequence: Px = per(x,n1,n2)
@@ -64,7 +64,7 @@ endfunction
 //    Px - The periodogram estimate of the power spectrum of x(n).
 //
 //**********************************************************************
-function Px = per(n)
+function Px = per(x,n1,n2)
 
   // Force a column vector.
   x = x(:);
@@ -100,7 +100,7 @@ endfunction
 //
 //  Name: mper
 //
-///  The purpose of this function is to compute the spectrum of a
+//  The purpose of this function is to compute the spectrum of a
 //   process using the modified periodogram.
 //
 //  Calling Sequence: Px = mper(x,win,n1,n2)
@@ -178,19 +178,10 @@ function Px = mper(x,win,n1,n2)
   U  = norm(w)^2 / N;
 
   // Compute windowed sequence.
-  xw = x(n1:n2).*w';
+  xw = x(n1:n2) .* w' / norm(w);
 
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Compute the periodogram.
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Compute the Fourier transform.
-  XW = fft(xw,-1);
-
-  // Compute the power spectrum.
-  Px = (XW .* conj(XW)) / (N * U);
-
-  Px(1) = Px(2);
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  Px = N * per(xw);
 
 endfunction
 
