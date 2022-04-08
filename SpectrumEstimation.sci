@@ -275,9 +275,8 @@ function Px = welch(x,L,over,win)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   if over > 0 & over < 1
-    // Set initial limits for the first subsequence.
+    // Set starting index for the first subsequence.
     n1 = 1;
-    n2 = L;
 
     // Set the increment for the next subsequence.
     n0 = (1 - over) * L;
@@ -286,15 +285,14 @@ function Px = welch(x,L,over,win)
     nsect = 1+ floor((length(x) -L ) / n0);
 
     // Clear average.
-    Px=0;
+    Px = 0;
 
     for i = 1:nsect
       // Add the next periodogram to the average.
-      Px = Px + mper(x,win,n1,n2) / nsect;
+      Px = Px + mper(x,win,n1,n1 + L - 1) / nsect;
 
       // Reference the next subsequence.
       n1 = n1 + n0;  
-      n2 = n2 + n0;
     end
   else
     error('Overlap is invalid');
