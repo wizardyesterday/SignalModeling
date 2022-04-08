@@ -40,7 +40,7 @@ function [gamm,err] = fcov(x,p)
 
   N = N - 1;
 
-  for j = 1:p;
+  for j = 1:p
     // Compute reflection coefficient.
     gamm(j) = -eminus'*eplus/(eminus'*eminus);
 
@@ -102,7 +102,7 @@ function [gamm,err] = bcov(x,p)
 
   N = N - 1;
 
-  for j = 1:p;
+  for j = 1:p
     // Compute reflection coefficient.
     gamm(j) = -eminus'*eplus/(eplus'*eplus);
 
@@ -163,7 +163,7 @@ function [gamm,err] = burg(x,p)
 
   N = N - 1;
 
-  for j = 1:p;
+  for j = 1:p
     // Compute reflection coefficient.
     gamm(j) = -2*eminus'*eplus/(eplus'*eplus + eminus'*eminus);
 
@@ -278,7 +278,7 @@ function [gamm,err] = itakura(x,p)
 
   N = N - 1;
 
-  for j = 1:p;
+  for j = 1:p
     // Compute reflection coefficient.
     gamm(j) = -eminus'*eplus/(sqrt(eplus'*eplus)*sqrt(eminus'*eminus));
 

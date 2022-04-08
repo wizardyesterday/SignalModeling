@@ -290,7 +290,7 @@ function [aQ,success] = quantize(a,b)
   indexOfBigNumbers = find(abs(a) >= 1);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-  if indexOfBigNumbers == [];
+  if indexOfBigNumbers == []
     positiveLimit = 2^(b - 1) - 1;
     negativeLimit = 2^(b - 1);
 
@@ -367,7 +367,7 @@ function [a,success] = unquantize(aQ,b)
   indexOfFractionalNumbers = find(abs(c) < 1);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-  if indexOfFractionalNumbers == [];
+  if indexOfFractionalNumbers == []
     positiveLimit = 2^(b - 1) - 1;
     negativeLimit = 2^(b - 1);
 

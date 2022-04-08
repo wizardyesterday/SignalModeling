@@ -194,7 +194,7 @@ endfunction
 //
 //    x - The input sequence.
 //
-//    nsect - The number of subsequences to be used in the average
+//    nsect - The number of subsequences to be used in the average.
 //
 //  Outputs:
 //
@@ -205,12 +205,12 @@ endfunction
 function Px = bart(x,nsect)
 
   // Compute length of each subsection.
-  L = floor(length(x)/nsect);
+  L = floor(length(x) / nsect);
 
   // Clear average.
   Px = 0;
 
-  // Start with the first subsection.
+  // Start with the first subsequence.
   n1 = 1;
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -229,7 +229,76 @@ function Px = bart(x,nsect)
 
 endfunction
 
+//**********************************************************************
+//
+//  Name:  bart
+//
+//  The purpose of this function is to compute the spectrum of a
+//   process using Welch's method of modified periodogram averaging.
+//
+//  Calling Sequence: x = welch(x,L,over,win)
+//
+//  Inputs:
+//
+//    x - The input sequence.
+//
+//    over - The amount of overlap, where 0 < over < 1.
+//
+//    L - The section length.
+//
+//    win - The window type.  Valid values are 1 (Rectangular),
+//    2 (Hamming), 3 (Hanning), 4 (Bartlett), and 5 (Blackman).
+//
+//  Outputs:
+//
+//    Px - The Welch estimate of the power spectrum of x(n) using
+//    a linear scale.
+//
+//**********************************************************************
+function Px = welch(x,L,over,win)
 
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // argn(2) returns is the number of arguments passed to the
+  // function.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  if argn(2) <= 3
+    win = 1;
+  end
 
+  if argn(2) <= 2
+   over = 0;
+  end
 
+  if argn(2) == 1
+   L = length(x);
+  end
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  if over > 0 & over < 1
+    // Set initial limits for the first subsequence.
+    n1 = 1;
+    n2 = L;
+
+    // Set the increment for the next subsequence.
+    n0 = (1 - over) * L;
+
+    // Compute the number of subsequences.
+    nsect = 1+ floor((length(x) -L ) / n0);
+
+    // Clear average.
+    Px=0;
+
+    for i = 1:nsect
+      // Add the next periodogram to the average.
+      Px = Px + mper(x,win,n1,n2) / nsect;
+
+      // Reference the next subsequence.
+      n1 = n1 + n0;  
+      n2 = n2 + n0;
+    end
+  else
+    error('Overlap is invalid');
+  end
+
+endfunction
 
