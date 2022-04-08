@@ -4,7 +4,7 @@
 
 //**********************************************************************
 //
-//  Name: per
+//  Name: blackman
 //
 //  The purpose of this function is to compute the Blackman window. 
 //
@@ -59,7 +59,8 @@ endfunction
 //
 //  Outputs:
 //
-//    Px - The periodogram estimate of the power spectrum of x(n).
+//    Px - The periodogram estimate of the power spectrum of x(n)
+//    using a linear scale.
 //
 //**********************************************************************
 function Px = per(x,n1,n2)
@@ -119,7 +120,7 @@ endfunction
 //  Outputs:
 //
 //    Px - The modified periodogram estimate of the power spectrum
-//    of x(n).
+//    of x(n) using a linear scale.
 //
 //**********************************************************************
 function Px = mper(x,win,n1,n2)
@@ -172,9 +173,6 @@ function Px = mper(x,win,n1,n2)
   end // select
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-  // Compute L2 norm of w(n).
-  U  = norm(w)^2 / N;
-
   // Compute windowed sequence.
   xw = x(n1:n2) .* w' / norm(w);
 
@@ -183,6 +181,53 @@ function Px = mper(x,win,n1,n2)
 
 endfunction
 
+//**********************************************************************
+//
+//  Name:  bart
+//
+//  The purpose of this function is to compute the spectrum of a
+//   process using Bartlett's method of periodogram averaging.
+//
+//  Calling Sequence: Px = bart(x,nsect)
+//
+//  Inputs:
+//
+//    x - The input sequence.
+//
+//    nsect - The number of subsequences to be used in the average
+//
+//  Outputs:
+//
+//    Px - The Bartlett estimate of the power spectrum of x(n) using
+//    a linear scale.
+//
+//**********************************************************************
+function Px = bart(x,nsect)
+
+  // Compute length of each subsection.
+  L = floor(length(x)/nsect);
+
+  // Clear average.
+  Px = 0;
+
+  // Start with the first subsection.
+  n1 = 1;
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Compute the average of the periodograms of each
+  // subsequence. Note that division by the number of
+  // subsequences occurs within the loop.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  for i = 1:nsect
+    // Add the next periodogram to the average.
+    Px = Px + per(x(n1:n1+ L - 1)) / nsect;
+
+    // Increment to the next subsection.
+    n1 = n1 + L;
+  end
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+endfunction
 
 
 
