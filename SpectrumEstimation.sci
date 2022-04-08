@@ -26,13 +26,11 @@ function w = blackman(n)
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Set the coefficients for the Blackman window.
-  // These coefficients are from "Multirate Signal
-  // Processing for Communication Systems" by Fredric
-  // J. Harris, Table 3-1, Page 48.
+
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  a0 = 0.42659;
-  a1 = -0.49656;
-  a2 = 0.07685;
+  a0 = 0.42;
+  a1 = -0.50;
+  a2 = 0.08;
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Compute the window function.
