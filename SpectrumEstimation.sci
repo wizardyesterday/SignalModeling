@@ -282,7 +282,7 @@ function Px = welch(x,L,over,win)
     n0 = (1 - over) * L;
 
     // Compute the number of subsequences.
-    nsect = 1+ floor((length(x) -L ) / n0);
+    nsect = 1+ floor((length(x) -L) / n0);
 
     // Clear average.
     Px = 0;
