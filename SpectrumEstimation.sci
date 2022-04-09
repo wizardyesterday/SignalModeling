@@ -344,7 +344,7 @@ endfunction
 
 //**********************************************************************
 //
-//  Name:  bart
+//  Name:  welch
 //
 //  The purpose of this function is to compute the spectrum of a
 //   process using Welch's method of modified periodogram averaging.
