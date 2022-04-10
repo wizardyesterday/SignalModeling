@@ -562,7 +562,7 @@ endfunction
 //  Name:  minvar
 //
 //  The purpose of this function is to estimate the spectrum of a
-//   process using the minimum variance method.
+//  process using the minimum variance method.
 //
 //  Calling Sequence: Px = minvar(x,p)
 //
@@ -579,7 +579,7 @@ endfunction
 //    a linear scale.
 //
 //**********************************************************************
-function [v,V1] = minvar(x,p)
+function Px = minvar(x,p)
 
   // Enforce a column vector.
   x = x(:);
@@ -593,24 +593,33 @@ function [v,V1] = minvar(x,p)
   U = diag(inv(abs(d)+ %eps));
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Compute the number of colums in the matrix
-  // of eigenvectors.
+  // We need to compute a 1024-point FFT, so all
+  // of this magic to zero-pad each column of the
+  // matrix of eigenvectors so that they are at
+  // least of length 1024. A matrix of zero-padded
+  // columns of v will be first created.  Next, the
+  // matrix of zero-padded columns will be passed
+  // to the FFT routine.  Further processing can
+  // then continue.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Compute the number of columns of v.
   rowsColumns = size(v);
   columns = rowsColumns(2);
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-
+  // Zero-pad the first column of v.
   V1 = zeroPadSequence(v(:,1),1024);
 
+  // Zero-pad the rest of the columns in v.
   for i = 2:columns
     V1(:,i) = zeroPadSequence(v(:,i),1024);
   end
 
-//  V  = abs(fft(v,1024)).^2;
-//  V  = abs(fft(v,-1)).^2;
+  // Compute the 1024-pointspectrum.
+  V  = abs(fft(V1,-1)).^2;
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-//  Px = 10*log10(p) - 10*log10(V * U);
+  // Estimate the power spectrum in decibels.
+  Px = 10*log10(p) - 10*log10(V * U);
 
 endfunction
 
