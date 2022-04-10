@@ -4,7 +4,7 @@
 
 //**********************************************************************
 //
-//  Name: zeroPaddedSequence
+//  Name: zeroPadSequence
 //
 //  The purpose of this function is to zero-pad a sequence by appending
 //  zeros to the sequence. Note that if the input sequence is longer
@@ -18,7 +18,7 @@
 //  specifying the size of the FFT.  This function circumvents that
 //  problem.
 //
-//  Calling Sequence: xpadded = zeroPaddedSequence(x,N,n1,n2)
+//  Calling Sequence: xpadded = zeroPadSequence(x,N,n1,n2)
 //
 //  Inputs:
 //
@@ -31,7 +31,7 @@
 //    xpadded - The zero-padded sequence.
 //
 //**********************************************************************
-function xpadded = zeroPaddedSequence(x,N)
+function xpadded = zeroPadSequence(x,N)
 
   // Force a column vector.
   x = x(:);
@@ -241,7 +241,7 @@ function Px = per(x,n1,n2)
   // for the computation.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Zero-pad if necessary.
-  x = zeroPaddedSequence(x(n1:n2),1024);
+  x = zeroPadSequence(x(n1:n2),1024);
 
   // Compute the FFT of the zero-padded sequence.
   X = fft(x,-1);
@@ -547,7 +547,7 @@ function Px = per_smooth(x,win,M,n1,n2)
   // Compute estimated spectrum.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Zero-pad to the desired FFT size.
-  r = zeroPaddedSequence(r,1024);
+  r = zeroPadSequence(r,1024);
 
   // Compute the spectrum.
   Px = abs(fft(r,-1));
@@ -579,7 +579,7 @@ endfunction
 //    a linear scale.
 //
 //**********************************************************************
-function [Px,V,U,d] = minvar(x,p)
+function [v,V1] = minvar(x,p)
 
   // Enforce a column vector.
   x = x(:);
@@ -592,11 +592,25 @@ function [Px,V,U,d] = minvar(x,p)
 
   U = diag(inv(abs(d)+ %eps));
 
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Compute the number of colums in the matrix
+  // of eigenvectors.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  rowsColumns = size(v);
+  columns = rowsColumns(2);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+
+  V1 = zeroPadSequence(v(:,1),1024);
+
+  for i = 2:columns
+    V1(:,i) = zeroPadSequence(v(:,i),1024);
+  end
 
 //  V  = abs(fft(v,1024)).^2;
-  V  = abs(fft(v,-1)).^2;
+//  V  = abs(fft(v,-1)).^2;
 
-  Px = 10*log10(p) - 10*log10(V * U);
+//  Px = 10*log10(p) - 10*log10(V * U);
 
 endfunction
 
