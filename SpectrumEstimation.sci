@@ -114,6 +114,51 @@ endfunction
 
 //**********************************************************************
 //
+//  Name: Covar
+//
+//  The purpose of this function is to compute an autocorrelation
+//  matrix of order, p, from an input sequence, x(n).  The matrix is
+//  created by the following two steps:
+//
+//    1. Construct a single-sided autocorrelation sequence of order, p.
+//
+//    2. Use the toeplitz function to construct the autocorrelation
+//    matrix.
+//
+//  Calling Sequence: R = Covar(x,p)
+//
+//  Inputs:
+//
+//    x - The input sequence.
+//
+//    p - The order of the autocorrelation matrix.
+//
+//  Outputs:
+//
+//    R - The p x p autocorrelation matrix.
+//
+//**********************************************************************
+function R = Covar(x,p)
+
+  if p <= length(x)
+    // Compute  autocorrelation sequence for positive lags.
+    r = convol(x,x($:-1:1));
+    kmax = find(r == max(r));
+    r = r(kmax:$);
+
+    // Truncate the autocorrelation sequence to p lags.
+    r = r(1:p);
+
+    // Create the autocorrelation matrix.
+    R = toeplitz(r);
+  else
+    error('Order too large');
+  end
+
+endfunction
+
+//**********************************************************************
+//
 //  Name: blackman
 //
 //  The purpose of this function is to compute the Blackman window. 
@@ -152,7 +197,7 @@ endfunction
 //
 //  Name: per
 //
-//  The purpose of this function is to compute the spectrum of a
+//  The purpose of this function is to estimate the spectrum of a
 //   process using the periodogram.
 //
 //  Calling Sequence: Px = per(x,n1,n2)
@@ -213,7 +258,7 @@ endfunction
 //
 //  Name: mper
 //
-//  The purpose of this function is to compute the spectrum of a
+//  The purpose of this function is to estimate the spectrum of a
 //   process using the modified periodogram.
 //
 //  Calling Sequence: Px = mper(x,win,n1,n2)
@@ -298,7 +343,7 @@ endfunction
 //
 //  Name:  bart
 //
-//  The purpose of this function is to compute the spectrum of a
+//  The purpose of this function is to estimate the spectrum of a
 //   process using Bartlett's method of periodogram averaging.
 //
 //  Calling Sequence: Px = bart(x,nsect)
@@ -346,10 +391,10 @@ endfunction
 //
 //  Name:  welch
 //
-//  The purpose of this function is to compute the spectrum of a
+//  The purpose of this function is to estimate the spectrum of a
 //   process using Welch's method of modified periodogram averaging.
 //
-//  Calling Sequence: x = welch(x,L,over,win)
+//  Calling Sequence: Px = welch(x,L,over,win)
 //
 //  Inputs:
 //
@@ -417,7 +462,7 @@ endfunction
 //
 //  Name: per_smooth
 //
-//  The purpose of this function is to compute the spectrum of a
+//  The purpose of this function is to estimate the spectrum of a
 //   process using Blackman-Tukey method.
 //
 //  Calling Sequence: Px = per_smooth(x,win,M,n1,n2)
@@ -509,6 +554,49 @@ function Px = per_smooth(x,win,M,n1,n2)
 
   Px(1) = Px(2);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+endfunction
+
+//**********************************************************************
+//
+//  Name:  minvar
+//
+//  The purpose of this function is to estimate the spectrum of a
+//   process using the minimum variance method.
+//
+//  Calling Sequence: Px = minvar(x,p)
+//
+//  Inputs:
+//
+//    x - The input sequence.
+//
+//    p - The order of the minimum variance estimate.  For short
+//    sequences, p is typically about length(x) / 3.
+//
+//  Outputs:
+//
+//    Px - The Welch estimate of the power spectrum of x(n) using
+//    a linear scale.
+//
+//**********************************************************************
+function [Px,V,U,d] = minvar(x,p)
+
+  // Enforce a column vector.
+  x = x(:);
+
+  // Compute the autocorrelation matrix of order, p.
+  R = Covar(x,p);
+
+  // Compute the eigenvectors of R and the diagonal matrix of eigenvalues.
+  [v,d] = spec(R);
+
+  U = diag(inv(abs(d)+ %eps));
+
+
+//  V  = abs(fft(v,1024)).^2;
+  V  = abs(fft(v,-1)).^2;
+
+  Px = 10*log10(p) - 10*log10(V * U);
 
 endfunction
 
