@@ -631,8 +631,8 @@ endfunction
 //
 //  Outputs:
 //
-//    Px - The Welch estimate of the power spectrum of x(n) using
-//    a linear scale.
+//    Px - The minimum variance estimate of the power spectrum of
+//    x(n) using a decibel scale.
 //
 //**********************************************************************
 function Px = minvar(x,p)
@@ -655,6 +655,57 @@ function Px = minvar(x,p)
 
   // Estimate the power spectrum in decibels.
   Px = (10 * log10(p)) - (10 * log10(V * U));
+
+endfunction
+
+//**********************************************************************
+//
+//  Name:  mem
+//
+//  The purpose of this function is to estimate the spectrum of a
+//  process using the maximum entropy method.  The autocorrelation
+//  method is used to find a pth-order all-pole model for x(n), and
+//  the spectral estimate is formed from the following equation:
+//
+//    Px = b^2(0) / |A(omega)|^2 
+//
+//  Calling Sequence: Px = minvar(x,p)
+//
+//  Inputs:
+//
+//    x - The input sequence.
+//
+//    p - The order of the all-pole model.
+//
+//  Outputs:
+//
+//    Px - The maximum entropy estimate of the power spectrum of
+//    x(n) using a decibel scale.
+//
+//**********************************************************************
+function Px = mem(x,p)
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Construct an all-pole model using the autocorrelation 
+  // matrix method.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  [a,e] = acm(x,p);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  // Compute the FFT of the all-pole model.
+  A = matrixFft(a,1024);
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Compute the estimated power spectral density.  Note that
+  // e = b^(0), and that e is being normalized by the length
+  // of the input vector.  Also, notice that the second log()
+  // term is being multiplied by 20 to account that A
+  // represents a voltage rather than a power (|A|^2),
+  // Had we been working with |A|^2, the multiplier would have
+  // been 10. 
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  Px = 10 * log10(e / length(x)) - 20 * log10(abs(A));
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 endfunction
 
