@@ -165,7 +165,8 @@ endfunction
 //  that is composed of column vectors.  Each column of the output
 //  matrix will be the FFT of each column of the input matrix.  The
 //  goal of this function is to strongarm the Scilab FFT of a matrix
-//  to perform like the default behavior of a MATLAB FFT.
+//  to perform like the default behavior of a MATLAB FFT.  Scilab has
+//  some interesting indexing with respect to FFT processing.
 //
 //  Calling Sequence: V =  matrixFft(v,N)
 //
@@ -189,9 +190,10 @@ function V = matrixFft(v,N)
   // We need to compute a N-point FFT, so all
   // of this magic to zero-pad each column of the
   // matrix so that they are at least of length N.
-  // A matrix of zero-padded columns of a will be
-  // first created.  Next, each column of the
-  // matrix will be passed to the FFT routine.
+  // A matrix of zero-padded columns of will be
+  // first created.  Next, the funky indexing stuff
+  // will be used to compute the FFT of each
+  // column of the matrix.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Compute the number of columns of v.
   rowsColumns = size(v);
@@ -206,11 +208,7 @@ function V = matrixFft(v,N)
   end
 
   // Compute the N-pointspectrum for each column.
-  V = fft(v1(:,1),-1);
-
-  for i = 2:columns
-    V(:,i) = fft(v1(:,i),-1);
-  end
+  V = fft(v1,-1,N,1);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 endfunction
@@ -655,23 +653,8 @@ function Px = minvar(x,p)
   V = matrixFft(v,1024);
   V = V .* conj(V);
 
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Replace all zero entries with something sane.  The
-  // goal is to disallow the log() function to treat
-  // these zero values as singularities.
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Perform the product to be used later.
-  A = V * U;
-
-  // Search for all zero values.
-  nzero = find(A == 0);
-
-  // Store a value that doesn't cause log() to blow up.
-  A(nzero) = 1e-6;
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-
   // Estimate the power spectrum in decibels.
-  Px = 10*log10(p) - 10*log10(A);
+  Px = (10 * log10(p)) - (10 * log10(V * U));
 
 endfunction
 
