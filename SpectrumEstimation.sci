@@ -159,6 +159,64 @@ endfunction
 
 //**********************************************************************
 //
+//  Name: matrixFft
+//
+//  The purpose of this function is to compute the FFT of a matrix
+//  that is composed of column vectors.  Each column of the output
+//  matrix will be the FFT of each column of the input matrix.  The
+//  goal of this function is to strongarm the Scilab FFT of a matrix
+//  to perform like the default behavior of a MATLAB FFT.
+//
+//  Calling Sequence: V =  matrixFft(v,N)
+//
+//  Inputs:
+//
+//    v - The time-domain input matrix.  Each column of this matrix
+//    represents a separate time-domain sequence.
+//
+//    N - The desired Fast Fourier transform length for each column.
+//
+//  Outputs:
+//
+//    V - The frequency-domain output matrix. Each column of this
+//    matrix represents the frequency-domain representation of each
+//    column of the input matrix.
+//
+//**********************************************************************
+function V = matrixFft(v,N)
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // We need to compute a N-point FFT, so all
+  // of this magic to zero-pad each column of the
+  // matrix so that they are at least of length N.
+  // A matrix of zero-padded columns of a will be
+  // first created.  Next, each column of the
+  // matrix will be passed to the FFT routine.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Compute the number of columns of v.
+  rowsColumns = size(v);
+  columns = rowsColumns(2);
+
+  // Zero-pad the first column of v.
+  v1 = zeroPadSequence(v(:,1),N);
+
+  // Zero-pad the rest of the columns in a.
+  for i = 2:columns
+    v1(:,i) = zeroPadSequence(v(:,i),N);
+  end
+
+  // Compute the N-pointspectrum for each column.
+  V = fft(v1(:,1),-1);
+
+  for i = 2:columns
+    V(:,i) = fft(v1(:,i),-1);
+  end
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+endfunction
+
+//**********************************************************************
+//
 //  Name: blackman
 //
 //  The purpose of this function is to compute the Blackman window. 
@@ -590,36 +648,30 @@ function Px = minvar(x,p)
   // Compute the eigenvectors of R and the diagonal matrix of eigenvalues.
   [v,d] = spec(R);
 
+  // Construct a column vector of eigenvalue reciprocals.
   U = diag(inv(abs(d)+ %eps));
 
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // We need to compute a 1024-point FFT, so all
-  // of this magic to zero-pad each column of the
-  // matrix of eigenvectors so that they are at
-  // least of length 1024. A matrix of zero-padded
-  // columns of v will be first created.  Next, the
-  // matrix of zero-padded columns will be passed
-  // to the FFT routine.  Further processing can
-  // then continue.
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Compute the number of columns of v.
-  rowsColumns = size(v);
-  columns = rowsColumns(2);
+  // Compute the 1024-pointspectrum for each column.
+  V = matrixFft(v,1024);
+  V = V .* conj(V);
 
-  // Zero-pad the first column of v.
-  V1 = zeroPadSequence(v(:,1),1024);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Replace all zero entries with something sane.  The
+  // goal is to disallow the log() function to treat
+  // these zero values as singularities.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Perform the product to be used later.
+  A = V * U;
 
-  // Zero-pad the rest of the columns in v.
-  for i = 2:columns
-    V1(:,i) = zeroPadSequence(v(:,i),1024);
-  end
+  // Search for all zero values.
+  nzero = find(A == 0);
 
-  // Compute the 1024-pointspectrum.
-  V  = abs(fft(V1,-1)).^2;
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Store a value that doesn't cause log() to blow up.
+  A(nzero) = 1e-6;
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Estimate the power spectrum in decibels.
-  Px = 10*log10(p) - 10*log10(V * U);
+  Px = 10*log10(p) - 10*log10(A);
 
 endfunction
 
