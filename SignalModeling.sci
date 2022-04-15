@@ -493,3 +493,69 @@ function b = durbin(x,p,q)
   end
 
 endfunction
+
+//**********************************************************************
+//
+//  Name: modifiedYuleWalker
+//
+//  Purpose: The purpose of this function is to solve for the
+//  coefficients of a filter that models a signal given the number of
+//  poles and zeros of the model.
+//  The signal is modeled as the white noise response of a system
+//  represented by, H(z) = B(z) / A(z), such that the coefficients of
+//  B(z) and A(z) are contained in the vectors, [b(0), b(1),.. b(q)],
+//  and [1 a(1), a(2),... a(p)] respectively.
+//
+//  Calling Sequence: [a,b] = modifiedYuleWalker(x,p,q)
+//
+//  Inputs:
+//
+//    x - The input vector to be processed.
+//
+//    p - The number of poles in the model.
+//
+//    q - The number of zeros in the model.
+//
+//  Outputs:
+//
+//    a - The denominator coefficients in the model.
+//
+//    b - The numerator coefficients in the model.
+//
+//**********************************************************************
+function [a,b] = modifiedYuleWalker(x,p,q)
+
+  // Compute autocorrelation sequence.
+  rx = convol(x,x($:-1:1));
+
+  // Find rx(0).
+  n = find(rx == max(rx));
+
+  // Use only rx(0) and the positive lags.
+  rx = rx(n:$);
+
+  // Let Pade' do the work with b being a dummy value.
+  [a,b] = pade(rx,p,q);
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Determine the numerator coefficients.
+  // Note that if the system function is
+  // H(z) = B(z) / A(z), we can pass the
+  // x(n) through a filter with the system
+  // function described by H1(z) = A(z).
+  // That is, define y(n) = h1(n) * x(n).  The
+  // result will be an MA(q) process.  We can
+  // then present this process to the Durbin
+  // algorithm to estimate b(n).
+  // Note that when invoking Durbin's method,
+  // the all-pole model needs to be at least
+  // four times the order of the estimated
+  // all-zero model.  We choose 20q.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  y = filterBlock(x,a,0);
+
+  // Durbin's method does the rest of the work.  
+  b = durbin(y,20*q,q);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+endfunction
