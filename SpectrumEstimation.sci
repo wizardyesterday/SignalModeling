@@ -114,6 +114,57 @@ endfunction
 
 //**********************************************************************
 //
+//  Name: autocorrelationMatrix
+//
+//  The purpose of this function is to create an autocorrelation
+//  matrix, given an autocorrelation sequence.  Given an input
+//  autocorrelation sequence, a Toeplitz matrix will first be
+//  constructed.  Next, the complex conjugate of the appropriate
+//  entries of the matrix is taken.  Here's an example.
+//
+//    rx = [1+i1 2 3-i7]
+//
+//    Rx = [[1+i1 2 3+i7]
+//          [2 1+i1] 2]
+//          [3-i7 2 1+i]]
+//
+//  The result, R, is a Hermitian Toeplitz matrix.
+//
+//  Calling Sequence: R = autocorrelationMatrix(r)
+//
+//  Inputs:
+//
+//    r - The autocorrelation sequence.
+//
+//  Outputs:
+//
+//    R - The autocorrelation matrix.
+//
+//**********************************************************************
+function R = autocorrelationMatrix(r)
+
+  // Compute order of the autocorrelation sequence.
+  p = length(r);
+
+  // Construct the initial pxp matrix.
+  R = toeplitz(r);
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Take the complex conjugate of the entries to
+  // account for the conjugate symmetry of the
+  // autocorrelation function.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  for row = 1:p
+    for column = row+1:p
+      R(row,column) = conj(R(row,column));
+    end
+  end
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+endfunction
+
+//**********************************************************************
+//
 //  Name: Covar
 //
 //  The purpose of this function is to compute an autocorrelation
@@ -122,8 +173,8 @@ endfunction
 //
 //    1. Construct a single-sided autocorrelation sequence of order, p.
 //
-//    2. Use the toeplitz function to construct the autocorrelation
-//    matrix.
+//    2. Use the autocorrelationMatrix() function to construct the
+//    autocorrelation matrix.
 //
 //  Calling Sequence: R = Covar(x,p)
 //
@@ -150,7 +201,7 @@ function R = Covar(x,p)
     r = r(1:p);
 
     // Create the autocorrelation matrix.
-    R = toeplitz(r);
+    R = autocorrelationMatrix(r);
   else
     error('Order too large');
   end
@@ -709,3 +760,59 @@ function Px = mem(x,p)
 
 endfunction
 
+//**********************************************************************
+//
+//  Name:  phd
+//
+//  The purpose of this function is to estimate the the frequencies
+//  and powers of a sum of complex sinusids in white noise.
+//
+//  The input sequence x is assumed to consist of p complex
+//  exponentials in white noise.  The frequencies of the
+//  complex exponentials and the variance of the white noise
+//  are estimated using the Pisarenko harmonic decomposition.  
+//
+//  The frequency estimates are found from the peaks of the
+//  pseudospectrum
+//                               1
+//              ------------------------------------
+//              1 + a(1)exp(jw) + ... + a(p)exp(jpw)	
+//
+//   or from the roots of the polynomial formed from the 
+//   vector a.  The estimate of the white noise variance is 
+//   returned in sigma.
+//
+//  Calling Sequence: [vmin,sigma] = phd(x,p)
+//
+//  Inputs:
+//
+//    x - The input sequence.
+//
+//    p - The order of the all-pole model.
+//
+//  Outputs:
+//
+//    Px - The maximum entropy estimate of the power spectrum of
+//    x(n) using a decibel scale.
+//
+//**********************************************************************
+function [vmin,sigma] = phd(x,p)
+
+  // Enforce a column vector.
+  x = x(:);
+
+  // Compute the autocorrelation matrix of order, p+1.
+  R = Covar(x,p+1);
+
+  // Compute the eigenvectors of R and the diagonal matrix of eigenvalues.
+  [v,d] = spec(R);
+
+  // Determine the variance of the noise.
+  sigma = min(diag(d));
+
+  // Find the eigenvector that spans the noise subspace.
+  index = find(diag(d) == sigma);
+ 
+  vmin = v(:,index);
+
+endfunction

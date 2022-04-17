@@ -24,7 +24,7 @@ exec('utils.sci',-1);
 n = 0:499;
 n = n(:);
 
-// Generate random phase angla sequence.
+// Generate random phase angle sequence just for fun.
 phi = generateBipolarNoise(%pi,500);
 phi = phi(:);
 
