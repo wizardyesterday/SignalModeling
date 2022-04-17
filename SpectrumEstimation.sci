@@ -97,7 +97,7 @@ function r = truncatedAutocorrelation(x,M,n1,n2)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Compute  autocorrelation sequence for positive lags.
-  r = convol(x(n1:n2),x(n2:-1:1));
+  r = convol(x(n1:n2),conj(x(n2:-1:1)));
   kmax = find(r == max(r));
   r = r(kmax:$);
 
@@ -105,7 +105,7 @@ function r = truncatedAutocorrelation(x,M,n1,n2)
   r = r(1:M);
 
   // Make the autocorrelation sequence double-sided.
-  r = [r(M:-1:2) r];
+  r = [conj(r(M:-1:2)) r];
 
   // Force column vector.
   r = r(:);
@@ -193,7 +193,7 @@ function R = Covar(x,p)
 
   if p <= length(x)
     // Compute  autocorrelation sequence for positive lags.
-    r = convol(x,x($:-1:1));
+    r = convol(x,conj(x($:-1:1)));
     kmax = find(r == max(r));
     r = r(kmax:$);
 
