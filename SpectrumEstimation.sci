@@ -816,3 +816,66 @@ function [vmin,sigma] = phd(x,p)
   vmin = v(:,index);
 
 endfunction
+
+//**********************************************************************
+//
+//  Name:  music
+//
+//  The purpose of this function is to estimate the the frequencies
+//  and powers of a sum of complex sinusids in white noise, using
+//  the MUSIC algorithm.  Additionally, the variance of the white
+//  noise is estimated.
+//
+//  Calling Sequence: Px = music(x,p,M)
+//
+//  Inputs:
+//
+//    x - The input sequence.
+//
+//    p - The number of complex exponentials to find.
+//
+//    M - Thenumber of noise eigenvectors to use.
+//
+//  Outputs:
+//
+//    Px - The pseudospectrum.
+//
+//**********************************************************************
+function Px = music(x,p,M)
+
+  // Enforce a column vector.
+  x = x(:);
+
+  if M >= p+1 & length(x) >= M
+    // Compute the autocorrelation matrix of order, M.
+    R = Covar(x,M);
+
+    // Compute the eigenvectors of R and the diagonal matrix of eigenvalues.
+    [v,d] = spec(R);
+
+    // Sort the eigenvalues in decending order.
+    [y,i] = sort(diag(d));
+
+    // Clear initial sum.
+    Px = 0;
+
+    for j = 1:M-p
+      Px = Px + abs(matrixFft(v(:,i(j)),1024));
+    end
+
+    // Convert to a decibel scale.
+    Px = -20 * log10(Px);
+  else
+    error('Size of R is inappropriate');
+  end
+
+
+
+
+
+
+
+
+
+endfunction
+
