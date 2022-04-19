@@ -853,8 +853,18 @@ function Px = music(x,p,M)
     // Compute the eigenvectors of R and the diagonal matrix of eigenvalues.
     [v,d] = spec(R);
 
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Note that the sort() command sorts items in
+    // descending order, therefore we have to provide
+    // code to produce a sort in ascending order.
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     // Sort the eigenvalues in decending order.
     [y,i] = sort(diag(d));
+
+    // Produce a sort in ascending order.
+    y = y($:-1:1);
+    i = i($:-1:1);
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
     // Clear initial sum.
     Px = 0;
