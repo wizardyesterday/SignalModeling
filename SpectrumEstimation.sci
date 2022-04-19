@@ -764,7 +764,7 @@ endfunction
 //
 //  Name:  phd
 //
-//  The purpose of this function is to estimate the the frequencies
+//  The purpose of this function is to estimate the frequencies
 //  and powers of a sum of complex sinusids in white noise.
 //
 //  The input sequence x is assumed to consist of p complex
@@ -821,7 +821,7 @@ endfunction
 //
 //  Name:  music
 //
-//  The purpose of this function is to estimate the the frequencies
+//  The purpose of this function is to estimate the frequencies
 //  and powers of a sum of complex sinusids in white noise, using
 //  the MUSIC algorithm.  Additionally, the variance of the white
 //  noise is estimated.
@@ -834,7 +834,7 @@ endfunction
 //
 //    p - The number of complex exponentials to find.
 //
-//    M - Thenumber of noise eigenvectors to use.
+//    M - The number of noise eigenvectors to use.
 //
 //  Outputs:
 //
@@ -881,3 +881,68 @@ function Px = music(x,p,M)
 
 endfunction
 
+//**********************************************************************
+//
+//  Name:  bt_pc
+//
+//  The purpose of this function is to estimate the spectrum of a
+//  a process, x using a principal components analysis of the
+//  autocorrelation matrix.  The model for the process is such that
+//  x(n) consists of a sum of complex exponentials in white noise.
+//  After a principle components analysis is carried out, the
+//  principal eigenvectors are used in the Blackman-Tukey estimate.
+//
+//  Calling Sequence: Px = bt_pc(x,p,M)
+//
+//  Inputs:
+//
+//    x - The input sequence.
+//
+//    p - number of complex exponentials in x.
+//
+//    M - The size of autocorrelation matrix.
+//
+//  Outputs:
+//
+//    Px - The spectrum estimate using a dB scale.
+//
+//**********************************************************************
+function Px = bt_pc(x,p,M)
+
+  // Enforce a column vector.
+  x = x(:);
+
+  if M >= p+1
+    // Compute the autocorrelation matrix of order, M.
+    R = Covar(x,M);
+
+    // Compute the eigenvectors of R and the diagonal matrix of eigenvalues.
+    [v,d] = spec(R);
+
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Note that the sort() command sorts items in
+    // descending order, therefore we have to provide
+    // code to produce a sort in ascending order.
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Sort the eigenvalues in decending order.
+    [y,i] = sort(diag(d));
+
+    // Reverse the sort to ascending order.
+    y = y($:-1:1);
+    i = i($:-1:1);
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+    // Clear initial sum.
+    Px = 0;
+
+    for j = M-p+1:M
+      Px = Px + abs(matrixFft(v(:,i(j)),1024)) * sqrt(real(y(j)));
+    end
+
+    // Convert to a decibel scale.
+    Px = 20 * log10(Px) - 10 * log10(M);
+  else
+    error('Specified size of R is too small');
+  end
+
+endfunction
