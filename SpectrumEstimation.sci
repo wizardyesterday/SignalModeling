@@ -98,7 +98,7 @@ function r = truncatedAutocorrelation(x,M,n1,n2)
 
   // Compute  autocorrelation sequence for positive lags.
   r = convol(x(n1:n2),conj(x(n2:-1:1)));
-  kmax = find(r == max(r));
+  kmax = find(abs(r) == max(abs(r)));
   r = r(kmax:$);
 
   // Truncate the autocorrelation sequence to M lags.
@@ -194,7 +194,7 @@ function R = Covar(x,p)
   if p <= length(x)
     // Compute  autocorrelation sequence for positive lags.
     r = convol(x,conj(x($:-1:1)));
-    kmax = find(r == max(r));
+    kmax = find(abs(r) == max(abs(r)));
     r = r(kmax:$);
 
     // Truncate the autocorrelation sequence to p lags.
@@ -861,7 +861,7 @@ function Px = music(x,p,M)
     // Sort the eigenvalues in decending order.
     [y,i] = sort(diag(d));
 
-    // Produce a sort in ascending order.
+    // Reverse the sort to ascending order.
     y = y($:-1:1);
     i = i($:-1:1);
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -878,14 +878,6 @@ function Px = music(x,p,M)
   else
     error('Size of R is inappropriate');
   end
-
-
-
-
-
-
-
-
 
 endfunction
 
