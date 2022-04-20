@@ -819,6 +819,142 @@ endfunction
 
 //**********************************************************************
 //
+//  Name:  ev
+//
+//  The purpose of this function is to estimate the spectrum of a
+//  a process, x that consists of a sum of p complex exponentials
+//  in white noise.  The frequencies of the complex exponentials and
+//  the variance of the white noise are estimated using the
+//  eigenvector method.
+//  autocorrelation matrix.  The model for the process is such that
+//  x(n) consists of a sum of complex exponentials in white noise.
+//  After a principle components analysis is carried out, the
+//  principal eigenvectors are used in the Blackman-Tukey estimate.
+//
+//  Calling Sequence: Px = ev(x,p,M)
+//
+//  Inputs:
+//
+//    x - The input sequence.
+//
+//    p - number of complex exponentials in x.
+//
+//    M - The size of the autocorrelation matrix to use in
+//    estimating the complex exponential frequencies
+//
+//  Outputs:
+//
+//    Px - The pseudospectrum estimate using a dB scale.
+//
+//**********************************************************************
+function Px = ev(x,p,M)
+
+  // Enforce a column vector.
+  x = x(:);
+
+  if M >= p+1
+    // Compute the autocorrelation matrix of order, M.
+    R = Covar(x,M);
+
+    // Compute the eigenvectors of R and the diagonal matrix of eigenvalues.
+    [v,d] = spec(R);
+
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Note that the sort() command sorts items in
+    // descending order, therefore we have to provide
+    // code to produce a sort in ascending order.
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Sort the eigenvalues in decending order.
+    [y,i] = sort(diag(d));
+
+    // Reverse the sort to ascending order.
+    y = y($:-1:1);
+    i = i($:-1:1);
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+    // Clear initial sum.
+    Px = 0;
+
+    for j=1:M-p
+      Px = Px + abs(matrixFft(v(:,i(j)),1024)).^2 / abs(y(j));
+    end
+
+    // Convert the pseudospectrum to a decibel scale.
+    Px = -10 * log10(Px);
+  else
+    error('Specified size of R is too small');
+  end
+
+endfunction
+
+//**********************************************************************
+//
+//  Name:  min_norm
+//
+//  The purpose of this function is to estimate the spectrum of a
+//  a process, x that consists of a sum of p complex exponentials
+//  in white noise.  The frequencies of the complex exponentials and
+//  the variance of the white noise are estimated using the
+//  minimum norm method.
+//
+//  Calling Sequence: Px = min_norm(x,p,M)
+//
+//  Inputs:
+//
+//    x - The input sequence.
+//
+//    p - number of complex exponentials in x.
+//
+//    M - The size of the autocorrelation matrix to use in
+//    estimating the complex exponential frequencies
+//
+//  Outputs:
+//
+//    Px - The pseudospectrum estimate using a dB scale.
+//
+//**********************************************************************
+function Px = min_norm(x,p,M)
+
+  // Enforce a column vector.
+  x = x(:);
+
+  if M >= p+1
+    // Compute the autocorrelation matrix of order, M.
+    R = Covar(x,M);
+
+    // Compute the eigenvectors of R and the diagonal matrix of eigenvalues.
+    [v,d] = spec(R);
+
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Note that the sort() command sorts items in
+    // descending order, therefore we have to provide
+    // code to produce a sort in ascending order.
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Sort the eigenvalues in decending order.
+    [y,i] = sort(diag(d));
+
+    // Reverse the sort to ascending order.
+    y = y($:-1:1);
+    i = i($:-1:1);
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+    for j = 1:M-p
+      V = [V,v(:,i(j))];
+    end
+
+    // Compute minimum norm solution.
+    a = V * V (1,:)';
+
+    // Estimate the pseudospectrum on a decibel scale.
+    Px = -20 * log10(abs(matrixFft(a,1024)));
+  else
+    error('Specified size of R is too small');
+  end
+
+endfunction
+
+//**********************************************************************
+//
 //  Name:  music
 //
 //  The purpose of this function is to estimate the frequencies
