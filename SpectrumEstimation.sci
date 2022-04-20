@@ -938,6 +938,9 @@ function Px = min_norm(x,p,M)
     i = i($:-1:1);
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
+    // We have to kludge this for Scilab.
+    V = v(:,1);
+
     for j = 1:M-p
       V = [V,v(:,i(j))];
     end
