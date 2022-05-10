@@ -765,7 +765,8 @@ endfunction
 //  Name:  phd
 //
 //  The purpose of this function is to estimate the frequencies
-//  and powers of a sum of complex sinusids in white noise.
+//  and powers of a sum of complex sinusids in white noise using
+//  Pisarenko's method.
 //
 //  The input sequence x is assumed to consist of p complex
 //  exponentials in white noise.  The frequencies of the
@@ -792,7 +793,7 @@ endfunction
 //
 //  Outputs:
 //
-//    Px - The maximum entropy estimate of the power spectrum of
+//    Px - The estimate of the power spectrum of
 //    x(n) using a decibel scale.
 //
 //**********************************************************************
