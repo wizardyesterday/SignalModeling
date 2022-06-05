@@ -145,7 +145,7 @@ endfunction
 //
 //    gamm - The vector of reflection coefficients.
 //
-//   err - The vector of modeling errors.
+//    err - The vector of modeling errors.
 //
 //**********************************************************************
 function [gamm,err] = burg(x,p)
