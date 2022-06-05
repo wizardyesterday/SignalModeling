@@ -266,6 +266,38 @@ endfunction
 
 //**********************************************************************
 //
+//  Name: constructPowerSpectrum
+//
+//  Purpose: The purpose of this function is to generate a 1024-point
+//  power spectrum representation.
+//
+//  Calling Sequence: Px = constructPowerSpectrum(x)
+//
+//  Inputs:
+//
+//    x - The input vector to be processed.
+
+//
+//  Outputs:
+//
+//  Px - The power spectrum in linear units.
+//
+//**********************************************************************
+function Px = constructPowerSpectrum(x)
+
+  // Force column vector.
+  x = x(:);
+
+  // Construct 1024-point FFT.
+  X = matrixFft(x,1024);
+
+  // Construct power spectrum.
+  Px = X .* conj(X);
+
+endfunction
+
+//**********************************************************************
+//
 //  Name: blackman
 //
 //  The purpose of this function is to compute the Blackman window. 
