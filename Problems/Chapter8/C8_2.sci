@@ -32,7 +32,8 @@ w = feval([1:256],Noise);
 x = filterBlock(w,1,a(2:$));
 
 // Generate exact spectrum.
-Pa = constructPowerSpectrum(a);
+Pa = constructPowerSpectrum(1 ./ a);
+
 
 // Generate spectral estimate using the autocorrelation method.
 [ahatAcm,e] = acm(x,4);
