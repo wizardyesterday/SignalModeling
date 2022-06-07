@@ -752,7 +752,7 @@ endfunction
 //
 //    Px = b^2(0) / |A(omega)|^2 
 //
-//  Calling Sequence: Px = minvar(x,p)
+//  Calling Sequence: Px = mem(x,p)
 //
 //  Inputs:
 //
