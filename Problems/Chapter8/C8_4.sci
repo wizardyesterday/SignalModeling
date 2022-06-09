@@ -23,21 +23,35 @@ w = feval([1:256],Noise);
 w = w(:);
 
 
-// Generate processe.
-x = filterBlock(w,[1 0 -1],0);
+// Generate process.
+xa = filterBlock(w,[1 0 -1],0);
 
 // Generate exact spectra.
-Px = constructPowerSpectrum(x);
+Pxa = constructPowerSpectrum(xa);
 
-Pxa_2 = mem(x,2);
-Pxa_4 = mem(x,4);
-Pxa_40 = mem(x,40);
+// Perform spectral estimates.
+Pxa_2 = mem(xa,2);
+Pxa_8 = mem(xa,8);
+Pxa_20 = mem(xa,20);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (b): For sigmaW^2 = 0.5, 1, 2, 5, generate N = 100
-// samples of the process y(n), and estimate the power spectrum
-// of x(n) from y(n) using the maximum entropy method with p = 2.
+// Part (b): Repeat part (a) for the MA(3) process that is formed
+// by filtering white Gaussian noise with the filter,
+// H(z) = {1 - 0.98z^(-1)}{1 - 0.96z^(-2)}.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Form filter coefficients.
+b = convol([1 -0.98],[1 0 0.96]);
+
+// Generate process.
+xb = filterBlock(w,b,0);
+
+// Generate exact spectra.
+Pxb = constructPowerSpectrum(xb);
+
+// Perform spectral estimates.
+Pxb_3 = mem(xb,3);
+Pxb_8 = mem(xb,8);
+Pxb_20 = mem(xb,20);
 
 //*********************************************
 // Plot results.
@@ -45,3 +59,36 @@ Pxa_40 = mem(x,40);
 // Select window 1.
 //scf(1);
 
+// Part (a).
+subplot(421);
+title('MA(2) Spectrum');
+plot(Pxa);
+
+subplot(423);
+title('Mem Spectrum for MA(2) Process, p: 2');
+plot(Pxa_2);
+
+subplot(425);
+title('Mem Spectrum for MA(2) Process, p: 8');
+plot(Pxa_8);
+
+subplot(427);
+title('Mem Spectrum for MA(2) Process, p: 20');
+plot(Pxa_20);
+
+// Part (b).
+subplot(422);
+title('MA(3) Spectrum');
+plot(Pxb);
+
+subplot(424);
+title('Mem Spectrum for MA(3) Process, p: 3');
+plot(Pxb_3);
+
+subplot(426);
+title('Mem Spectrum for MA(3) Process, p: 8');
+plot(Pxb_8);
+
+subplot(428);
+title('Mem Spectrum for MA(3) Process, p: 20');
+plot(Pxb_20);
