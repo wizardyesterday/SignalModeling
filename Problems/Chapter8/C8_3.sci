@@ -6,6 +6,130 @@
 exec('utils.sci',-1);
 
 //**********************************************************************
+//
+//  Name: acm1
+//
+//  Purpose: The purpose of this function is to compute an all pole
+//  model of a signal using the autocorrelation method.
+//  The signal is modeled as the unit sample response of a system
+//  represented by, H(z) = b(0) / A(z), such that the coefficients of
+//  A(z) are contained in the vector, [1 a(1), a(2),... a(p)].  The
+//  difference between this function and the acm() function is that
+//  we're working with the autocorrelation matrix rather than the data
+//  matrix.  This allows to do clever trickery to the autocorrelation
+//  sequence.
+//
+//  Calling Sequence: [a = acm1(x,p,sigma2)
+//
+//  Inputs:
+//
+//    x - The input vector to be processed.
+//
+//    p - The number of poles in the model.
+//
+//    sigma2 - The variance of the white noise that has been added
+//    to the vector, x.
+//
+//  Outputs:
+//
+//    a - The denominator coefficients in the model.
+//
+//    err - The model error.
+//
+//**********************************************************************
+function [a,err] = acm1(x,p,sigma2)
+
+  // Ensure that we have a column vector.
+  x   = x(:);
+
+  N   = length(x);
+
+  if p < length(x)
+    // Construct autocorrelation sequence.
+    rx = convol(x,flipud(x));
+    k = find(rx == max(rx));
+    rx = rx(k:$);
+    rx = rx(:);
+
+    // Subtract the variance.
+    rx(1) = rx(1) - sigma2;
+
+    // Construct autocorrelation matrix.
+    Rx = autocorrelationMatrix(rx(1:p));
+
+    // Compute denominator coefficients, a(1) ... a(p).
+    a   = -Rx \ rx(2:p+1);
+
+    // Insert a(0).
+    a = [1; a];
+
+    err = rx(1) + a(1:p)' * conj(rx(1:p));
+  else
+    error('Model order too large');
+  end
+
+endfunction
+
+//**********************************************************************
+//
+//  Name:  mem1
+//
+//  The purpose of this function is to estimate the spectrum of a
+//  process using the maximum entropy method.  The autocorrelation
+//  method is used to find a pth-order all-pole model for x(n), and
+//  the spectral estimate is formed from the following equation:
+//
+//    Px = b^2(0) / |A(omega)|^2
+//
+//  This routine is a modified varion of the mem() function so that
+//  a variance can be passed to the modified version of the acm()
+//  function.
+//
+//  Calling Sequence: Px = mem1(x,p)
+//
+//  Inputs:
+//
+//    x - The input sequence.
+//
+//    p - The order of the all-pole model.
+//
+//    sigma2 - The variance of the white noise that has been added
+//    to the vector, x.
+//
+//  Outputs:
+//
+//    Px - The maximum entropy estimate of the power spectrum of
+//    x(n) using a decibel scale.
+//
+//**********************************************************************
+function Px = mem1(x,p,sigma2)
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Construct an all-pole model using the autocorrelation 
+  // matrix method.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  [a,e] = acm1(x,p,sigma2);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  // Compute the FFT of the all-pole model.
+  A = matrixFft(a,1024);
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Compute the estimated power spectral density.  Note that
+  // e = b^(0), and that e is being normalized by the length
+  // of the input vector.  Also, notice that the second log()
+  // term is being multiplied by 20 to account that A
+  // represents a voltage rather than a power (|A|^2),
+  // Had we been working with |A|^2, the multiplier would have
+  // been 10. 
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  Px = 10 * log10(e / length(x)) - 20 * log10(abs(A));
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+endfunction
+
+
+//**********************************************************************
 // Mainline code.
 //**********************************************************************
 
@@ -88,16 +212,86 @@ Pyc_2 = mem(yb_2,5);
 Pyc_5 = mem(yb_5,5);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (d): Repeat parts (b) and (c) for the covariance,
-// modified covariance, and Burg algorithms.  Which approach
-// seems to be the best for a broadband autoregressive process?
-// Note that 20 different realizations will be generated and
-// estimates for p = 4, 6, 8, and 12 will be used.
+// Part (d): Given that ry(k) = rx(k) + sigmaW^2*delta(k),
+// investigate what heppens to the estimate in (c) if the
+// autocorrelation sequence is modified by subtracting sigmaW^2
+// from ry(0) before the maximum entropy spectrum is computed.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Compute power spectrum estimates using the maximum entropy method.
+Pyd_pt5 = mem1(yb_pt5,5,0.5);
+Pyd_1 = mem1(yb_1,5,1);
+Pyd_2 = mem1(yb_2,5,2);
+Pyd_5 = mem1(yb_5,5,5);
 
 //*********************************************
 // Plot results.
 //*********************************************
 // Select window 1.
-//scf(1);
+scf(1);
+
+// Part (a).
+subplot(321);
+title('Px');
+plot(Px);
+
+subplot(322)
+title('Py');
+plot(Py);
+
+// Part (b).
+subplot(323);
+title('Pxhat, sigma^2: 0.5, mem, p:2');
+plot(Pyb_pt5);
+
+subplot(324)
+title('Pxhat, sigma^2: 1, mem, p:2');
+plot(Pyb_1);
+
+subplot(325);
+title('Pxhat, sigma^2: 2, mem, p:2');
+plot(Pyb_2);
+
+subplot(326);
+title('Pxhat, sigma^2: 5, mem, p:2');
+plot(Pyb_5);
+
+scf(2);
+
+// Part (c).
+subplot(421);
+title('Pxhat, sigma^2: 0.5, mem, p:5');
+plot(Pyc_pt5);
+
+subplot(423)
+title('Pxhat, sigma^2: 1, mem, p:5');
+plot(Pyc_1);
+
+subplot(425);
+title('Pxhat, sigma^2: 2, mem, p:5');
+plot(Pyc_2);
+
+subplot(427);
+title('Pxhat, sigma^2: 5, mem, p:5');
+plot(Pyc_5);
+
+// Part (d).
+subplot(422);
+title('Pxhat (modified), sigma^2: 0.5, mem, p:5');
+plot(Pyd_pt5);
+
+subplot(424)
+title('Pxhat (modified), sigma^2: 1, mem, p:5');
+plot(Pyd_1);
+
+subplot(426);
+title('Pxhat (modified), sigma^2: 2, mem, p:5');
+plot(Pyd_2);
+
+subplot(428);
+title('Pxhat (modified), sigma^2: 5, mem, p:5');
+plot(Pyd_5);
+
+
+
+
 
