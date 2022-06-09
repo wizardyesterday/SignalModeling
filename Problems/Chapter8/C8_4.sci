@@ -62,7 +62,7 @@ Pxb_20 = mem(xb,20);
 // Part (a).
 subplot(421);
 title('MA(2) Spectrum');
-plot(Pxa);
+plot(20*log10(Pxa));
 
 subplot(423);
 title('Mem Spectrum for MA(2) Process, p: 2');
@@ -79,7 +79,7 @@ plot(Pxa_20);
 // Part (b).
 subplot(422);
 title('MA(3) Spectrum');
-plot(Pxb);
+plot(20*log10(Pxb));
 
 subplot(424);
 title('Mem Spectrum for MA(3) Process, p: 3');
