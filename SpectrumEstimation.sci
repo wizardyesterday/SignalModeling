@@ -1118,3 +1118,136 @@ function Px = bt_pc(x,p,M)
   end
 
 endfunction
+
+//**********************************************************************
+//
+//  Name: Aic
+//
+//  The purpose of this function is to determine the error criteria of
+//  a filter order using the Akaike Information Criterion.
+//
+//  Calling Sequence: c = Aic(ep,p,N)
+//
+//  Inputs:
+//
+//    ep - The modeling error for a given filter order.
+//
+//    p - The filter order that is getting tested.
+//
+//    N - The data record length of the input sequence being
+//    evaluated.
+//
+//  Outputs:
+//
+//    c - C(p), the error criteria which includes the penalty term.
+//
+//**********************************************************************
+function c = Aic(ep,p,N)
+
+  // Compute the error criteria.
+  c = N * log(ep) + 2 * p;
+
+endfunction
+
+//**********************************************************************
+//
+//  Name: Mdl
+//
+//  The purpose of this function is to determine the error criteria of
+//  a filter order using the minimum description length.
+//
+//  Calling Sequence: c = Mdl(ep,p,N)
+//
+//  Inputs:
+//
+//    ep - The modeling error for a given filter order.
+//
+//    p - The filter order that is getting tested.
+//
+//    N - The data record length of the input sequence being
+//    evaluated.
+//
+//  Outputs:
+//
+//    c - C(p), the error criteria which includes the penalty term.
+//
+//**********************************************************************
+function c = Mdl(ep,p,N)
+
+  // Compute the error criteria.
+  c = N * log(ep) + log(N) * p;
+
+endfunction
+
+//**********************************************************************
+//
+//  Name: Fpe
+//
+//  The purpose of this function is to determine the error criteria of
+//  a filter order using Akaike's Final Prediction Error.
+//
+//  Calling Sequence: c = Fpe(ep,p,N)
+//
+//  Inputs:
+//
+//    ep - The modeling error for a given filter order.
+//
+//    p - The filter order that is getting tested.
+//
+//    N - The data record length of the input sequence being
+//    evaluated.
+//
+//  Outputs:
+//
+//    c - C(p), the error criteria which includes the penalty term.
+//
+//**********************************************************************
+function c = Fpe(ep,p,N)
+
+  // Compute the error criteria.
+  c = ep * ((N + p + 1) / (N - p - 1));
+
+endfunction
+
+//**********************************************************************
+//
+//  Name: Cat
+//
+//  The purpose of this function is to determine the error criteria of
+//  a filter order using Parzen's Criterion Autoregressive Transfer
+//  function.
+//
+//  Calling Sequence: c = Cat(ep,p,N)
+//
+//  Inputs:
+//
+//    ep - The modeling error vector for a given filter order.
+//
+//    p - The filter order that is getting tested.
+//
+//    N - The data record length of the input sequence being
+//    evaluated.
+//
+//  Outputs:
+//
+//    c - C(p), the error criteria which includes the penalty term.
+//
+//**********************************************************************
+function c = Cat(ep,p,N)
+
+  // Initialize sum.
+  c = 0;
+
+  // Compute the error criteria.
+  for j = 1:p
+    c = c + ((N - j) / (N * ep(j))); 
+  end
+
+  // Compute the average.
+  c = c / N;
+
+  // Include final term.
+  c = c - (N - p) / (N * ep(p));
+
+endfunction
+
