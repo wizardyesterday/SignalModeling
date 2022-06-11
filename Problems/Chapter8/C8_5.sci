@@ -49,7 +49,7 @@ function evaluateFilterOrders(x,N,functionPtr);
     [model,ep] = functionPtr(x,pAic);
 
     // Evaluate criteria.
-    c = Aic(ep,pAic,N);
+    c = Aic(ep($),pAic,N);
 
     if previousC > c
       // Increase the model order.
@@ -94,7 +94,7 @@ function evaluateFilterOrders(x,N,functionPtr);
     [model,ep] = functionPtr(x,pMdl);
 
     // Evaluate criteria.
-    c = Mdl(ep,pMdl,N);
+    c = Mdl(ep($),pMdl,N);
 
     if previousC > c
       // Increase the model order.
@@ -133,7 +133,7 @@ function evaluateFilterOrders(x,N,functionPtr);
     [model,ep] = functionPtr(x,pFpe);
 
     // Evaluate criteria.
-    c = Fpe(ep,pFpe,N);
+    c = Fpe(ep($),pFpe,N);
 
     if previousC > c
       // Increase the model order.
