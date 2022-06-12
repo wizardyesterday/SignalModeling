@@ -23,10 +23,8 @@ v = v(:);
 w = filterBlock(v,b,0);
 
 // Generate random phases uniformly distributed between 0 and 2PI.
-phi1 = rand(zeros(256,1));
-phi1 = phi1 * 2 * %pi;
-phi2 = rand(zeros(256,1));
-phi2 = phi2 * 2 * %pi;
+phi1 = rand() * 2*%pi;
+phi2 = rand() * 2*%pi;
 
 // Generate time vector.
 n = 0:255;
@@ -35,9 +33,6 @@ n = n(:);
 // Set frequencies of sinusoids.
 w1 = %pi / 2;
 w2 = 1.1 * %pi/2;
-
-phi1 = zeros(256,1);
-phi2 = zeros(256,1);
 
 // Construct random process.
 x = 2*cos(w1*n + phi1) + 2*cos(w2*n + phi2);
