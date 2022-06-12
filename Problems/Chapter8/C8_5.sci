@@ -202,7 +202,7 @@ function evaluateFilterOrders(x,N,functionPtr);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 // Print results.
-printf("pAic: %f, pMdl: %f, pFpe: %f, pCat: %f\n", ...
+printf("pAic: %d, pMdl: %d, pFpe: %d, pCat: %d\n", ...
        pAic,pMdl,pFpe,pCat);
 
 endfunction
