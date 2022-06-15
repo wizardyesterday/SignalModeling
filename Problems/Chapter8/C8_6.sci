@@ -59,8 +59,51 @@ sigmaW2 = variance(w);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (e):
+// Part (e): Generate a sample realization of x(n) of length,
+// N = 256, and plot the periodogram.  Repeat for 20 different
+// realizations of the process.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Generate time vector.
+n_e = 0:255;
+n_e = n_e(:);
+
+// Generate random phases.
+phi1_e = rand() * 2*%pi;
+phi2_e = rand() * 2*%pi;
+
+v_e = feval([1:256],Noise);
+v_e = v_e(:);
+
+// Generate MA(4) process.
+w_e = filterBlock(v_e,b,0);
+
+// Construct realization of random process.
+x_e = 2*cos(w1*n_e + phi1_e) + 2*cos(w2*n_e + phi2_e) + w_e;
+
+// Generate initial periodogram.
+Pxper = per(x_e);
+
+// Allocate the matrix.
+Pxper_mat = zeros(1024,1);
+
+// Generate 20 different realiations.
+for j = 1:20
+  // Generate random phases.
+  phi1_e = rand() * 2*%pi;
+  phi2_e = rand() * 2*%pi;
+
+  // Generate white noise sequence with unit variance.
+  v_e = feval([1:256],Noise);
+  v_e = v_e(:);
+
+  // Generate MA(4) process.
+  w_e = filterBlock(v_e,b,0);
+
+  // Construct realization of random process.
+  x_e = 2*cos(w1*n_e + phi1_e) + 2*cos(w2*n_e + phi2_e) + w_e;
+
+  Pxper_mat(:,j) = per(x_e);
+end
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (f):
@@ -73,4 +116,17 @@ sigmaW2 = variance(w);
 scf(1);
 
 // Part (a).
+subplot(311);
+title('Exact spectrum');
 plot(20*log10(Px));
+
+// Part (e).
+subplot(312);
+title('Periodogram of Length 256');
+plot(20*log10(Pxper));
+
+subplot(313);
+title('20 Realizations of Periodogram of Length 256');
+plot(20*log10(Pxper_mat));
+
+
