@@ -114,7 +114,7 @@ end
 Pxper_mat_f = zeros(1024,1);
 
 // Generate 50 different realiations.
-for j = 1:20
+for j = 1:50
   // Generate random phases.
   phi1_f = rand() * 2*%pi;
   phi2_f = rand() * 2*%pi;
@@ -132,9 +132,67 @@ for j = 1:20
   Pxper_mat_f(:,j) = per(x_e);
 end
 
-// Estimate the expected value of the spectra.
 // Compute the average power spectrum.
 Pxperavg = sum(Pxper_mat_f,'c') / 50;
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (g): Repeat parts (e) and (f) using Bartlett's method
+// with K = 2, 4, and 8 sections..
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Allocate the matrices
+PxB_20_2 = zeros(1024,1);
+PxB_20_4 = zeros(1024,1);
+PxB_20_8 = zeros(1024,1);
+PxB_50_2 = zeros(1024,1);
+PxB_50_4 = zeros(1024,1);
+PxB_50_8 = zeros(1024,1);
+
+// Generate 20 different realiations.
+for j = 1:20
+  // Generate random phases.
+  phi1_ge = rand() * 2*%pi;
+  phi2_ge = rand() * 2*%pi;
+
+  // Generate white noise sequence with unit variance.
+  v_ge = feval([1:256],Noise);
+  v_ge = v_ge(:);
+
+  // Generate MA(4) process.
+  w_ge = filterBlock(v_ge,b,0);
+
+  // Construct realization of random process.
+  x_ge = 2*cos(w1*n_256 + phi1_ge) + 2*cos(w2*n_256 + phi2_ge) + w_ge;
+
+  PxB_20_2(:,j) = bart(x_ge,2);
+  PxB_20_4(:,j) = bart(x_ge,4);
+  PxB_20_8(:,j) = bart(x_ge,8);
+end
+
+// Generate 50 different realiations.
+for j = 1:50
+  // Generate random phases.
+  phi1_gf = rand() * 2*%pi;
+  phi2_gf = rand() * 2*%pi;
+
+  // Generate white noise sequence with unit variance.
+  v_gf = feval([1:256],Noise);
+  v_gf = v_gf(:);
+
+  // Generate MA(4) process.
+  w_gf = filterBlock(v_gf,b,0);
+
+  // Construct realization of random process.
+  x_gf = 2*cos(w1*n_256 + phi1_gf) + 2*cos(w2*n_256 + phi2_gf) + w_gf;
+
+  PxB_50_2(:,j) = bart(x_gf,2);
+  PxB_50_4(:,j) = bart(x_gf,4);
+  PxB_50_8(:,j) = bart(x_gf,8);
+end
+
+// Compute the average power spectra.
+PxBavg_2 = sum(PxB_50_2,'c') / 50;
+PxBavg_4 = sum(PxB_50_4,'c') / 50;
+PxBavg_8 = sum(PxB_50_8,'c') / 50;
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
@@ -160,5 +218,35 @@ plot(20*log10(Pxper_mat));
 subplot(414);
 title('50 Realizations of Periodogram of Length 256 (Average)');
 plot(20*log10(Pxperavg));
+
+// Part (g).
+scf(2);
+
+subplot(321);
+title('Overlay Bartlett, Ensemble: 20, 2 Sections');
+plot(20*log10(PxB_20_2));
+
+subplot(323);
+title('Overlay Bartlett, Ensemble: 20, 4 Sections');
+plot(20*log10(PxB_20_4));
+
+subplot(325);
+title('Overlay Bartlett, Ensemble: 20, 8 Sections');
+plot(20*log10(PxB_20_8));
+
+subplot(322);
+title('Average Bartlett, Ensemble: 50, 2 Sections');
+plot(20*log10(PxBavg_2));
+
+subplot(324);
+title('Average Bartlett, Ensemble: 50, 4 Sections');
+plot(20*log10(PxBavg_4));
+
+subplot(326);
+title('Average Bartlett, Ensemble: 50, 8 Sections');
+plot(20*log10(PxBavg_8));
+
+
+
 
 
