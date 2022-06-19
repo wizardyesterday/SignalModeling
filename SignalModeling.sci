@@ -314,10 +314,10 @@ function [a,b,err] = ipf(x,p,q,n,a)
     // Perform n iterations of the estimator.
     for i=1:n
       // f = a(n) * x(n).
-      f = filterBlock(x,1,a);
+      f = filterBlock(x,1,a(2:$));
 
       // g(n) = a(n) * delta(n).
-      g = filterBlock(delta,1,a);
+      g = filterBlock(delta,1,a(2:$));
 
       // Construct data matrix of f.
       u = convm(f,p+1); 

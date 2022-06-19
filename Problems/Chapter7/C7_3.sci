@@ -109,7 +109,7 @@ v = feval([1:500],Noise);
 v = v(:);
 
 // Generate third-order autoregressive process.
-x3 = filterBlock(w,1,a3) + w;
+x3 = filterBlock(w,1,a3(2:$)) + w;
 
 // Compute observations.
 y3 = x3 + v;
@@ -137,7 +137,7 @@ a2 = [0.95 0.9025];
 b2 = [1 -1];
 
 // Generate autoregressive process.
-x2_1 = filterBlock(w,b2,a2) + w;
+x2_1 = filterBlock(w,b2,a2(2:$)) + w;
 
 // Compute observations.
 y2_1 = x2_1 + ve;
