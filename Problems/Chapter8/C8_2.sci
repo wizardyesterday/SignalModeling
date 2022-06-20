@@ -37,7 +37,7 @@ Pa = constructPowerSpectrum(1 ./ a);
 
 // Generate spectral estimate using the autocorrelation method.
 [ahatAcm,e] = acm(x,4);
-PaAcm = constructPowerSpectrum(ahatAcm);
+PaAcm = constructPowerSpectrum(1 ./ ahatAcm);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (b): Repeat part (a) for 20 different realizations of the
@@ -53,7 +53,7 @@ for i = 1:20
 
   // Generate spectral estimate using the autocorrelation method.
   [abhatAcm,e] = acm(x20,4);
-  PbAcm(:,i) = constructPowerSpectrum(abhatAcm);  
+  PbAcm(:,i) = constructPowerSpectrum(1 ./ abhatAcm);  
 end
 
 // Compute the average power spectrum.
@@ -77,9 +77,9 @@ for i = 1:20
   [achatAcm_12,e] = acm(x20,12);
 
   // Autocorrelation method spectrum.
-  PcAcm_6(:,i) = constructPowerSpectrum(achatAcm_6);  
-  PcAcm_8(:,i) = constructPowerSpectrum(achatAcm_8);  
-  PcAcm_12(:,i) = constructPowerSpectrum(achatAcm_12);  
+  PcAcm_6(:,i) = constructPowerSpectrum(1 ./ achatAcm_6);  
+  PcAcm_8(:,i) = constructPowerSpectrum(1 ./ achatAcm_8);  
+  PcAcm_12(:,i) = constructPowerSpectrum(1 ./ achatAcm_12);  
 end
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -96,11 +96,11 @@ for i = 1:20
   // Create a realization.
   x20 = filterBlock(w,1,a(2:$));
 
-  // Generate spectral estimate using the autocorrelation method.
+  // Generate spectral estimate using the covariance method.
   [adhatCovm_4,e] = covm(x20,4);
   [adhatCovm_6,e] = covm(x20,6);
-  [adhatCovm_8,e] = acm(x20,8);
-  [adhatCovm_12,e] = acm(x20,12);
+  [adhatCovm_8,e] = covm(x20,8);
+  [adhatCovm_12,e] = covm(x20,12);
 
   // Generate spectral estimate using the modified covariance method.
   [adhatMcov_4,e] = mcov(x20,4);
@@ -119,23 +119,22 @@ for i = 1:20
   adhatBurg_12 = gtoa(gamm);
 
   // Covariance method spectrum.
-  PdCovm_4(:,i) = constructPowerSpectrum(adhatCovm_4);  
-  PdCovm_6(:,i) = constructPowerSpectrum(adhatCovm_6);  
-  PdCovm_8(:,i) = constructPowerSpectrum(adhatCovm_8);  
-  PdCovm_12(:,i) = constructPowerSpectrum(adhatCovm_12);
+  PdCovm_4(:,i) = constructPowerSpectrum(1 ./ adhatCovm_4);  
+  PdCovm_6(:,i) = constructPowerSpectrum(1 ./ adhatCovm_6);  
+  PdCovm_8(:,i) = constructPowerSpectrum(1 ./ adhatCovm_8);  
+  PdCovm_12(:,i) = constructPowerSpectrum(1 ./ adhatCovm_12);
 
   // Modified covariance method spectrum.
-  PdMcov_4(:,i) = constructPowerSpectrum(adhatMcov_4);  
-  PdMcov_6(:,i) = constructPowerSpectrum(adhatMcov_6);  
-  PdMcov_8(:,i) = constructPowerSpectrum(adhatMcov_8);  
-  PdMcov_12(:,i) = constructPowerSpectrum(adhatMcov_12);  
+  PdMcov_4(:,i) = constructPowerSpectrum(1 ./ adhatMcov_4);  
+  PdMcov_6(:,i) = constructPowerSpectrum(1 ./ adhatMcov_6);  
+  PdMcov_8(:,i) = constructPowerSpectrum(1 ./ adhatMcov_8);  
+  PdMcov_12(:,i) = constructPowerSpectrum(1 ./ adhatMcov_12);  
 
   // Burg method spectrum. 
-  PdBurg_4(:,i) = constructPowerSpectrum(adhatBurg_4);  
-  PdBurg_6(:,i) = constructPowerSpectrum(adhatBurg_6);  
-  PdBurg_8(:,i) = constructPowerSpectrum(adhatBurg_8);  
-  PdBurg_12(:,i) = constructPowerSpectrum(adhatBurg_12);  
- 
+  PdBurg_4(:,i) = constructPowerSpectrum(1 ./ adhatBurg_4);  
+  PdBurg_6(:,i) = constructPowerSpectrum(1 ./ adhatBurg_6);  
+  PdBurg_8(:,i) = constructPowerSpectrum(1 ./ adhatBurg_8);  
+  PdBurg_12(:,i) = constructPowerSpectrum(1 ./ adhatBurg_12);   
 end
 
 //*********************************************
