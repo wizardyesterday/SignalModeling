@@ -100,10 +100,10 @@ for j = 1:20
   aburg_32 = gtoa(gamm);
 
   // Construct spectral estimates.
-  Pburg_20_4(:,j) = constructPowerSpectrum(aburg_4);
-  Pburg_20_8(:,j) = constructPowerSpectrum(aburg_8);
-  Pburg_20_16(:,j) = constructPowerSpectrum(aburg_16);
-  Pburg_20_32(:,j) = constructPowerSpectrum(aburg_32);
+  Pburg_20_4(:,j) = constructPowerSpectrum(1 ./ aburg_4);
+  Pburg_20_8(:,j) = constructPowerSpectrum(1 ./ aburg_8);
+  Pburg_20_16(:,j) = constructPowerSpectrum(1 ./ aburg_16);
+  Pburg_20_32(:,j) = constructPowerSpectrum(1 ./ aburg_32);
 end
 
 // Convert to decibels.
@@ -143,10 +143,10 @@ for j = 1:20
   [amcov_32,e] = mcov(xmcov,32);
 
   // Construct spectral estimates.
-  Pmcov_20_4(:,j) = constructPowerSpectrum(amcov_4);
-  Pmcov_20_8(:,j) = constructPowerSpectrum(amcov_8);
-  Pmcov_20_16(:,j) = constructPowerSpectrum(amcov_16);
-  Pmcov_20_32(:,j) = constructPowerSpectrum(amcov_32);
+  Pmcov_20_4(:,j) = constructPowerSpectrum(1 ./ amcov_4);
+  Pmcov_20_8(:,j) = constructPowerSpectrum(1 ./ amcov_8);
+  Pmcov_20_16(:,j) = constructPowerSpectrum(1 ./ amcov_16);
+  Pmcov_20_32(:,j) = constructPowerSpectrum(1 ./ amcov_32);
 end
 
 // Convert to decibels.
