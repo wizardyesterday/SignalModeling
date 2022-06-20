@@ -108,13 +108,13 @@ for i = 1:20
   [adhatMcov_12,e] = mcov(x20,12);
 
   // Generate spectral estimate using the Burg method.
-  [gamm,e] = burg(x,4);
+  [gamm,e] = burg(x20,4);
   adhatBurg_4 = gtoa(gamm);
-  [gamm,e] = burg(x,6);
+  [gamm,e] = burg(x20,6);
   adhatBurg_6 = gtoa(gamm);
-  [gamm,e] = burg(x,8);
+  [gamm,e] = burg(x20,8);
   adhatBurg_8 = gtoa(gamm);
-  [gamm,e] = burg(x,12);
+  [gamm,e] = burg(x20,12);
   adhatBurg_12 = gtoa(gamm);
 
   // Covariance method spectrum.
