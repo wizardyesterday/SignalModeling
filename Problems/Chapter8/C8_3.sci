@@ -85,7 +85,7 @@ endfunction
 //  a variance can be passed to the modified version of the acm()
 //  function.
 //
-//  Calling Sequence: Px = mem1(x,p)
+//  Calling Sequence: Px = mem1(x,p,sigma2)
 //
 //  Inputs:
 //
