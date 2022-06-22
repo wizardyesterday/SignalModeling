@@ -239,7 +239,7 @@ v = feval([1:11],Noise);
 n = 0:10;
 
 // Generate noisy signal.
-x = cos(0.35*%pi*n); + v;
+x = cos(0.35*%pi*n) + v;
 
 // Compute maximum entropy spectrum.
 Px_c1 = mem2(x,10,0);
@@ -260,7 +260,7 @@ for j = 1:25
   v = feval([1:11],Noise);
 
   // Generate noisy signal.
-  x = cos(0.35*%pi*n); + v;
+  x = cos(0.35*%pi*n) + v;
 
   // Compute maximum entropyspectrum.
   Py_c2(:,j) = mem2(x,10,0.1);
