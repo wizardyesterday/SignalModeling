@@ -10,24 +10,29 @@ exec('utils.sci',-1);
 //  Name:  modminvar
 //
 //  The purpose of this function is to estimate the spectrum of a
-//  process using the modified minimum variance method.
+//  process using the modified covariance method. Additionally, this
+//  function computeds the bandwidth of the bandpass filters that are
+//  "designed" by the modified minimum  ariance method.  Note that
+//  this function provides a good mapping of the equations described
+//  in the textbook.
 //
-//  Calling Sequence: Px = modminvarminvar(x,p)
+//  Calling Sequence: [B,Px] = modminvar(x,p)
 //
 //  Inputs:
 //
 //    x - The input sequence.
 //
-//    p - The order of the minimum variance estimate.  For short
-//    sequences, p is typically about length(x) / 3.
+//    p - The order of the modified minimum variance estimate.
 //
 //  Outputs:
+//
+//    B - A vector of bandwidths of the bandpass filters.
 //
 //    Px - The minimum variance estimate of the power spectrum of
 //    x(n) using a decibel scale.
 //
 //**********************************************************************
-function Px = modminvar(x,p)
+function [B,Px] = modminvar(x,p)
 
   // Enforce a column vector.
   x = x(:);
@@ -35,119 +40,90 @@ function Px = modminvar(x,p)
   // Compute the autocorrelation matrix of order, p.
   R = Covar(x,p);
 
-  // Compute the eigenvectors of R and the diagonal matrix of eigenvalues.
-  [v,d] = spec(R);
+  // Compute inverse of autocorrelation matrix.
+  Rinv = inv(R);
 
-  // Construct a column vector of eigenvalue reciprocals.
-  U = diag(inv(abs(d)+ %eps));
+  // Generate frequency index.
+  n = 0:p-1;
 
-  // Compute the 1024-pointspectrum for each column.
-  V = matrixFft(v,1024);
-  V = V .* conj(V);
+  for j = 1:p
+    for k = 0:p-1
+      // Construct complex sinusoid vector.
+      e(k+1) = exp(%i*j*k*%pi/p);
+    end
 
-  // Construct numerator.
-  num = V * U;
+    // Do this to make things clearer.
+    num = Rinv * e;
+    den = e' * Rinv * e;
 
-  // Construct denominator.
-  den = num .* num;
+    // Compute filter.
+    g = num .* den;
 
-  // Estimate the power spectrum in decibels.
-  Px = (10 * log10(num)) - (10 * log10(den));
+    // compute bandwidth.
+    B(j) = g' * g;
+
+    Px(j) = 10*log10(e' * Rinv * e) - 10*log10(den .* den);
+  end
+
+  // Ensure that we have real values.
+  B = real(B);
 
 endfunction
 
 //**********************************************************************
 // Mainline code.
 //**********************************************************************
-// Set model order.
-p = 10;
-
-// Construct time vector.
-k = 0:p;
-
-// Construct autocorrelation sequence.
-rx = cos(0.35*%pi*k);
-
-// Add delta(k) to rx(0).
-rx(1) = rx(1) + 1;
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (a): The written function is modminvar().
+// Part (a): Pencil and paper problem.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Construct noise free autocorrelation sequence.
-rx = cos(0.35*%pi*k);
-rx = rx(:);
-
-// Add delta(k) to rx(0).
-rx(1) = rx(1) + 1;
-
-// Compute minimum variance spectrum.
-Px_a = minvar_auto(rx);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (b): Generate an overlay plot of 25 minimum variance
-// spectrum estimates with sigmaW^2 = 0.1, and compare these
-// estimates to that generated in part (a).
+// Part (b): The written function is modminvar().
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Preallocate matrix.
-Py_b = zeros(1024,1);
-
-// Set variance.
-sigmaW2 = 0.1;
-
-// Compute limits of uniform distribution.
-b = sqrt(3*sigmaW2);
-
-for j = 1:25
-  w = generateBipolarNoise(b,p+1);
-
-  // Generate noisy autocorrelation sequence.
-  ry = rx + w;
-
-  // Compute minimum variance spectrum.
-  Py_b(:,j) = minvar_auto(ry);
-end
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (c1): Compute the maximum entropy spectrum with p = 10
-// and sigmaW^2 = 0.
+// Part (c): Pencil and paper problem.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (d): Let x(n) be a harmonic process consisting of a sum
+// of two sinusoids in white noise.  Let the sinusoid frequencies
+// be w1 = 0.25PI and w2=0.25PI, and assume that the signal-to-
+// noise ratio for each sinusoid is 10dB.  Find the
+// autocorrelation sequence of this process, and compute the
+// 10th-order minimum variance estimate and a 10th-order MEM
+// estimate.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Initialize unit variance noise source.
 noisegen(1,256,1);
 
 // Construct noise.
-v = feval([1:11],Noise);
+v = feval([1:256],Noise);
 
 // Generate time index.
-n = 0:10;
+n = 0:255;
 
 // Generate noisy signal.
-x = cos(0.35*%pi*n); + v;
+x = sqrt(20)*cos(0.2*%pi*n) + sqrt(20)*cos(0.25*%pi*n) + v;
+
+// Compute modified minimum variance spectrum.
+[B,Px_modminvar_c] = modminvar(x,10);
+
+// Compute minimum variance spectrum.
+Px_minvar_c = minvar(x,10);
 
 // Compute maximum entropy spectrum.
-Px_c1 = mem2(x,10,0);
+Px_mem_c = mem(x,10);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (b): Generate an overlay plot of 25 maximum entropy
-// spectrum estimates with sigmaW^2 = 0.1, and compare these
-// estimates to that generated in part (a).
+// Part (e): Make a plot of the bandwidths of the bandpass
+// filters versus omega that are used in the modified MV
+// spectrum estimate generated in (d), and compare them to the
+// fixed bandwidth, deltaOmega = 2*PI/p, used in the MV spectrum
+// estimate.  The bandwidths were already computed in part (d)
+// using the modminvar() function.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Preallocate matrix.
-Py_c2 = zeros(1024,1);
-
-// Set variance.
-sigmaW2 = 0.1;
-
-for j = 1:25
-  // Construct noise.
-  v = feval([1:11],Noise);
-
-  // Generate noisy signal.
-  x = cos(0.35*%pi*n); + v;
-
-  // Compute maximum entropyspectrum.
-  Py_c2(:,j) = mem2(x,10,0.1);
-end
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
@@ -155,21 +131,24 @@ end
 
 scf(1);
 
-// Part (a).
-subplot(221);
-title('Noise Free  Minvar Spectrum');
-plot(Px_a);
+// Part (d).
+subplot(311);
+title('Modified MV Spectrum');
+plot(Px_modminvar_c);
 
-// Part (b).
-subplot(223);
-title('Minvar Spectrum, Variance: 0.1');
-plot(Py_b);
+subplot(312);
+title('MV Spectrum');
+plot(Px_minvar_c);
 
-// Part (c).
-subplot(222);
-title('Noise Free Mem Spectrum');
-plot(Px_c1);
+subplot(313);
+title('MEM Sectrum');
+plot(Px_mem_c);
 
-subplot(224);
-title('Mem Spectrum, Variance: 0.1');
-plot(Py_c2);
+scf(2);
+// Part (e).
+title('Bandwidth of Bandpass Filters');
+plot(B);
+
+
+
+
