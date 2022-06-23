@@ -62,11 +62,13 @@ function [B,Px] = modminvar(x,p)
     // compute bandwidth.
     B(j) = g' * g;
 
-    Px(j) = 10*log10(e' * Rinv * e) - 10*log10(den .* den);
+    // Compute power spectrum estimate.
+    Px(j) = 10*log10(e' * Rinv * e) - 10*log10(B(j));
   end
 
   // Ensure that we have real values.
   B = real(B);
+  Px = real(Px);
 
 endfunction
 
