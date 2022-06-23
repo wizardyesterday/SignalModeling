@@ -43,6 +43,9 @@ function [B,Px] = modminvar(x,p)
   // Compute inverse of autocorrelation matrix.
   Rinv = inv(R);
 
+  // Square it.
+  Rinv2 = Rinv * Rinv;
+
   // Generate frequency index.
   n = 0:p-1;
 
@@ -52,18 +55,14 @@ function [B,Px] = modminvar(x,p)
       e(k+1) = exp(%i*j*k*%pi/p);
     end
 
-    // Do this to make things clearer.
-    num = Rinv * e;
-    den = e' * Rinv * e;
-
     // Compute filter.
-    g = num .* den;
+    g = (Rinv * e)  / (e' * Rinv * e);
 
     // compute bandwidth.
     B(j) = g' * g;
 
     // Compute power spectrum estimate.
-    Px(j) = -10*log10(e' * Rinv * e) - 10*log10(B(j));
+    Px(j) = 10*log10(e' * Rinv * e) - 10*log10(e' * Rinv2 * e);
   end
 
   // Ensure that we have real values.
@@ -94,8 +93,10 @@ endfunction
 // be w1 = 0.25PI and w2=0.25PI, and assume that the signal-to-
 // noise ratio for each sinusoid is 10dB.  Find the
 // autocorrelation sequence of this process, and compute the
-// 10th-order minimum variance estimate and a 10th-order MEM
-// estimate.
+// 40th-order minimum variance estimate and a 40th-order MEM
+// estimate.  Note that the problem stated to use 10th-order
+// models, but the results were unsatisfactory for analysis of
+// a record length of 256.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Initialize unit variance noise source.
 noisegen(1,256,1);
@@ -110,13 +111,13 @@ n = 0:255;
 x = sqrt(20)*cos(0.2*%pi*n) + sqrt(20)*cos(0.25*%pi*n) + v;
 
 // Compute modified minimum variance spectrum.
-[B,Px_modminvar_c] = modminvar(x,10);
+[B,Px_modminvar_c] = modminvar(x,40);
 
 // Compute minimum variance spectrum.
-Px_minvar_c = minvar(x,10);
+Px_minvar_c = minvar(x,40);
 
 // Compute maximum entropy spectrum.
-Px_mem_c = mem(x,10);
+Px_mem_c = mem(x,40);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (e): Make a plot of the bandwidths of the bandpass
