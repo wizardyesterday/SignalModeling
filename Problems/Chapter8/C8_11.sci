@@ -111,13 +111,13 @@ n = 0:255;
 x = sqrt(20)*cos(0.2*%pi*n) + sqrt(20)*cos(0.25*%pi*n) + v;
 
 // Compute modified minimum variance spectrum.
-[B,Px_modminvar_c] = modminvar(x,40);
+[B,Px_modminvar_d] = modminvar(x,40);
 
 // Compute minimum variance spectrum.
-Px_minvar_c = minvar(x,40);
+Px_minvar_d = minvar(x,40);
 
 // Compute maximum entropy spectrum.
-Px_mem_c = mem(x,40);
+Px_mem_d = mem(x,40);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (e): Make a plot of the bandwidths of the bandpass
@@ -129,29 +129,63 @@ Px_mem_c = mem(x,40);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (f): Create an ensemble of 25 different harmonic
+// processes of the form given in (d), and generate an overlay
+// plot of the modified MV spectrum estimates.  Repeat for the MV
+// spectrum estimate, and comment on any differences that you
+// observe.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+for j = 1:25
+  // Construct noise.
+  v = feval([1:256],Noise);
+
+  // Generate noisy signal.
+  x = sqrt(20)*cos(0.2*%pi*n) + sqrt(20)*cos(0.25*%pi*n) + v;
+
+  // Compute modified minimum variance spectrum.
+  [Bdummy,Px_modminvar_f(:,j)] = modminvar(x,40);
+
+  // Compute minimum variance spectrum.
+  Px_minvar_f(:,j) = minvar(x,40);
+
+  // Compute maximum entropy spectrum.
+  Px_mem_f(:,j) = mem(x,40);
+end
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 scf(1);
 
 // Part (d).
-subplot(311);
+subplot(421);
 title('Modified MV Spectrum');
-plot(Px_modminvar_c);
+plot(Px_modminvar_d);
 
-subplot(312);
+subplot(423);
 title('MV Spectrum');
-plot(Px_minvar_c);
+plot(Px_minvar_d);
 
-subplot(313);
+subplot(425);
 title('MEM Sectrum');
-plot(Px_mem_c);
+plot(Px_mem_d);
 
-scf(2);
 // Part (e).
+subplot(427);
 title('Bandwidth of Bandpass Filters');
 plot(B);
 
+// Part (f).
+subplot(422);
+title('Modified MV Spectrum Overlay');
+plot(Px_modminvar_f);
 
+subplot(424);
+title('MV Spectrum Overlay');
+plot(Px_minvar_f);
 
-
+subplot(426);
+title('MEM Sectrum Overlay');
+plot(Px_mem_f);

@@ -389,14 +389,13 @@ endfunction
 
 //**********************************************************************
 //
-//  Name: generateWhiteNoise
+//  Name: generateBipolarNoise
 //
 //  Purpose: The purpose of this function is to generate a white noise
 //  sequence for which the random variable is uniformly distributed
 //  between [-amplitude,amplitude].
 //
-//  Calling Sequence: w = generateBipolarNoise(amplitude,
-//                                                  numberOfSamples)
+//  Calling Sequence: w = generateBipolarNoise(amplitude,numberOfSamples)
 //
 //  Inputs:
 //
