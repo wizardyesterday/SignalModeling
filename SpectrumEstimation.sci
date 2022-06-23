@@ -253,7 +253,7 @@ function V = matrixFft(v,N)
   // Zero-pad the first column of v.
   v1 = zeroPadSequence(v(:,1),N);
 
-  // Zero-pad the rest of the columns in a.
+  // Zero-pad the rest of the columns in v1.
   for i = 2:columns
     v1(:,i) = zeroPadSequence(v(:,i),N);
   end
