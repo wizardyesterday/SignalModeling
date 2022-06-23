@@ -63,7 +63,7 @@ function [B,Px] = modminvar(x,p)
     B(j) = g' * g;
 
     // Compute power spectrum estimate.
-    Px(j) = 10*log10(e' * Rinv * e) - 10*log10(B(j));
+    Px(j) = -10*log10(e' * Rinv * e) - 10*log10(B(j));
   end
 
   // Ensure that we have real values.
