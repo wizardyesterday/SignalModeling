@@ -51,7 +51,7 @@ function [B,Px] = modminvar(x,p)
 
   for j = 1:p
     for k = 0:p-1
-      // Construct complex sinusoid vector.
+      // Construct signal vector.
       e(k+1) = exp(%i*j*k*%pi/p);
     end
 
