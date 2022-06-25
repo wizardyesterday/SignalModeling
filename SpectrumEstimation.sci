@@ -841,10 +841,10 @@ function [vmin,sigma] = phd(x,p)
   [v,d] = spec(R);
 
   // Determine the variance of the noise.
-  sigma = min(diag(abs(d)));
+  sigma = min(abs(diag(d)));
 
   // Find the eigenvector that spans the noise subspace.
-  index = find(diag(d) == sigma);
+  index = find(abs(diag(d)) == sigma);
  
   vmin = v(:,index);
 
