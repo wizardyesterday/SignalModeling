@@ -268,8 +268,8 @@ endfunction
 //
 //  Name:  computeDtft
 //
-//  The purpose of this function is to compute the discrete Fourier
-//  transform of a short sequence.
+//  The purpose of this function is to compute the discrete time 
+//  Fourier transform of a short sequence.
 //
 //  Calling Sequence: V = computeDtft(v,p,w)
 //
@@ -277,7 +277,7 @@ endfunction
 //
 //    v - The input sequence.  This is a (p+1) x 1 column vector.
 //
-//    p - The order of the DFT.
+//    p - The order of the DTFT.
 //
 //    w - The radian frequency for which the DTFT is to be evaluated.
 //
