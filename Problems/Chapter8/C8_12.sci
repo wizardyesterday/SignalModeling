@@ -12,7 +12,7 @@ exec('utils.sci',-1);
 //  The purpose of this function is to compute the discrete Fourier
 //  transform of a short sequence.
 //
-//  Calling Sequence: V = computeDtft(v,p)
+//  Calling Sequence: V = computeDtft(v,p,w)
 //
 //  Inputs:
 //
@@ -20,6 +20,8 @@ exec('utils.sci',-1);
 //    a length of p+1.
 //
 //    p - The order of the DFT.
+//
+//    w - The radian frequency for which the DTFT is to be evaluated.
 //
 //  Outputs:
 //
@@ -49,7 +51,7 @@ endfunction
 //  this function provides a good mapping of the equations described
 //  in the textbook.
 //
-//  Calling Sequence: Px = computePowers(x,p)
+//  Calling Sequence: P = computePowers(x,p)
 //
 //  Inputs:
 //
@@ -59,16 +61,10 @@ endfunction
 //
 //  Outputs:
 //
-//    B - A vector of bandwidths of the bandpass filters.
-//
-//    Px - The minimum variance estimate of the power spectrum of
-//    x(n) using a decibel scale.
+//    P - The power of each sinusoid.
 //
 //**********************************************************************
 function P = computePowers(x,p)
-
-  // Enforce a column vector.
-  x = x(:);
 
   // Enforce a column vector.
   x = x(:);
@@ -170,6 +166,9 @@ for j = 1:20
 
   // Estimate the frequencies of the complex exponentials.
   fr_phd(:,j) = atan(imag(ro),real(ro)) / %pi;
+
+  // Compute the powers of the sinusoids.
+  P(:,j) = computePowers(x,3);
 end
 
 for j = 1:3
@@ -184,9 +183,9 @@ end
 // Part (b): Estimate the powers of the signals using the
 // frequency estimates derived in part (a).
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-
-// Power using estimated frequencies.
-P = computePowers(x,3);
+for j = 1:3
+  pMean(j,:) = mean(P(j,:));
+end
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (c): Repeat part(a) using the MUSIC algorithm, the
@@ -218,17 +217,17 @@ end
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 // Part (c).
-//subplot(311);
-//title('MUSIC, p:3, M:4');
-//plot(Px_music);
+subplot(311);
+title('MUSIC, p:3, M:4');
+plot(Px_music);
 
-//subplot(312);
-//title('Ev, p:3, M:4');
-//plot(Px_ev);
+subplot(312);
+title('Ev, p:3, M:4');
+plot(Px_ev);
 
-//subplot(313);
-//title('Min_norm, p:3, M:4');
-//plot(Px_min_norm);
+subplot(313);
+title('Min_norm, p:3, M:4');
+plot(Px_min_norm);
 
 
 
