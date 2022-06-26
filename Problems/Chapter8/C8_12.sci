@@ -28,12 +28,10 @@ exec('utils.sci',-1);
 //**********************************************************************
 function V = computeDtft(v,p,w)
 
-  for k = 0:p-1
-  end
-
   // Clear sum.
   V = 0;
 
+  // Compute the DTFT of v.
   for k = 0:p
     V = V + v(k+1) * exp(-%i*k*w);
   end
@@ -67,7 +65,7 @@ endfunction
 //    x(n) using a decibel scale.
 //
 //**********************************************************************
-function [P,V,lam] = computePowers(x,p)
+function P = computePowers(x,p)
 
   // Enforce a column vector.
   x = x(:);
@@ -94,6 +92,7 @@ function [P,V,lam] = computePowers(x,p)
 
   // Remove lamdaMin from the eigenvalue matrix.
   d(:,index) = [];
+  d(index,:) = [];
 
   // Remove the insigificant values.
   d = clean(d);
@@ -104,13 +103,13 @@ function [P,V,lam] = computePowers(x,p)
   // Compute frequency estimates.
   omega = atan(imag(ro),real(ro));
 
-  for j = 1:p
+  for i = 1:p
     for k = 1:p
       // Take it to the frequency domain.
-      V(j,k) = computeDtft(v(:,k),p-1,omega(k));
+      V(i,k) = computeDtft(v(:,i),p,omega(k));
 
       // Compute |Vjk|^2.
-      V(j,k) = V(j,k) .* conj(V(j,k));
+      V(i,k) = V(i,k) .* conj(V(i,k));
     end
   end
 
@@ -159,16 +158,6 @@ for j = 1:20
   phi2 = generateBipolarNoise(%pi,1);
   phi3 = generateBipolarNoise(%pi,1);
 
-w1 = 0.1 * %pi;
-w2 = 0.45 * %pi;
-w3 = 0.8 * %pi;
-phi1 = 0;
-phi2 = 0;
-phi3 = 0;
-w = 0;
-
-
-
   // Generate realization.
   x = A1*exp(%i*w1*n + phi1) + + A2*exp(%i*w2*n + phi2) ...
       + A3*exp(%i*w3*n + phi3) + w;
@@ -183,13 +172,21 @@ w = 0;
   fr_phd(:,j) = atan(imag(ro),real(ro)) / %pi;
 end
 
+for j = 1:3
+  // Compute the variance of the frequency estimates.
+  vr_phd(j) = variance(fr_phd(j,:));
+
+  // Compute the mean values of the frequency estimates.
+  mean_phd(j) = mean(fr_phd(j,:));
+end
+
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (b): Estimate the powers of the signals using the
 // frequency estimates derived in part (a).
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 // Power using estimated frequencies.
-[P,V,lam] = computePowers(x,3);
+P = computePowers(x,3);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (c): Repeat part(a) using the MUSIC algorithm, the
@@ -210,7 +207,7 @@ for j = 1:20
   x = A1*exp(%i*w1*n + phi1) + + A2*exp(%i*w2*n + phi2) ...
       + A3*exp(%i*w3*n + phi3) + w;
 
-  // Compute spectral estimates using 5 noise eigenvectors.
+  // Compute spectral estimates using 10 noise eigenvectors.
   Px_music(:,j) = music(x,3,10);
   Px_ev(:,j) = ev(x,3,10);
   Px_min_norm(:,j) = min_norm(x,3,10);
