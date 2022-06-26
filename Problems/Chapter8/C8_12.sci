@@ -7,51 +7,15 @@ exec('utils.sci',-1);
 
 //**********************************************************************
 //
-//  Name:  computeDtft
+//  Name:  computePisarenkoPowers
 //
-//  The purpose of this function is to compute the discrete Fourier
-//  transform of a short sequence.
+//  The purpose of this function is to esimate the powers of complex
+//  exponentials within a random process whose frequency estimates
+//  are computed using the Pisarenko harmonic decomposition method.
+//  This function performs all of the parameter computations that are
+//  needed by the computeEigenPowers() function.
 //
-//  Calling Sequence: V = computeDtft(v,p,w)
-//
-//  Inputs:
-//
-//    V - The input sequence. This is typically an eigenvector with
-//    a length of p+1.
-//
-//    p - The order of the DFT.
-//
-//    w - The radian frequency for which the DTFT is to be evaluated.
-//
-//  Outputs:
-//
-//    V - The discrete time Fourier transform of v.
-//
-//**********************************************************************
-function V = computeDtft(v,p,w)
-
-  // Clear sum.
-  V = 0;
-
-  // Compute the DTFT of v.
-  for k = 0:p
-    V = V + v(k+1) * exp(-%i*k*w);
-  end
-
-endfunction
-
-//**********************************************************************
-//
-//  Name:  computePowers
-//
-//  The purpose of this function is to estimate the spectrum of a
-//  process using the modified covariance method. Additionally, this
-//  function computeds the bandwidth of the bandpass filters that are
-//  "designed" by the modified minimum  ariance method.  Note that
-//  this function provides a good mapping of the equations described
-//  in the textbook.
-//
-//  Calling Sequence: P = computePowers(x,p)
+//  Calling Sequence: P = computePisarenkoPowers(x,p)
 //
 //  Inputs:
 //
@@ -64,7 +28,7 @@ endfunction
 //    P - The power of each sinusoid.
 //
 //**********************************************************************
-function P = computePowers(x,p)
+function P = computePisarenkoPowers(x,p)
 
   // Enforce a column vector.
   x = x(:);
@@ -76,10 +40,10 @@ function P = computePowers(x,p)
   [v,d] = spec(R);
 
   // Determine the variance of the noise.
-  sigma = min(abs(diag(d)));
+  sigma2 = min(abs(diag(d)));
 
   // Find the eigenvector that spans the noise subspace.
-  index = find(abs(diag(d)) == sigma);
+  index = find(abs(diag(d)) == sigma2);
 
   vmin = v(:,index);
 
@@ -99,27 +63,11 @@ function P = computePowers(x,p)
   // Compute frequency estimates.
   omega = atan(imag(ro),real(ro));
 
-  for i = 1:p
-    for k = 1:p
-      // Compute V_i(omega_k).
-      V(i,k) = computeDtft(v(:,i),p,omega(k));
-
-      // Compute |V_i(omega_k)|^2.
-      V(i,k) = V(i,k) .* conj(V(i,k));
-    end
-  end
-
-  // Construct right hand side vector of eigenvalues.
-  lam = diag(d);
-
-  // Subtract the noise.
-  lam = lam - sigma;
+  // Construct vector of eigenvalues.
+  lamda = diag(d);
 
   // Compute power estimates.
-  P = V \ lam;
-
-  // Remove infinitesimal imaginary component.
-  P = real(P);
+  P = computeEigenPowers(v,lamda,sigma2,omega);
 
 endfunction
 
@@ -168,7 +116,7 @@ for j = 1:20
   fr_phd(:,j) = atan(imag(ro),real(ro)) / %pi;
 
   // Compute the powers of the sinusoids.
-  P(:,j) = computePowers(x,3);
+  P(:,j) = computePisarenkoPowers(x,3);
 end
 
 for j = 1:3

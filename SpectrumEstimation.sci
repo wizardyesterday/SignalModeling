@@ -266,6 +266,95 @@ endfunction
 
 //**********************************************************************
 //
+//  Name:  computeDtft
+//
+//  The purpose of this function is to compute the discrete Fourier
+//  transform of a short sequence.
+//
+//  Calling Sequence: V = computeDtft(v,p,w)
+//
+//  Inputs:
+//
+//    v - The input sequence.  This is a (p+1) x 1 column vector.
+//
+//    p - The order of the DFT.
+//
+//    w - The radian frequency for which the DTFT is to be evaluated.
+//
+//  Outputs:
+//
+//    V - The discrete time Fourier transform of v.
+//
+//**********************************************************************
+function V = computeDtft(v,p,w)
+
+  // Clear sum.
+  V = 0;
+
+  // Compute the DTFT of v.
+  for k = 0:p
+    V = V + v(k+1) * exp(-%i*k*w);
+  end
+
+endfunction
+
+//**********************************************************************
+//
+//  Name:  computeEigenPowers
+//
+//  The purpose of this function is to estimate the powers of complex
+//  exponentials in a white noise process given the eigenvectors of
+//  the autocorrelation matrix and their associated eigenvalues, the
+//  variance of the random process, and the frequency estimates of
+//  the complex exponentials.
+//
+//  Calling Sequence: P = computeEigenPowers(v,lamda,sigma2,omega)
+//
+//  Inputs:
+//
+//    v - A p x (p+1) matrix of column eigenvectors.
+//
+//    lamda - A (p+1) x 1 column vector of eigenvalues that are 
+//    associated with V.
+//
+//    sigma2 - The noise power.
+//
+//    omega - A p x 1 column vector of frequency estimates.
+//
+//  Outputs:
+//
+//    P - The power of each sinusoid.
+//
+//**********************************************************************
+function P = computeEigenPowers(v,lamda,sigma2,omega)
+
+  // Determine size of V.
+  s = size(v);
+  p = s(2);
+
+  for i = 1:p
+    for k = 1:p
+      // Compute V_i(omega_k).
+      V(i,k) = computeDtft(v(:,i),p,omega(k));
+
+      // Compute |V_i(omega_k)|^2.
+      V(i,k) = V(i,k) .* conj(V(i,k));
+    end
+  end
+
+  // Subtract out the noise term.
+  lamda = lamda - sigma2;
+
+  // Compute power estimates.
+  P = V \ lamda;
+
+  // Remove infinitesimal imaginary component.
+  P = real(P);
+
+endfunction
+
+//**********************************************************************
+//
 //  Name: constructPowerSpectrum
 //
 //  Purpose: The purpose of this function is to generate a 1024-point
@@ -972,9 +1061,9 @@ function Px = min_norm(x,p,M)
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
     // We have to kludge this for Scilab.
-    V = v(:,1);
+    V = v(:,i(1));
 
-    for j = 1:M-p
+    for j = 2:M-p
       V = [V,v(:,i(j))];
     end
 
