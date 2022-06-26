@@ -101,10 +101,10 @@ function P = computePowers(x,p)
 
   for i = 1:p
     for k = 1:p
-      // Take it to the frequency domain.
+      // Compute V_i(omega_k).
       V(i,k) = computeDtft(v(:,i),p,omega(k));
 
-      // Compute |Vjk|^2.
+      // Compute |V_i(omega_k)|^2.
       V(i,k) = V(i,k) .* conj(V(i,k));
     end
   end
