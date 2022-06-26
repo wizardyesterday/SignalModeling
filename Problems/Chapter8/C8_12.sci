@@ -218,15 +218,15 @@ end
 
 // Part (c).
 subplot(311);
-title('MUSIC, p:3, M:4');
+title('MUSIC, p:3, M:10');
 plot(Px_music);
 
 subplot(312);
-title('Ev, p:3, M:4');
+title('Ev, p:3, M:10');
 plot(Px_ev);
 
 subplot(313);
-title('Min_norm, p:3, M:4');
+title('Min_norm, p:3, M:10');
 plot(Px_min_norm);
 
 
