@@ -21,7 +21,7 @@ exec('utils.sci',-1);
 //
 //    x - The input sequence.
 //
-//    p - The order of the modified minimum variance estimate.
+//    p - The number of complex exponentials.
 //
 //  Outputs:
 //
