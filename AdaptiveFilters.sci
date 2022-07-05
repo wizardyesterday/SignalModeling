@@ -21,8 +21,8 @@
 //
 //    nord - The number of filter coefficients.
 //
-//    a0 - An optional row vector that serves as the initial guess
-//    for FIR filter coefficients.  If a0 is omitted, then a0 = 0 is
+//    w0 - An optional row vector that serves as the initial guess
+//    for FIR filter coefficients.  If a0 is omitted, then w0 = 0 is
 //    assumed.
 //    
 //  Outputs:
@@ -42,7 +42,7 @@
 //    Note that E(n) = d(n) - dhat(n).
 //
 //**********************************************************************
-function [W,E] = lms(x,d,mu,nord,a0)
+function [W,E] = lms(x,d,mu,nord,w0)
 
   // Construct the data matrix.
   X = convm(x,nord);
