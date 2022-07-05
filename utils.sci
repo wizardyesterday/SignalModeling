@@ -437,4 +437,5 @@ exec('Lsp.sci',-1);
 exec('Lattice.sci',-1);
 exec('OptimumFilters.sci',-1);
 exec('SpectrumEstimation.sci',-1);
+exec('AdaptiveFilters.sci',-1);
 
