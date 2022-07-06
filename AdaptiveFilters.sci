@@ -245,15 +245,10 @@ function [W,E] = rls(x,d,nord,lambda)
     alpha = d(k) - X(k,:) * W(k-1,:).';
 
       // Update the filter vector.
-    W(k,:) = W(k-1,:) + alpha*g.';
+    W(k,:) = W(k-1,:) + alpha * g.';
 
     // Update inverse autocorrelation matrix.
     P = (P - g * z.') / lambda;
-end;
+  end
 
-
-
-
-
-
-
+endfunction
