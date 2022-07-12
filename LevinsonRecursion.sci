@@ -175,7 +175,7 @@ endfunction
 //  The purpose of this function is to construct the autocorrelation
 //  sequence from the reflection coefficients.  If the optional input
 //  epsilon is omitted, then the autocorrelation sequence is
-//  normalized so that r(0)=1.
+//  normalized so that r(0) = 1.
 //
 //  Calling Sequence: a = gamm = atog(a)
 //
