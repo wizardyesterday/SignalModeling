@@ -32,9 +32,6 @@ for j = 1:2
   X1(:,j) = filterBlock(v,1,a1(2:$));
   X2(:,j) = filterBlock(v,1,a2(2:$));
 end
-//----------------------------------------
-
-///----------------------------------------
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (a): Paper problem.
@@ -48,25 +45,17 @@ end
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Generate error sequences.
 for j = 1:2
-  //+++++++++++++++++++++++++++++++++++++++++++++++
-  // This block of code generates the reference
-  // signal.
-  //+++++++++++++++++++++++++++++++++++++++++++++++
-  x1 = convm(X1(:,j),2);
-  x2 = convm(X2(:,j),2);
+  // Generate reference signal looking at this as an FIR filter.
+  d1 = filterBlock(X1(:,j),a1(2:$),0);
 
-  d1 = a1(2:$)' * x1';
-  d2 = a2(2:$)' * x2';
-  //+++++++++++++++++++++++++++++++++++++++++++++++
-
-  [W1,E1(:,j)] = lms(X1(:,j),d1,mu1,2);
-  [W2,E2(:,j)] = lms(X2(:,1),d2,mu1,2);
+  [W1_1,E1_1(:,j)] = lms(X1(:,j),d1,mu1,2);
+  [W1_2,E1_2(:,j)] = lms(X1(:,j),d1,mu2,2);
 end
 
-// Compute learning curve.
+// Compute learning curves.
 for j = 1:500
-  E1avg(j) = sum(E1(j,:));
-  E2avg(j) = sum(E2(j,:));
+  E1avg_1(j) = sum(E1_1(j,:));
+  E1avg_2(j) = sum(E1_2(j,:));
 end
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
