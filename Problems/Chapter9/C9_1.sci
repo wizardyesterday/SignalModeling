@@ -67,7 +67,7 @@ function [W,E] = lmsblah(x,d,mu,nord,w0)
   w0   = w0(:).';
 
   // Perform the first iteration for the error vector.
-  E(1) = d(1) - w0 * X(1,:).'; 
+  E(1) = (d - w0) * X(1,:).'; 
 
   // Perform the first iteration for the filter vector.
   W(1,:) = w0 + mu * E(1) * conj(X(1,:));
@@ -75,7 +75,7 @@ function [W,E] = lmsblah(x,d,mu,nord,w0)
   if M > 1
     for k = 2:M - nord + 1
       // Update the error.
-      E(k) = d(k) - W(k-1,:) * X(k,:).';
+      E(k) = (d - W(k-1,:)) * X(k,:).';
 
       // Update the filter vector.
       W(k,:) = W(k-1,:) + mu * E(k) * conj(X(k,:));
@@ -94,10 +94,8 @@ sigmavSq = 0.25;
 noisegen(1,500,sqrt(sigmavSq));
 
 // Set AR(2) filter coefficients.
-a1 = [1 -0.1 -0.8];
-a2 = [1 -0.1 0.8];
-a1 = [1 .1 .8]
-a2 = [1 .1 -.8]
+a1 = [1 .1 .8]';
+a2 = [1 .1 -.8]';
 
 // Set step sizes.
 mu1 = 0.05
@@ -112,14 +110,28 @@ for j = 1:1
 
   X1(:,j) = filterBlock(v,1,a1(2:$));
   X2(:,j) = filterBlock(v,1,a2(2:$));
-
-  d1(:,j) = X1(:,j) - v';
-  d2(:,j) = X2(:,j) - v';
 end
 //----------------------------------------
 
-[W1,E1] = lms(X1(:,1),d1,mu1,2)
-[W2,E2] = lms(X2(:,1),d2,mu1,2)
+//----------------------------------------
+// Generate error sequences.
+//----------------------------------------
+for j = 1:1
+  //+++++++++++++++++++++++++++++++++++++++++++++++
+  // This block of code generates the reference
+  // signal.
+  //+++++++++++++++++++++++++++++++++++++++++++++++
+  x1 = convm(X1(:,j),2);
+  x2 = convm(X2(:,j),2);
+
+  d1 = a1(2:$)' * x1';
+  d2 = a2(2:$)' * x2';
+  //+++++++++++++++++++++++++++++++++++++++++++++++
+
+  [W1,E1(:,j)] = lms(X1(:,j),d1,mu1,2);
+  [W2,E2(:,j)] = lms(X2(:,1),d2,mu1,2);
+end
+//----------------------------------------
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (a): Generate 100 samples of an ARMA(2,2) process, x(n),
