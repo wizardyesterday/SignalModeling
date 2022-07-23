@@ -70,7 +70,7 @@ function [W,E] = lms(x,d,mu,nord,w0)
   W(1,:) = w0 + mu * E(1) * conj(X(1,:));
 
   if M > 1
-    for k = 2:M;
+    for k = 2:M
       // Update the error.
       E(k) = d(k) - W(k-1,:) * X(k,:).';
 
@@ -153,7 +153,7 @@ function [W,E] = nlms(x,d,beta,nord,w0)
   W(1,:) = w0 + beta / DEN * E(1) * conj(X(1,:));
 
   if M > 1
-    for k = 2:M - nord+1;
+    for k = 2:M - nord + 1
       // Update the error.
       E(k) = d(k) - W(k-1,:) * X(k,:).';
 
@@ -234,7 +234,7 @@ function [W,E] = rls(x,d,nord,lambda)
   // Initialize first iteration of the filter vector.
   W(1,:) = zeros(1,N);
 
-  for k = 2:M - nord+1;
+  for k = 2:M - nord + 1
     // Update the filtered information vector.
     z = P * X(k,:)';
 
