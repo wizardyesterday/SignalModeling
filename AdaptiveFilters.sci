@@ -60,7 +60,7 @@ function [W,E] = lms(x,d,mu,nord,w0)
     w0 = zeros(1,N);
   end
 
-  // Force a column vector without altering the values.
+  // Force a row vector without altering the values.
   w0   = w0(:).';
 
   // Perform the first iteration for the error vector.
@@ -140,7 +140,7 @@ function [W,E] = nlms(x,d,beta,nord,w0)
     w0 = zeros(1,N);
   end
 
-  // Force a column vector without altering the values.
+  // Force a row vector without altering the values.
   w0   = w0(:).';
 
   // Perform the first iteration for the error vector.
