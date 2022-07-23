@@ -70,7 +70,7 @@ function [W,E] = lms(x,d,mu,nord,w0)
   W(1,:) = w0 + mu * E(1) * conj(X(1,:));
 
   if M > 1
-    for k = 2:M
+    for k = 2:M - nord + 1
       // Update the error.
       E(k) = d(k) - W(k-1,:) * X(k,:).';
 
