@@ -193,10 +193,144 @@ Wse2avg_2 = Wse2avg_2 / length(Wse2avg_2);
 //-------------------------------------------------------------
 // Sign-data.
 //-------------------------------------------------------------
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// a(1) = 0.1, a(2) = -0.8, and sigmaV^2 = 0.25.
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Initialize running sums.
+Wsd1avg_1 = 0;
+Wsd1avg_2 = 0;
+
+// Generate error sequences.
+for j = 1:2
+  // Generate reference signal looking at this as an FIR filter.
+  d = filterBlock(X1(:,j),a1(2:$),0);
+
+  [Wsd1_1,Esd1_1(:,j)] = lms_signData(X1(:,j),d,mu1,2);
+  [Wsd1_2,Esd1_2(:,j)] = lms_signData(X1(:,j),d,mu2,2);
+
+  // Update running sums.
+  Wsd1avg_1 = Wsd1avg_1 + Wsd1_1($,1:2);
+  Wsd1avg_2 = Wsd1avg_2 + Wsd1_2($,1:2);
+end
+
+// Compute squared error.
+Esd1Sq_1 = Esd1_1 .* Esd1_1;
+Esd1Sq_2 = Esd1_2 .* Esd1_2;
+
+// Compute learning curves.
+for j = 401:500
+  Esd1avg_1(j) = sum(Esd1Sq_1(j,:));
+  Esd1avg_2(j) = sum(Esd1Sq_2(j,:));
+end
+
+// Compute average frequency estimates.
+Wsd1avg_1 = Wsd1avg_1 / length(Wsd1avg_1);
+Wsd1avg_2 = Wsd1avg_2 / length(Wsd1avg_2);
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// a(1) = 0.1, a(2) = -0.8, and sigmaV^2 = 0.25.
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Initialize running sums.
+Wsd2avg_1 = 0;
+Wsd2avg_2 = 0;
+
+// Generate error sequences.
+for j = 1:2
+  // Generate reference signal looking at this as an FIR filter.
+  d = filterBlock(X2(:,j),a2(2:$),0);
+
+  [Wsd2_1,Esd2_1(:,j)] = lms_signData(X2(:,j),d,mu1,2);
+  [Wsd2_2,Esd2_2(:,j)] = lms_signData(X2(:,j),d,mu2,2);
+
+  // Update running sums.
+  Wsd2avg_1 = Wsd2avg_1 + Wsd2_1($,1:2);
+  Wsd2avg_2 = Wsd2avg_2 + Wsd2_2($,1:2);
+end
+
+// Compute squared error.
+Esd2Sq_1 = Esd2_1 .* Esd2_1;
+Esd2Sq_2 = Esd2_2 .* Esd2_2;
+
+// Compute learning curves.
+for j = 401:500
+  Esd2avg_1(j) = sum(Esd2Sq_1(j,:));
+  Esd2avg_2(j) = sum(Esd2Sq_2(j,:));
+end
+
+// Compute average frequency estimates.
+Wsd2avg_1 = Wsd2avg_1 / length(Wsd2avg_1);
+Wsd2avg_2 = Wsd2avg_2 / length(Wsd2avg_2);
 
 //-------------------------------------------------------------
 // Sign-sign.
 //-------------------------------------------------------------
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// a(1) = 0.1, a(2) = -0.8, and sigmaV^2 = 0.25.
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Initialize running sums.
+Wss1avg_1 = 0;
+Wss1avg_2 = 0;
+
+// Generate error sequences.
+for j = 1:2
+  // Generate reference signal looking at this as an FIR filter.
+  d = filterBlock(X1(:,j),a1(2:$),0);
+
+  [Wss1_1,Ess1_1(:,j)] = lms_signSign(X1(:,j),d,mu1,2);
+  [Wss1_2,Ess1_2(:,j)] = lms_signSign(X1(:,j),d,mu2,2);
+
+  // Update running sums.
+  Wss1avg_1 = Wss1avg_1 + Wss1_1($,1:2);
+  Wss1avg_2 = Wss1avg_2 + Wss1_2($,1:2);
+end
+
+// Compute squared error.
+Ess1Sq_1 = Ess1_1 .* Ess1_1;
+Ess1Sq_2 = Ess1_2 .* Ess1_2;
+
+// Compute learning curves.
+for j = 401:500
+  Ess1avg_1(j) = sum(Ess1Sq_1(j,:));
+  Ess1avg_2(j) = sum(Ess1Sq_2(j,:));
+end
+
+// Compute average frequency estimates.
+Wss1avg_1 = Wss1avg_1 / length(Wss1avg_1);
+Wss1avg_2 = Wss1avg_2 / length(Wss1avg_2);
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// a(1) = 0.1, a(2) = -0.8, and sigmaV^2 = 0.25.
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Initialize running sums.
+Wss2avg_1 = 0;
+Wss2avg_2 = 0;
+
+// Generate error sequences.
+for j = 1:2
+  // Generate reference signal looking at this as an FIR filter.
+  d = filterBlock(X2(:,j),a2(2:$),0);
+
+  [Wss2_1,Ess2_1(:,j)] = lms_signSign(X2(:,j),d,mu1,2);
+  [Wss2_2,Ess2_2(:,j)] = lms_signSign(X2(:,j),d,mu2,2);
+
+  // Update running sums.
+  Wss2avg_1 = Wss2avg_1 + Wss2_1($,1:2);
+  Wss2avg_2 = Wss2avg_2 + Wsd2_2($,1:2);
+end
+
+// Compute squared error.
+Ess2Sq_1 = Ess2_1 .* Ess2_1;
+Ess2Sq_2 = Ess2_2 .* Ess2_2;
+
+// Compute learning curves.
+for j = 401:500
+  Ess2avg_1(j) = sum(Ess2Sq_1(j,:));
+  Ess2avg_2(j) = sum(Ess2Sq_2(j,:));
+end
+
+// Compute average frequency estimates.
+Wss2avg_1 = Wss2avg_1 / length(Wss2avg_1);
+Wss2avg_2 = Wss2avg_2 / length(Wss2avg_2);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
