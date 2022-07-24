@@ -61,7 +61,7 @@ for j = 1:2
 end
 
 // Compute learning curves.
-for j = 1:500
+for j = 401:500
   E1avg_1(j) = sum(E1_1(j,:));
   E1avg_2(j) = sum(E1_2(j,:));
 end
@@ -97,7 +97,7 @@ for j = 1:2
 end
 
 // Compute learning curves.
-for j = 1:500
+for j = 401:500
   E2avg_1(j) = sum(E2_1(j,:));
   E2avg_2(j) = sum(E2_2(j,:));
 end
