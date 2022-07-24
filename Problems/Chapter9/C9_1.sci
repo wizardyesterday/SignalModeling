@@ -368,5 +368,151 @@ Wss2avg_2 = Wss2avg_2 / length(Wss2avg_2);
 // Plot results.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-//scf(1);
+//------------------------------------------------------
+// Parts (b) and (d).
+//------------------------------------------------------
+scf(1);
+
+subplot(421);
+title('LMS Coefficients, a = [1 0.1 0.8], mu = 0.05');
+plot(W1_1);
+
+subplot(422);
+title('LMS Coefficients, a = [1 0.1 0.8], mu = 0.01');
+plot(W1_2);
+
+subplot(423);
+title('Mean-square error, a = [1 0.1 0.8], mu = 0.05');
+plot(E1Sq_1);
+
+subplot(424);
+title('Mean-square error, a = [1 0.1 0.8], mu = 0.01');
+plot(E1Sq_2);
+
+subplot(425);
+title('LMS Coefficients, a = [1 0.1 -0.8], mu = 0.05');
+plot(W2_1);
+
+subplot(426);
+title('LMS Coefficients, a = [1 0.1 0.8], mu = 0.01');
+plot(W2_2);
+
+subplot(427);
+title('Mean-square error, a = [1 0.1 0.8], mu = 0.05');
+plot(E2Sq_1);
+
+subplot(428);
+title('Mean-square error, a = [1 0.1 0.8], mu = 0.01');
+plot(E1Sq_2);
+
+//------------------------------------------------------
+// Part (e), Sign-Error.
+//------------------------------------------------------
+scf(2);
+
+subplot(421);
+title('LMS Coefficients, Sign-Error, a = [1 0.1 0.8], mu = 0.05');
+plot(Wse1_1);
+
+subplot(422);
+title('LMS Coefficients, Sign-Error, a = [1 0.1 0.8], mu = 0.01');
+plot(Wse1_2);
+
+subplot(423);
+title('Mean-square error, Sign-Error, a = [1 0.1 0.8], mu = 0.05');
+plot(Ese1Sq_1);
+
+subplot(424);
+title('Mean-square error, Sign-Error, a = [1 0.1 0.8], mu = 0.01');
+plot(Ese1Sq_2);
+
+subplot(425);
+title('LMS Coefficients, Sign-Error, a = [1 0.1 -0.8], mu = 0.05');
+plot(Wse2_1);
+
+subplot(426);
+title('LMS Coefficients, Sign-Error, a = [1 0.1 0.8], mu = 0.01');
+plot(Wse2_2);
+
+subplot(427);
+title('Mean-square error, Sign-Error, a = [1 0.1 0.8], mu = 0.05');
+plot(Ese2Sq_1);
+
+subplot(428);
+title('Mean-square error, Sign-Error a = [1 0.1 0.8], mu = 0.01');
+plot(Ese2Sq_2);
+
+//------------------------------------------------------
+// Part (e), Sign-Data.
+//------------------------------------------------------
+scf(3);
+
+subplot(421);
+title('LMS Coefficients, Sign-Data, a = [1 0.1 0.8], mu = 0.05');
+plot(Wsd1_1);
+
+subplot(422);
+title('LMS Coefficients, Sign-Data, a = [1 0.1 0.8], mu = 0.01');
+plot(Wsd1_2);
+
+subplot(423);
+title('Mean-square error, Sign-Data, a = [1 0.1 0.8], mu = 0.05');
+plot(Esd1Sq_1);
+
+subplot(424);
+title('Mean-square error, Sign-Data, a = [1 0.1 0.8], mu = 0.01');
+plot(Esd1Sq_2);
+
+subplot(425);
+title('LMS Coefficients, Sign-Data, a = [1 0.1 -0.8], mu = 0.05');
+plot(Wsd2_1);
+
+subplot(426);
+title('LMS Coefficients, Sign-Data, a = [1 0.1 0.8], mu = 0.01');
+plot(Wsd2_2);
+
+subplot(427);
+title('Mean-square error, Sign-Data, a = [1 0.1 0.8], mu = 0.05');
+plot(Esd2Sq_1);
+
+subplot(428);
+title('Mean-square error, Sign-Data, a = [1 0.1 0.8], mu = 0.01');
+plot(Esd2Sq_2);
+
+//------------------------------------------------------
+// Part (e), Sign-Sign.
+//------------------------------------------------------
+scf(4);
+
+subplot(421);
+title('LMS Coefficients, Sign-Sign, a = [1 0.1 0.8], mu = 0.05');
+plot(Wss1_1);
+
+subplot(422);
+title('LMS Coefficients, Sign-Sign, a = [1 0.1 0.8], mu = 0.01');
+plot(Wss1_2);
+
+subplot(423);
+title('Mean-square error, Sign-Sign, a = [1 0.1 0.8], mu = 0.05');
+plot(Ess1Sq_1);
+
+subplot(424);
+title('Mean-square error, Sign-Sign, a = [1 0.1 0.8], mu = 0.01');
+plot(Ess1Sq_2);
+
+subplot(425);
+title('LMS Coefficients, Sign-Sign, a = [1 0.1 -0.8], mu = 0.05');
+plot(Wss2_1);
+
+subplot(426);
+title('LMS Coefficients, Sign-Sign, a = [1 0.1 0.8], mu = 0.01');
+plot(Wss2_2);
+
+subplot(427);
+title('Mean-square error, Sign-Sign, a = [1 0.1 0.8], mu = 0.05');
+plot(Ess2Sq_1);
+
+subplot(428);
+title('Mean-square error, Sign-Sign, a = [1 0.1 0.8], mu = 0.01');
+plot(Ess2Sq_2);
 
