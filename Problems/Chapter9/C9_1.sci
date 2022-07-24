@@ -8,7 +8,10 @@ exec('utils.sci',-1);
 //**********************************************************************
 // Mainline code.
 //**********************************************************************
-// Set variances.
+// Set number of realizations.
+N = 100;
+
+// Set variance.
 sigmavSq = 0.25;
 
 // Initialize white noise generator.
@@ -25,7 +28,7 @@ mu2 = 0.01;
 //----------------------------------------
 // Generate AR(2) processes.
 //----------------------------------------
-for j = 1:2
+for j = 1:N
   // Generate the noise.
   v = feval([1:500],Noise);
 
@@ -48,7 +51,7 @@ W1avg_1 = 0;
 W1avg_2 = 0;
 
 // Generate error sequences.
-for j = 1:2
+for j = 1:N
   // Generate reference signal looking at this as an FIR filter.
   d = filterBlock(X1(:,j),a1(2:$),0);
 
@@ -92,7 +95,7 @@ W2avg_1 = 0;
 W2avg_2 = 0;
 
 // Generate error sequences.
-for j = 1:2
+for j = 1:N
   // Generate reference signal looking at this as an FIR filter.
   d = filterBlock(X2(:,j),a2(2:$),0);
 
@@ -138,7 +141,7 @@ Wse1avg_1 = 0;
 Wse1avg_2 = 0;
 
 // Generate error sequences.
-for j = 1:2
+for j = 1:N
   // Generate reference signal looking at this as an FIR filter.
   d = filterBlock(X1(:,j),a1(2:$),0);
 
@@ -176,7 +179,7 @@ Wse2avg_1 = 0;
 Wse2avg_2 = 0;
 
 // Generate error sequences.
-for j = 1:2
+for j = 1:N
   // Generate reference signal looking at this as an FIR filter.
   d = filterBlock(X2(:,j),a2(2:$),0);
 
@@ -217,7 +220,7 @@ Wsd1avg_1 = 0;
 Wsd1avg_2 = 0;
 
 // Generate error sequences.
-for j = 1:2
+for j = 1:N
   // Generate reference signal looking at this as an FIR filter.
   d = filterBlock(X1(:,j),a1(2:$),0);
 
@@ -255,7 +258,7 @@ Wsd2avg_1 = 0;
 Wsd2avg_2 = 0;
 
 // Generate error sequences.
-for j = 1:2
+for j = 1:N
   // Generate reference signal looking at this as an FIR filter.
   d = filterBlock(X2(:,j),a2(2:$),0);
 
@@ -296,7 +299,7 @@ Wss1avg_1 = 0;
 Wss1avg_2 = 0;
 
 // Generate error sequences.
-for j = 1:2
+for j = 1:N
   // Generate reference signal looking at this as an FIR filter.
   d = filterBlock(X1(:,j),a1(2:$),0);
 
@@ -334,7 +337,7 @@ Wss2avg_1 = 0;
 Wss2avg_2 = 0;
 
 // Generate error sequences.
-for j = 1:2
+for j = 1:N
   // Generate reference signal looking at this as an FIR filter.
   d = filterBlock(X2(:,j),a2(2:$),0);
 
