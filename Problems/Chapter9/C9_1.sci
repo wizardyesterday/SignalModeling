@@ -70,6 +70,10 @@ for j = 401:500
   E1avg_2(j) = sum(E1Sq_2(j,:));
 end
 
+// Compute average values.
+E1avg_1 = E1avg_1 / 100;
+E1avg_2 = E1avg_2 / 100;
+
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (c): Estimate the steady-state values of the adaptive
 // filter coefficients for step sizes of mu = 0.05 and 0.01.
@@ -109,6 +113,10 @@ for j = 401:500
   E2avg_1(j) = sum(E2Sq_1(j,:));
   E2avg_2(j) = sum(E2Sq_2(j,:));
 end
+
+// Compute average values.
+E2avg_1 = E2avg_1 / 100;
+E2avg_2 = E2avg_2 / 100;
 
 // Compute average frequency estimates.
 W2avg_1 = W2avg_1 / length(W2avg_1);
@@ -152,6 +160,10 @@ for j = 401:500
   Ese1avg_2(j) = sum(Ese1Sq_2(j,:));
 end
 
+// Compute average values.
+Ese1avg_1 = Ese1avg_1 / 100;
+Ese1avg_2 = Ese1avg_2 / 100;
+
 // Compute average frequency estimates.
 Wse1avg_1 = Wse1avg_1 / length(Wse1avg_1);
 Wse1avg_2 = Wse1avg_2 / length(Wse1avg_2);
@@ -185,6 +197,10 @@ for j = 401:500
   Ese2avg_1(j) = sum(Ese2Sq_1(j,:));
   Ese2avg_2(j) = sum(Ese2Sq_2(j,:));
 end
+
+// Compute average values.
+Ese2avg_1 = Ese2avg_1 / 100;
+Ese2avg_2 = Ese2avg_2 / 100;
 
 // Compute average frequency estimates.
 Wse2avg_1 = Wse2avg_1 / length(Wse2avg_1);
@@ -223,6 +239,10 @@ for j = 401:500
   Esd1avg_2(j) = sum(Esd1Sq_2(j,:));
 end
 
+// Compute average values.
+Esd1avg_1 = Esd1avg_1 / 100;
+Esd1avg_2 = Esd1avg_2 / 100;
+
 // Compute average frequency estimates.
 Wsd1avg_1 = Wsd1avg_1 / length(Wsd1avg_1);
 Wsd1avg_2 = Wsd1avg_2 / length(Wsd1avg_2);
@@ -256,6 +276,10 @@ for j = 401:500
   Esd2avg_1(j) = sum(Esd2Sq_1(j,:));
   Esd2avg_2(j) = sum(Esd2Sq_2(j,:));
 end
+
+// Compute average values.
+Esd2avg_1 = Esd2avg_1 / 100;
+Esd2avg_2 = Esd2avg_2 / 100;
 
 // Compute average frequency estimates.
 Wsd2avg_1 = Wsd2avg_1 / length(Wsd2avg_1);
@@ -294,6 +318,10 @@ for j = 401:500
   Ess1avg_2(j) = sum(Ess1Sq_2(j,:));
 end
 
+// Compute average values.
+Ess1avg_1 = Ess1avg_1 / 100;
+Ess1avg_2 = Ess1avg_2 / 100;
+
 // Compute average frequency estimates.
 Wss1avg_1 = Wss1avg_1 / length(Wss1avg_1);
 Wss1avg_2 = Wss1avg_2 / length(Wss1avg_2);
@@ -327,6 +355,10 @@ for j = 401:500
   Ess2avg_1(j) = sum(Ess2Sq_1(j,:));
   Ess2avg_2(j) = sum(Ess2Sq_2(j,:));
 end
+
+// Compute average values.
+Ess2avg_1 = Ess2avg_1 / 100;
+Ess2avg_2 = Ess2avg_2 / 100;
 
 // Compute average frequency estimates.
 Wss2avg_1 = Wss2avg_1 / length(Wss2avg_1);
