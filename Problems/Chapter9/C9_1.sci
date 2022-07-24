@@ -83,8 +83,8 @@ E1avg_2 = E1avg_2 / 100;
 // Note that running sums were computed in Part (b).
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Compute average frequency estimates.
-W1avg_1 = W1avg_1 / length(W1avg_1);
-W1avg_2 = W1avg_2 / length(W1avg_2);
+W1avg_1 = W1avg_1 / N;
+W1avg_2 = W1avg_2 / N;
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (d): Repeat the experiments in parts (b) and (c) with
@@ -122,8 +122,8 @@ E2avg_1 = E2avg_1 / 100;
 E2avg_2 = E2avg_2 / 100;
 
 // Compute average frequency estimates.
-W2avg_1 = W2avg_1 / length(W2avg_1);
-W2avg_2 = W2avg_2 / length(W2avg_2);
+W2avg_1 = W2avg_1 / N;
+W2avg_2 = W2avg_2 / N;
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (e): Repeat the above exercises using the sign-error,
@@ -168,8 +168,8 @@ Ese1avg_1 = Ese1avg_1 / 100;
 Ese1avg_2 = Ese1avg_2 / 100;
 
 // Compute average frequency estimates.
-Wse1avg_1 = Wse1avg_1 / length(Wse1avg_1);
-Wse1avg_2 = Wse1avg_2 / length(Wse1avg_2);
+Wse1avg_1 = Wse1avg_1 / N;
+Wse1avg_2 = Wse1avg_2 / N;
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // a(1) = 0.1, a(2) = -0.8, and sigmaV^2 = 0.25.
@@ -206,8 +206,8 @@ Ese2avg_1 = Ese2avg_1 / 100;
 Ese2avg_2 = Ese2avg_2 / 100;
 
 // Compute average frequency estimates.
-Wse2avg_1 = Wse2avg_1 / length(Wse2avg_1);
-Wse2avg_2 = Wse2avg_2 / length(Wse2avg_2);
+Wse2avg_1 = Wse2avg_1 / N;
+Wse2avg_2 = Wse2avg_2 / N;
 
 //-------------------------------------------------------------
 // Sign-data.
@@ -247,8 +247,8 @@ Esd1avg_1 = Esd1avg_1 / 100;
 Esd1avg_2 = Esd1avg_2 / 100;
 
 // Compute average frequency estimates.
-Wsd1avg_1 = Wsd1avg_1 / length(Wsd1avg_1);
-Wsd1avg_2 = Wsd1avg_2 / length(Wsd1avg_2);
+Wsd1avg_1 = Wsd1avg_1 / N;
+Wsd1avg_2 = Wsd1avg_2 / N;
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // a(1) = 0.1, a(2) = -0.8, and sigmaV^2 = 0.25.
@@ -285,8 +285,8 @@ Esd2avg_1 = Esd2avg_1 / 100;
 Esd2avg_2 = Esd2avg_2 / 100;
 
 // Compute average frequency estimates.
-Wsd2avg_1 = Wsd2avg_1 / length(Wsd2avg_1);
-Wsd2avg_2 = Wsd2avg_2 / length(Wsd2avg_2);
+Wsd2avg_1 = Wsd2avg_1 / N;
+Wsd2avg_2 = Wsd2avg_2 / N;
 
 //-------------------------------------------------------------
 // Sign-sign.
@@ -326,8 +326,8 @@ Ess1avg_1 = Ess1avg_1 / 100;
 Ess1avg_2 = Ess1avg_2 / 100;
 
 // Compute average frequency estimates.
-Wss1avg_1 = Wss1avg_1 / length(Wss1avg_1);
-Wss1avg_2 = Wss1avg_2 / length(Wss1avg_2);
+Wss1avg_1 = Wss1avg_1 / N;
+Wss1avg_2 = Wss1avg_2 / N;
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // a(1) = 0.1, a(2) = -0.8, and sigmaV^2 = 0.25.
@@ -364,8 +364,8 @@ Ess2avg_1 = Ess2avg_1 / 100;
 Ess2avg_2 = Ess2avg_2 / 100;
 
 // Compute average frequency estimates.
-Wss2avg_1 = Wss2avg_1 / length(Wss2avg_1);
-Wss2avg_2 = Wss2avg_2 / length(Wss2avg_2);
+Wss2avg_1 = Wss2avg_1 / N;
+Wss2avg_2 = Wss2avg_2 / N;
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
