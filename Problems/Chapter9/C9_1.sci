@@ -60,10 +60,14 @@ for j = 1:2
   W1avg_2 = W1avg_2 + W1_2($,1:2);
 end
 
+// Compute squared error.
+E1Sq_1 = E1_1 .* E1_1;
+E1Sq_2 = E1_2 .* E1_2;
+
 // Compute learning curves.
 for j = 401:500
-  E1avg_1(j) = sum(E1_1(j,:));
-  E1avg_2(j) = sum(E1_2(j,:));
+  E1avg_1(j) = sum(E1Sq_1(j,:));
+  E1avg_2(j) = sum(E1Sq_2(j,:));
 end
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -96,10 +100,14 @@ for j = 1:2
   W2avg_2 = W2avg_2 + W2_2($,1:2);
 end
 
+// Compute squared error.
+E2Sq_1 = E2_1 .* E2_1;
+E2Sq_2 = E2_2 .* E2_2;
+
 // Compute learning curves.
 for j = 401:500
-  E2avg_1(j) = sum(E2_1(j,:));
-  E2avg_2(j) = sum(E2_2(j,:));
+  E2avg_1(j) = sum(E2Sq_1(j,:));
+  E2avg_2(j) = sum(E2Sq_2(j,:));
 end
 
 // Compute average frequency estimates.
