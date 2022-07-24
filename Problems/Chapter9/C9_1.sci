@@ -11,7 +11,7 @@ exec('utils.sci',-1);
 // Set variances.
 sigmavSq = 0.25;
 
-// Initialize white noise generator with unit variance.
+// Initialize white noise generator.
 noisegen(1,500,sqrt(sigmavSq));
 
 // Set AR(2) filter coefficients.
