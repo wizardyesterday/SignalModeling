@@ -43,13 +43,21 @@ end
 // by time-averaging over the final iterations of the ensemble-
 // average learning curves.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Initialize running sums.
+W1avg_1 = 0;
+W1avg_2 = 0;
+
 // Generate error sequences.
 for j = 1:2
   // Generate reference signal looking at this as an FIR filter.
-  d1 = filterBlock(X1(:,j),a1(2:$),0);
+  d = filterBlock(X1(:,j),a1(2:$),0);
 
-  [W1_1,E1_1(:,j)] = lms(X1(:,j),d1,mu1,2);
-  [W1_2,E1_2(:,j)] = lms(X1(:,j),d1,mu2,2);
+  [W1_1,E1_1(:,j)] = lms(X1(:,j),d,mu1,2);
+  [W1_2,E1_2(:,j)] = lms(X1(:,j),d,mu2,2);
+
+  // Update running sums.
+  W1avg_1 = W1avg_1 + W1_1($,1:2);
+  W1avg_2 = W1avg_2 + W1_2($,1:2);
 end
 
 // Compute learning curves.
@@ -59,8 +67,44 @@ for j = 1:500
 end
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (c): 
+// Part (c): Estimate the steady-state values of the adaptive
+// filter coefficients for step sizes of mu = 0.05 and 0.01.
+// Note that running sums were computed in Part (b).
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Compute average frequency estimates.
+W1avg_1 = W1avg_1 / length(W1avg_1);
+W1avg_2 = W1avg_2 / length(W1avg_2);
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (c): Repeat the experiments in parts (b) and (c) with
+// a(1) = 0.1, a(2) = -0.8, and sigmaV^2 = 0.25.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Initialize running sums.
+W2avg_1 = 0;
+W2avg_2 = 0;
+
+// Generate error sequences.
+for j = 1:2
+  // Generate reference signal looking at this as an FIR filter.
+  d = filterBlock(X2(:,j),a2(2:$),0);
+
+  [W2_1,E2_1(:,j)] = lms(X2(:,j),d,mu1,2);
+  [W2_2,E2_2(:,j)] = lms(X2(:,j),d,mu2,2);
+
+  // Update running sums.
+  W2avg_1 = W2avg_1 + W2_1($,1:2);
+  W2avg_2 = W2avg_2 + W2_2($,1:2);
+end
+
+// Compute learning curves.
+for j = 1:500
+  E2avg_1(j) = sum(E2_1(j,:));
+  E2avg_2(j) = sum(E2_2(j,:));
+end
+
+// Compute average frequency estimates.
+W2avg_1 = W2avg_1 / length(W2avg_1);
+W2avg_2 = W2avg_2 / length(W2avg_2);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
