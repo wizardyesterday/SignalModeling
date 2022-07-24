@@ -80,7 +80,7 @@ W1avg_1 = W1avg_1 / length(W1avg_1);
 W1avg_2 = W1avg_2 / length(W1avg_2);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (c): Repeat the experiments in parts (b) and (c) with
+// Part (d): Repeat the experiments in parts (b) and (c) with
 // a(1) = 0.1, a(2) = -0.8, and sigmaV^2 = 0.25.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Initialize running sums.
@@ -115,13 +115,80 @@ W2avg_1 = W2avg_1 / length(W2avg_1);
 W2avg_2 = W2avg_2 / length(W2avg_2);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (c): Repeat the above exercises using the sign-error,
+// Part (e): Repeat the above exercises using the sign-error,
 // sign-data, and sign-sign algorithms.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //-------------------------------------------------------------
 // Sign-error.
 //-------------------------------------------------------------
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// a(1) = 0.1, a(2) = -0.8, and sigmaV^2 = 0.25.
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Initialize running sums.
+Wse1avg_1 = 0;
+Wse1avg_2 = 0;
+
+// Generate error sequences.
+for j = 1:2
+  // Generate reference signal looking at this as an FIR filter.
+  d = filterBlock(X1(:,j),a1(2:$),0);
+
+  [Wse1_1,Ese1_1(:,j)] = lms_signError(X1(:,j),d,mu1,2);
+  [Wse1_2,Ese1_2(:,j)] = lms_signError(X1(:,j),d,mu2,2);
+
+  // Update running sums.
+  Wse1avg_1 = Wse1avg_1 + Wse1_1($,1:2);
+  Wse1avg_2 = Wse1avg_2 + Wse1_2($,1:2);
+end
+
+// Compute squared error.
+Ese1Sq_1 = Ese1_1 .* Ese1_1;
+Ese1Sq_2 = Ese1_2 .* Ese1_2;
+
+// Compute learning curves.
+for j = 401:500
+  Ese1avg_1(j) = sum(Ese1Sq_1(j,:));
+  Ese1avg_2(j) = sum(Ese1Sq_2(j,:));
+end
+
+// Compute average frequency estimates.
+Wse1avg_1 = Wse1avg_1 / length(Wse1avg_1);
+Wse1avg_2 = Wse1avg_2 / length(Wse1avg_2);
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// a(1) = 0.1, a(2) = -0.8, and sigmaV^2 = 0.25.
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Initialize running sums.
+Wse2avg_1 = 0;
+Wse2avg_2 = 0;
+
+// Generate error sequences.
+for j = 1:2
+  // Generate reference signal looking at this as an FIR filter.
+  d = filterBlock(X2(:,j),a2(2:$),0);
+
+  [Wse2_1,Ese2_1(:,j)] = lms_signError(X2(:,j),d,mu1,2);
+  [Wse2_2,Ese2_2(:,j)] = lms_signError(X2(:,j),d,mu2,2);
+
+  // Update running sums.
+  Wse2avg_1 = Wse2avg_1 + Wse2_1($,1:2);
+  Wse2avg_2 = Wse2avg_2 + Wse2_2($,1:2);
+end
+
+// Compute squared error.
+Ese2Sq_1 = Ese2_1 .* Ese2_1;
+Ese2Sq_2 = Ese2_2 .* Ese2_2;
+
+// Compute learning curves.
+for j = 401:500
+  Ese2avg_1(j) = sum(Ese2Sq_1(j,:));
+  Ese2avg_2(j) = sum(Ese2Sq_2(j,:));
+end
+
+// Compute average frequency estimates.
+Wse2avg_1 = Wse2avg_1 / length(Wse2avg_1);
+Wse2avg_2 = Wse2avg_2 / length(Wse2avg_2);
 
 //-------------------------------------------------------------
 // Sign-data.
@@ -130,7 +197,6 @@ W2avg_2 = W2avg_2 / length(W2avg_2);
 //-------------------------------------------------------------
 // Sign-sign.
 //-------------------------------------------------------------
-
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
