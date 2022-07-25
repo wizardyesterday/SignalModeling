@@ -9,7 +9,7 @@ exec('utils.sci',-1);
 // Mainline code.
 //**********************************************************************
 // Set number of realizations.
-N = 1;
+N = 100;
 
 // Set variance.
 sigmavSq = 0.25;
@@ -397,15 +397,15 @@ title('LMS Coefficients, a = [1 0.1 -0.8], mu = 0.05');
 plot(W2_1);
 
 subplot(426);
-title('LMS Coefficients, a = [1 0.1 0.8], mu = 0.01');
+title('LMS Coefficients, a = [1 0.1 -0.8], mu = 0.01');
 plot(W2_2);
 
 subplot(427);
-title('Mean-square error, a = [1 0.1 0.8], mu = 0.05');
+title('Mean-square error, a = [1 0.1 -0.8], mu = 0.05');
 plot(E2Sq_1(:,N));
 
 subplot(428);
-title('Mean-square error, a = [1 0.1 0.8], mu = 0.01');
+title('Mean-square error, a = [1 0.1 -0.8], mu = 0.01');
 plot(E1Sq_2(:,N));
 
 //------------------------------------------------------
@@ -434,15 +434,15 @@ title('LMS Coefficients, Sign-Error, a = [1 0.1 -0.8], mu = 0.05');
 plot(Wse2_1);
 
 subplot(426);
-title('LMS Coefficients, Sign-Error, a = [1 0.1 0.8], mu = 0.01');
+title('LMS Coefficients, Sign-Error, a = [1 0.1 -0.8], mu = 0.01');
 plot(Wse2_2);
 
 subplot(427);
-title('Mean-square error, Sign-Error, a = [1 0.1 0.8], mu = 0.05');
+title('Mean-square error, Sign-Error, a = [1 0.1 -0.8], mu = 0.05');
 plot(Ese2Sq_1(:,N));
 
 subplot(428);
-title('Mean-square error, Sign-Error a = [1 0.1 0.8], mu = 0.01');
+title('Mean-square error, Sign-Error a = [1 0.1 -0.8], mu = 0.01');
 plot(Ese2Sq_2(:,N));
 
 //------------------------------------------------------
@@ -471,15 +471,15 @@ title('LMS Coefficients, Sign-Data, a = [1 0.1 -0.8], mu = 0.05');
 plot(Wsd2_1);
 
 subplot(426);
-title('LMS Coefficients, Sign-Data, a = [1 0.1 0.8], mu = 0.01');
+title('LMS Coefficients, Sign-Data, a = [1 0.1 -0.8], mu = 0.01');
 plot(Wsd2_2);
 
 subplot(427);
-title('Mean-square error, Sign-Data, a = [1 0.1 0.8], mu = 0.05');
+title('Mean-square error, Sign-Data, a = [1 0.1 -0.8], mu = 0.05');
 plot(Esd2Sq_1(:,N));
 
 subplot(428);
-title('Mean-square error, Sign-Data, a = [1 0.1 0.8], mu = 0.01');
+title('Mean-square error, Sign-Data, a = [1 0.1 -0.8], mu = 0.01');
 plot(Esd2Sq_2(:,N));
 
 //------------------------------------------------------
@@ -508,15 +508,85 @@ title('LMS Coefficients, Sign-Sign, a = [1 0.1 -0.8], mu = 0.05');
 plot(Wss2_1);
 
 subplot(426);
-title('LMS Coefficients, Sign-Sign, a = [1 0.1 0.8], mu = 0.01');
+title('LMS Coefficients, Sign-Sign, a = [1 0.1 -0.8], mu = 0.01');
 plot(Wss2_2);
 
 subplot(427);
-title('Mean-square error, Sign-Sign, a = [1 0.1 0.8], mu = 0.05');
+title('Mean-square error, Sign-Sign, a = [1 0.1 -0.8], mu = 0.05');
 plot(Ess2Sq_1(:,N));
 
 subplot(428);
-title('Mean-square error, Sign-Sign, a = [1 0.1 0.8], mu = 0.01');
+title('Mean-square error, Sign-Sign, a = [1 0.1 -0.8], mu = 0.01');
 plot(Ess2Sq_2(:,N));
 
+//------------------------------------------------------
+// Plot learning curves.
+//------------------------------------------------------
+scf(5)
+
+subplot(421)
+title('Learning curve, LMS, a = [1 0.1 0.8], mu = 0.05');
+plot(E1SqAvg_1);
+
+subplot(422)
+title('Learning curve, LMS, a = [1 0.1 0.8], mu = 0.01'); 
+plot(E1SqAvg_2);
+
+subplot(423)
+title('Learning curve, LMS, a = [1 0.1 -0.8], mu = 0.05'); 
+plot(E2SqAvg_1);
+
+subplot(424)
+title('Learning curve, LMS, a = [1 0.1 -0.8], mu = 0.01');
+plot(E2SqAvg_2);
+
+subplot(425);
+title('Learning curve, Sign-Error, a = [1 0.1 0.8], mu = 0.05'); 
+plot(Ese1SqAvg_1);
+
+subplot(426);
+title('Learning curve, Sign-Error, a = [1 0.1 0.8], mu = 0.01'); 
+plot(Ese1SqAvg_2);
+
+subplot(427);
+title('Learning curve, Sign-Error, a = [1 0.1 -0.8], mu = 0.05'); 
+plot(Ese2SqAvg_1);
+
+subplot(428);
+title('Learning curve, Sign-Error, a = [1 0.1 -0.8], mu = 0.01');
+plot(Ese2SqAvg_2);
+
+scf(6);
+
+subplot(421)
+title('Learning curve, Sign-Data, a = [1 0.1 0.8], mu = 0.05'); 
+plot(Esd1SqAvg_1);
+
+subplot(422)
+title('Learning curve, Sign-Data, a = [1 0.1 0.8], mu = 0.01'); 
+plot(Esd1SqAvg_2);
+
+subplot(423)
+title('Learning curve, Sign-Data, a = [1 0.1 -0.8], mu = 0.05'); 
+plot(Esd2SqAvg_1);
+
+subplot(424)
+title('Learning curve, Sign-Data, a = [1 0.1 -0.8], mu = 0.01');
+plot(Esd2SqAvg_2);
+
+subplot(425);
+title('Learning curve, Sign-Sign, a = [1 0.1 0.8], mu = 0.05'); 
+plot(Ess1SqAvg_1);
+
+subplot(426);
+title('Learning curve, Sign-Sign, a = [1 0.1 0.8], mu = 0.01'); 
+plot(Ess1SqAvg_2);
+
+subplot(427);
+title('Learning curve, Sign-Sign, a = [1 0.1 -0.8], mu = 0.05'); 
+plot(Ess2SqAvg_1);
+
+subplot(428);
+title('Learning curve, Sign-Sign, a = [1 0.1 -0.8], mu = 0.01');
+plot(Ess2SqAvg_2);
 
