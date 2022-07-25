@@ -9,7 +9,7 @@ exec('utils.sci',-1);
 // Mainline code.
 //**********************************************************************
 // Set number of realizations.
-N = 100;
+N = 1;
 
 // Set variance.
 sigmavSq = 0.25;
@@ -67,15 +67,15 @@ end
 E1Sq_1 = E1_1 .* E1_1;
 E1Sq_2 = E1_2 .* E1_2;
 
-// Compute learning curves.
-for j = 401:500
-  E1avg_1(j) = sum(E1Sq_1(j,:));
-  E1avg_2(j) = sum(E1Sq_2(j,:));
+// Compute ensemble averages.  This is the learning curve.
+for j = 1:500
+  E1SqAvg_1(j) = mean(E1Sq_1(j,:)); 
+  E1SqAvg_2(j) = mean(E1Sq_2(j,:)); 
 end
 
-// Compute average values.
-E1avg_1 = E1avg_1 / 100;
-E1avg_2 = E1avg_2 / 100;
+// Compute steady-state error.
+E1inf_1 = mean(E1SqAvg_1(401:500));
+E1inf_2 = mean(E1SqAvg_2(401:500));
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (c): Estimate the steady-state values of the adaptive
@@ -111,15 +111,15 @@ end
 E2Sq_1 = E2_1 .* E2_1;
 E2Sq_2 = E2_2 .* E2_2;
 
-// Compute learning curves.
-for j = 401:500
-  E2avg_1(j) = sum(E2Sq_1(j,:));
-  E2avg_2(j) = sum(E2Sq_2(j,:));
+// Compute ensemble averages.  This is the learning curve.
+for j = 1:500
+  E2SqAvg_1(j) = mean(E2Sq_1(j,:)); 
+  E2SqAvg_2(j) = mean(E2Sq_2(j,:)); 
 end
 
-// Compute average values.
-E2avg_1 = E2avg_1 / 100;
-E2avg_2 = E2avg_2 / 100;
+// Compute steady-state error.
+E2inf_1 = mean(E2SqAvg_1(401:500));
+E2inf_2 = mean(E2SqAvg_2(401:500));
 
 // Compute average frequency estimates.
 W2avg_1 = W2avg_1 / N;
@@ -157,15 +157,15 @@ end
 Ese1Sq_1 = Ese1_1 .* Ese1_1;
 Ese1Sq_2 = Ese1_2 .* Ese1_2;
 
-// Compute learning curves.
-for j = 401:500
-  Ese1avg_1(j) = sum(Ese1Sq_1(j,:));
-  Ese1avg_2(j) = sum(Ese1Sq_2(j,:));
+// Compute ensemble averages.  This is the learning curve.
+for j = 1:500
+  Ese1SqAvg_1(j) = mean(Ese1Sq_1(j,:)); 
+  Ese1SqAvg_2(j) = mean(Ese1Sq_2(j,:)); 
 end
 
-// Compute average values.
-Ese1avg_1 = Ese1avg_1 / 100;
-Ese1avg_2 = Ese1avg_2 / 100;
+// Compute steady-state error.
+Ese1inf_1 = mean(Ese1SqAvg_1(401:500));
+Ese1inf_2 = mean(Ese1SqAvg_2(401:500));
 
 // Compute average frequency estimates.
 Wse1avg_1 = Wse1avg_1 / N;
@@ -195,15 +195,15 @@ end
 Ese2Sq_1 = Ese2_1 .* Ese2_1;
 Ese2Sq_2 = Ese2_2 .* Ese2_2;
 
-// Compute learning curves.
-for j = 401:500
-  Ese2avg_1(j) = sum(Ese2Sq_1(j,:));
-  Ese2avg_2(j) = sum(Ese2Sq_2(j,:));
+// Compute ensemble averages.  This is the learning curve.
+for j = 1:500
+  Ese2SqAvg_1(j) = mean(Ese2Sq_1(j,:)); 
+  Ese2SqAvg_2(j) = mean(Ese2Sq_2(j,:)); 
 end
 
-// Compute average values.
-Ese2avg_1 = Ese2avg_1 / 100;
-Ese2avg_2 = Ese2avg_2 / 100;
+// Compute steady-state error.
+Ese2inf_1 = mean(Ese2SqAvg_1(401:500));
+Ese2inf_2 = mean(Ese2SqAvg_2(401:500));
 
 // Compute average frequency estimates.
 Wse2avg_1 = Wse2avg_1 / N;
@@ -236,15 +236,15 @@ end
 Esd1Sq_1 = Esd1_1 .* Esd1_1;
 Esd1Sq_2 = Esd1_2 .* Esd1_2;
 
-// Compute learning curves.
-for j = 401:500
-  Esd1avg_1(j) = sum(Esd1Sq_1(j,:));
-  Esd1avg_2(j) = sum(Esd1Sq_2(j,:));
+// Compute ensemble averages.  This is the learning curve.
+for j = 1:500
+  Esd1SqAvg_1(j) = mean(Esd1Sq_1(j,:)); 
+  Esd1SqAvg_2(j) = mean(Esd1Sq_2(j,:)); 
 end
 
-// Compute average values.
-Esd1avg_1 = Esd1avg_1 / 100;
-Esd1avg_2 = Esd1avg_2 / 100;
+// Compute steady-state error.
+Esd1inf_1 = mean(Esd1SqAvg_1(401:500));
+Esd1inf_2 = mean(Esd1SqAvg_2(401:500));
 
 // Compute average frequency estimates.
 Wsd1avg_1 = Wsd1avg_1 / N;
@@ -274,15 +274,15 @@ end
 Esd2Sq_1 = Esd2_1 .* Esd2_1;
 Esd2Sq_2 = Esd2_2 .* Esd2_2;
 
-// Compute learning curves.
-for j = 401:500
-  Esd2avg_1(j) = sum(Esd2Sq_1(j,:));
-  Esd2avg_2(j) = sum(Esd2Sq_2(j,:));
+// Compute ensemble averages.  This is the learning curve.
+for j = 1:500
+  Esd2SqAvg_1(j) = mean(Esd2Sq_1(j,:)); 
+  Esd2SqAvg_2(j) = mean(Esd2Sq_2(j,:)); 
 end
 
-// Compute average values.
-Esd2avg_1 = Esd2avg_1 / 100;
-Esd2avg_2 = Esd2avg_2 / 100;
+// Compute steady-state error.
+Esd2inf_1 = mean(Esd2SqAvg_1(401:500));
+Esd2inf_2 = mean(Esd2SqAvg_2(401:500));
 
 // Compute average frequency estimates.
 Wsd2avg_1 = Wsd2avg_1 / N;
@@ -315,15 +315,15 @@ end
 Ess1Sq_1 = Ess1_1 .* Ess1_1;
 Ess1Sq_2 = Ess1_2 .* Ess1_2;
 
-// Compute learning curves.
-for j = 401:500
-  Ess1avg_1(j) = sum(Ess1Sq_1(j,:));
-  Ess1avg_2(j) = sum(Ess1Sq_2(j,:));
+// Compute ensemble averages.  This is the learning curve.
+for j = 1:500
+  Ess1SqAvg_1(j) = mean(Ess1Sq_1(j,:)); 
+  Ess1SqAvg_2(j) = mean(Ess1Sq_2(j,:)); 
 end
 
-// Compute average values.
-Ess1avg_1 = Ess1avg_1 / 100;
-Ess1avg_2 = Ess1avg_2 / 100;
+// Compute steady-state error.
+Ess1inf_1 = mean(Ess1SqAvg_1(401:500));
+Ess1inf_2 = mean(Ess1SqAvg_2(401:500));
 
 // Compute average frequency estimates.
 Wss1avg_1 = Wss1avg_1 / N;
@@ -353,15 +353,15 @@ end
 Ess2Sq_1 = Ess2_1 .* Ess2_1;
 Ess2Sq_2 = Ess2_2 .* Ess2_2;
 
-// Compute learning curves.
-for j = 401:500
-  Ess2avg_1(j) = sum(Ess2Sq_1(j,:));
-  Ess2avg_2(j) = sum(Ess2Sq_2(j,:));
+// Compute ensemble averages.  This is the learning curve.
+for j = 1:500
+  Ess2SqAvg_1(j) = mean(Ess2Sq_1(j,:)); 
+  Ess2SqAvg_2(j) = mean(Ess2Sq_2(j,:)); 
 end
 
-// Compute average values.
-Ess2avg_1 = Ess2avg_1 / 100;
-Ess2avg_2 = Ess2avg_2 / 100;
+// Compute steady-state error.
+Ess2inf_1 = mean(Ess2SqAvg_1(401:500));
+Ess2inf_2 = mean(Ess2SqAvg_2(401:500));
 
 // Compute average frequency estimates.
 Wss2avg_1 = Wss2avg_1 / N;
@@ -386,11 +386,11 @@ plot(W1_2);
 
 subplot(423);
 title('Mean-square error, a = [1 0.1 0.8], mu = 0.05');
-plot(E1Sq_1);
+plot(E1Sq_1(:,N));
 
 subplot(424);
 title('Mean-square error, a = [1 0.1 0.8], mu = 0.01');
-plot(E1Sq_2);
+plot(E1Sq_2(:,N));
 
 subplot(425);
 title('LMS Coefficients, a = [1 0.1 -0.8], mu = 0.05');
@@ -402,11 +402,11 @@ plot(W2_2);
 
 subplot(427);
 title('Mean-square error, a = [1 0.1 0.8], mu = 0.05');
-plot(E2Sq_1);
+plot(E2Sq_1(:,N));
 
 subplot(428);
 title('Mean-square error, a = [1 0.1 0.8], mu = 0.01');
-plot(E1Sq_2);
+plot(E1Sq_2(:,N));
 
 //------------------------------------------------------
 // Part (e), Sign-Error.
@@ -423,11 +423,11 @@ plot(Wse1_2);
 
 subplot(423);
 title('Mean-square error, Sign-Error, a = [1 0.1 0.8], mu = 0.05');
-plot(Ese1Sq_1);
+plot(Ese1Sq_1(:,N));
 
 subplot(424);
 title('Mean-square error, Sign-Error, a = [1 0.1 0.8], mu = 0.01');
-plot(Ese1Sq_2);
+plot(Ese1Sq_2(:,N));
 
 subplot(425);
 title('LMS Coefficients, Sign-Error, a = [1 0.1 -0.8], mu = 0.05');
@@ -439,11 +439,11 @@ plot(Wse2_2);
 
 subplot(427);
 title('Mean-square error, Sign-Error, a = [1 0.1 0.8], mu = 0.05');
-plot(Ese2Sq_1);
+plot(Ese2Sq_1(:,N));
 
 subplot(428);
 title('Mean-square error, Sign-Error a = [1 0.1 0.8], mu = 0.01');
-plot(Ese2Sq_2);
+plot(Ese2Sq_2(:,N));
 
 //------------------------------------------------------
 // Part (e), Sign-Data.
@@ -460,11 +460,11 @@ plot(Wsd1_2);
 
 subplot(423);
 title('Mean-square error, Sign-Data, a = [1 0.1 0.8], mu = 0.05');
-plot(Esd1Sq_1);
+plot(Esd1Sq_1(:,N));
 
 subplot(424);
 title('Mean-square error, Sign-Data, a = [1 0.1 0.8], mu = 0.01');
-plot(Esd1Sq_2);
+plot(Esd1Sq_2(:,N));
 
 subplot(425);
 title('LMS Coefficients, Sign-Data, a = [1 0.1 -0.8], mu = 0.05');
@@ -476,11 +476,11 @@ plot(Wsd2_2);
 
 subplot(427);
 title('Mean-square error, Sign-Data, a = [1 0.1 0.8], mu = 0.05');
-plot(Esd2Sq_1);
+plot(Esd2Sq_1(:,N));
 
 subplot(428);
 title('Mean-square error, Sign-Data, a = [1 0.1 0.8], mu = 0.01');
-plot(Esd2Sq_2);
+plot(Esd2Sq_2(:,N));
 
 //------------------------------------------------------
 // Part (e), Sign-Sign.
@@ -497,11 +497,11 @@ plot(Wss1_2);
 
 subplot(423);
 title('Mean-square error, Sign-Sign, a = [1 0.1 0.8], mu = 0.05');
-plot(Ess1Sq_1);
+plot(Ess1Sq_1(:,N));
 
 subplot(424);
 title('Mean-square error, Sign-Sign, a = [1 0.1 0.8], mu = 0.01');
-plot(Ess1Sq_2);
+plot(Ess1Sq_2(:,N));
 
 subplot(425);
 title('LMS Coefficients, Sign-Sign, a = [1 0.1 -0.8], mu = 0.05');
@@ -513,9 +513,10 @@ plot(Wss2_2);
 
 subplot(427);
 title('Mean-square error, Sign-Sign, a = [1 0.1 0.8], mu = 0.05');
-plot(Ess2Sq_1);
+plot(Ess2Sq_1(:,N));
 
 subplot(428);
 title('Mean-square error, Sign-Sign, a = [1 0.1 0.8], mu = 0.01');
-plot(Ess2Sq_2);
+plot(Ess2Sq_2(:,N));
+
 
