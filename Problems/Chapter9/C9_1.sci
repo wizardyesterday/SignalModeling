@@ -9,7 +9,7 @@ exec('utils.sci',-1);
 // Mainline code.
 //**********************************************************************
 // Set number of realizations.
-N = 1;
+N = 100;
 
 // Set variance.
 sigmavSq = 0.25;
