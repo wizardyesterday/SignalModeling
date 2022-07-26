@@ -18,8 +18,8 @@ sigmavSq = 0.25;
 noisegen(1,500,sqrt(sigmavSq));
 
 // Set AR(2) filter coefficients.
-a1 = [1 .1 .8]';
-a2 = [1 .1 -.8]';
+a1 = [1 -0.1 -0.8]';
+a2 = [1 -0.1 .8]';
 
 // Set step sizes.
 mu1 = 0.05
