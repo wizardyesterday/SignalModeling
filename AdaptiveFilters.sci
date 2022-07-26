@@ -4,6 +4,41 @@
 
 //**********************************************************************
 //
+//  Name: computeLmsMisadjustment
+//
+//  The purpose of this function is to compute the theoretical LMS
+//  misadjustment given the eigenvalues of the autocorrelation matrix
+//  for a random process and the LMS step size parameter.
+//
+//  Calling Sequence: M = computeLmsMisadjustment(mu,lamda)
+//
+//  Inputs:
+//
+//    mu - The adaptive filtering update (step-size) parameter.
+//
+//    lamda - A vector of eigenvalues of the autocorrelation matrix
+//    for a random process.
+//    
+//  Outputs:
+//
+//    M - The LMS misadjustment.
+//
+//**********************************************************************
+function M = computeLmsMisadjustment(mu,lamda)
+
+  // Compute the summation portion of the denominator.
+  SUM = sum(lamda ./ (2 - mu * lamda));
+
+  // Complete computation of the denominator.
+  den = 1 - mu * SUM;
+
+  // Compute misadjustment.
+  M = 1 / den;
+
+endfunction
+
+//**********************************************************************
+//
 //  Name: lms
 //
 //  The purpose of this function is to perform adaptive filtering using
