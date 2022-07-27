@@ -429,6 +429,47 @@ function w = generateBipolarNoise(amplitude,numberOfSamples)
 
 endfunction
 
+//**********************************************************************
+//
+//  Name: generateGaussianProcess
+//
+//  Purpose: The purpose of this function is to generate a Gaussian
+// white noise process.
+//
+//  Calling Sequence: X = generateGaussianProcess(numberOfRealizations,
+//                                                numberOfSamples,
+//                                                sigmaSquared)
+//
+//  Inputs:
+//
+//    numberOfRealizations - The number of sample realizations in the
+//    process.
+//
+//    numberOfSampels - The number of samples in each realization.
+//
+//    sigmaSquared - The variance of the process.
+//
+//  Outputs:
+//
+//    X - A matrix of column vectors for which each column represents
+//    a sample realization of the process.  For example, if
+//    numberOfRealizations is equal to 8, and numberOfSamples is
+//    equal to 3, X will have 8 column vectors of length 3.
+//
+//**********************************************************************
+function X = generateGaussianProcess(numberOfRealizations, ...
+                                     numberOfSamples, ...
+                                     sigmaSquared)
+
+  for j = 1:numberOfRealizations
+    // Initialize sample realization.
+    noisegen(1,numberOfSamples,sqrt(sigmaSquared));
+
+    // Fill in sample realization.
+    X(:,j) = feval([1:numberOfSamples]',Noise);
+  end
+
+endfunction
 
 // Bring in the rest of the files.
 exec('SignalModeling.sci',-1);
