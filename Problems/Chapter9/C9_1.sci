@@ -14,8 +14,11 @@ N = 100;
 // Set variance.
 sigmavSq = 0.25;
 
-// Initialize white noise generator.
-noisegen(1,500,sqrt(sigmavSq));
+//------------------------------------------
+// Generate Gaussian random process.  We
+// want 100 realizations of length 500.
+//------------------------------------------
+X = generateGaussianProcess(N,500,sigmavSq);
 
 // Set AR(2) filter coefficients.
 a1 = [1 -0.1 -0.8]';
@@ -25,15 +28,30 @@ a2 = [1 -0.1 .8]';
 mu1 = 0.05
 mu2 = 0.01;
 
+// Generate autocorrelation sequences.
+r1 = ator(a1);
+r2 = ator(a2);
+
+// Construct autocorrelation matrices.
+R1 = toeplitz(r1);
+R2 = toeplitz(r2);
+
+// Compute eigenvalues.
+lamda1 = spec(R1);
+lamda2 = spec(R2);
+
+// Compute LMS misadjustments.
+M1_1 = computeLmsMisadjustment(mu1,lamda1);
+M1_2 = computeLmsMisadjustment(mu2,lamda1);
+M2_1 = computeLmsMisadjustment(mu1,lamda2);
+M2_2 = computeLmsMisadjustment(mu2,lamda2);
+
 //----------------------------------------
 // Generate AR(2) processes.
 //----------------------------------------
 for j = 1:N
-  // Generate the noise.
-  v = feval([1:500],Noise);
-
-  X1(:,j) = filterBlock(v,1,a1(2:$));
-  X2(:,j) = filterBlock(v,1,a2(2:$));
+  X1(:,j) = filterBlock(X(:,j),1,a1(2:$));
+  X2(:,j) = filterBlock(X(:,j),1,a2(2:$));
 end
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -346,7 +364,7 @@ for j = 1:N
 
   // Update running sums.
   Wss2avg_1 = Wss2avg_1 + Wss2_1($,1:2);
-  Wss2avg_2 = Wss2avg_2 + Wsd2_2($,1:2);
+  Wss2avg_2 = Wss2avg_2 + Wss2_2($,1:2);
 end
 
 // Compute squared error.
