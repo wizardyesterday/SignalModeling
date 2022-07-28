@@ -66,7 +66,7 @@ d = filterBlock(X(:,1),g,0);
 [W_lms_mu1,E_lms_mu1] = lms(X(:,1),d,mu1,4);
 
 // Output result.
-printf("W_1lms_mu1\n");
+printf("\nW_lms_mu1");
 disp(W_lms_mu1($,1:4));
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -77,7 +77,7 @@ disp(W_lms_mu1($,1:4));
 [W_nlms_mu1,E_nlms_mu1] = nlms(X(:,1),d,0.1,4);
 
 // Output result.
-printf("W_nlms_mu1\n");
+printf("\nW_nlms_mu1");
 disp(W_nlms_mu1($,1:4));
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
