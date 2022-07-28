@@ -123,7 +123,7 @@ endfunction
 //  The purpose of this function is to perform adaptive filtering using
 //  the normalized LMS algorithm.
 //
-//  Calling Sequence: [W,E] = nlms(x,d,beta,nord,w0)
+//  Calling Sequence: [W,E] = nlms(x,d,Beta,nord,w0)
 //
 //  Inputs:
 //
@@ -131,7 +131,7 @@ endfunction
 //
 //    d - The desired output.
 //
-//    beta - The adaptive filtering update (normalized step-size)
+//    Beta - The adaptive filtering update (normalized step-size)
 //    parameter.
 //
 //    nord - The number of filter coefficients.
@@ -155,7 +155,7 @@ endfunction
 //    Note that E(n) = d(n) - dhat(n).
 //
 //**********************************************************************
-function [W,E] = nlms(x,d,beta,nord,w0)
+function [W,E] = nlms(x,d,Beta,nord,w0)
 
   // Construct the data matrix.
   X = convm(x,nord);
@@ -185,7 +185,7 @@ function [W,E] = nlms(x,d,beta,nord,w0)
   DEN = X(1,:) * X(1,:)' + 0.0001;
 
   // Perform the first iteration for the filter vector.
-  W(1,:) = w0 + beta / DEN * E(1) * conj(X(1,:));
+  W(1,:) = w0 + Beta / DEN * E(1) * conj(X(1,:));
 
   if M > 1
     for k = 2:M - nord + 1
@@ -196,7 +196,7 @@ function [W,E] = nlms(x,d,beta,nord,w0)
       DEN = X(k,:) * X(k,:)' + 0.0001;
 
       // Update the filter vector.
-      W(k,:) = W(k-1,:) + beta / DEN * E(k) * conj(X(k,:));
+      W(k,:) = W(k-1,:) + Beta / DEN * E(k) * conj(X(k,:));
     end
   end
 
