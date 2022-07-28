@@ -66,7 +66,7 @@ d = filterBlock(X(:,1),g,0);
 [W_lms_mu1,E_lms_mu1] = lms(X(:,1),d,mu1,4);
 
 // Output result.
-printf("\nW_lms_mu1");
+printf("\nW_lms_mu1, p = 4");
 disp(W_lms_mu1($,1:4));
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -77,10 +77,90 @@ disp(W_lms_mu1($,1:4));
 [W_nlms_mu1,E_nlms_mu1] = nlms(X(:,1),d,0.1,4);
 
 // Output result.
-printf("\nW_nlms_mu1");
+printf("\nW_nlms_mu1, p = 4");
 disp(W_nlms_mu1($,1:4));
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (d): Make a plot of the learning curve by repeating the
+// experiment described in part (b) for 100 different realizations
+// of d(n), and plotting the average of the plots of e^2(n) versus
+// n.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Generate error sequences.
+for j = 1:N
+  // Generate reference signal, d(n).
+  d = filterBlock(X(:,j),g,0);
+
+  [W_dummy,E_lms_mu1(:,j)] = lms(X(:,j),d,mu1,4);
+end
+
+// Compute squared error.
+ESq_lms_mu1 = E_lms_mu1 .* E_lms_mu1;
+
+// Compute ensemble averages.  This is the learning curve.
+for j = 1:1000
+  ESqAvg_lms_mu1(j) = mean(ESq_lms_mu1(j,:)); 
+end
+
+// Compute steady-state error.
+Einf_lms_mu1 = mean(ESqAvg_lms_mu1(901:1000));
+
+// Output result.
+printf("\nEinf_lms_mu1, p = 4");
+disp(Einf_lms_mu1);
+
+printf("\nTheoretical Excess Mean Square Value, mu1, p = 4\n");
+disp(trace(Rg) * mu1 * sigmavSq / 2);
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (e): Repeat parts (b) and (d) for mu = 0.01muMax and
+// mu = 0.2muMax.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Generate error sequences.
+for j = 1:N
+  // Generate reference signal, d(n).
+  d = filterBlock(X(:,j),g,0);
+
+  [W_dummy,E_lms_mu2(:,j)] = lms(X(:,j),d,mu2,4);
+  [W_dummy,E_lms_mu3(:,j)] = lms(X(:,j),d,mu3,4);
+end
+
+// Compute squared errors.
+ESq_lms_mu2 = E_lms_mu2 .* E_lms_mu2;
+ESq_lms_mu3 = E_lms_mu3 .* E_lms_mu3;
+
+// Compute ensemble averages.  This is the learning curve.
+for j = 1:1000
+  ESqAvg_lms_mu2(j) = mean(ESq_lms_mu2(j,:)); 
+  ESqAvg_lms_mu3(j) = mean(ESq_lms_mu3(j,:)); 
+end
+
+// Compute steady-state errors.
+Einf_lms_mu2 = mean(ESqAvg_lms_mu2(901:1000));
+Einf_lms_mu3 = mean(ESqAvg_lms_mu3(901:1000));
+
+// Output results.
+printf("\nE1inf_lms_mu2, p = 4");
+disp(Einf_lms_mu2);
+
+printf("\nE1inf_lms_mu3, p = 4");
+disp(Einf_lms_mu3);
+
+printf("\nTheoretical Excess Mean Square Value, mu2, p = 4\n");
+disp(trace(Rg) * mu2 * sigmavSq / 2);
+
+printf("\nTheoretical Excess Mean Square Value, mu3, p = 4\n");
+disp(trace(Rg) * mu3 * sigmavSq / 2);
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (f): Repeat parts (b) and (d) for p = 3 and p = 2.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
+// Part (d).
+subplot(321);
+title('Learning Curve, mu = 0.1muMax, p = 4');
+plot(ESqAvg_lms_mu1);
