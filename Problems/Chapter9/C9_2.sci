@@ -210,6 +210,6 @@ plot(ESqAvg_lms_mu1_p3);
 
 subplot(326);
 title('Learning Curve, mu = 0.1muMax, p = 2');
-plot(ESq_lms_mu1_p2);
+plot(ESqAvg_lms_mu1_p2);
 
 
