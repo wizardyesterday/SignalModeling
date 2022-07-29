@@ -1,0 +1,29 @@
+W_lms_mu1, p = 4 
+    0.9999992    1.7999989    0.7999990  - 0.0000006  
+
+W_nlms_mu1, p = 4 
+    1.    1.8    0.8  - 2.654E-11  
+
+Einf_lms_mu1, p = 4 
+    7.191E-11  
+
+Theoretical Excess Mean Square Value, mu1, p = 4 
+    0.0896741  
+
+E1inf_lms_mu2, p = 4 
+    0.3605637  
+
+E1inf_lms_mu3, p = 4 
+    4.344E-21  
+
+Theoretical Excess Mean Square Value, mu2, p = 4 
+    0.0089674  
+
+Theoretical Excess Mean Square Value, mu3, p = 4 
+    0.1793482  
+
+Einf_lms_mu1_p3, p = 3 
+    0.3600049  
+
+Einf_lms_mu1_p2, p = 4 
+    0.6568169  
