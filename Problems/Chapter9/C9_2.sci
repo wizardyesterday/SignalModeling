@@ -9,7 +9,7 @@ exec('utils.sci',-1);
 // Mainline code.
 //**********************************************************************
 // Set number of realizations.
-N = 1;
+N = 100;
 
 // Set variance.
 sigmavSq = 1;
@@ -109,7 +109,7 @@ Einf_lms_mu1 = mean(ESqAvg_lms_mu1(901:1000));
 printf("\nEinf_lms_mu1, p = 4");
 disp(Einf_lms_mu1);
 
-printf("\nTheoretical Excess Mean Square Value, mu1, p = 4\n");
+printf("\nTheoretical Excess Mean Square Value, mu1, p = 4");
 disp(trace(Rg) * mu1 * sigmavSq / 2);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -146,15 +146,44 @@ disp(Einf_lms_mu2);
 printf("\nE1inf_lms_mu3, p = 4");
 disp(Einf_lms_mu3);
 
-printf("\nTheoretical Excess Mean Square Value, mu2, p = 4\n");
+printf("\nTheoretical Excess Mean Square Value, mu2, p = 4");
 disp(trace(Rg) * mu2 * sigmavSq / 2);
 
-printf("\nTheoretical Excess Mean Square Value, mu3, p = 4\n");
+printf("\nTheoretical Excess Mean Square Value, mu3, p = 4");
 disp(trace(Rg) * mu3 * sigmavSq / 2);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (f): Repeat parts (b) and (d) for p = 3 and p = 2.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Generate error sequences.
+for j = 1:N
+  // Generate reference signal, d(n).
+  d = filterBlock(X(:,j),g,0);
+
+  [W_dummy,E_lms_mu1_p3(:,j)] = lms(X(:,j),d,mu2,3);
+  [W_dummy,E_lms_mu1_p2(:,j)] = lms(X(:,j),d,mu3,2);
+end
+
+// Compute squared errors.
+ESq_lms_mu1_p3 = E_lms_mu1_p3 .* E_lms_mu1_p3;
+ESq_lms_mu1_p2 = E_lms_mu1_p2 .* E_lms_mu1_p2;
+
+// Compute ensemble averages.  This is the learning curve.
+for j = 1:1000
+  ESqAvg_lms_mu1_p3(j) = mean(ESq_lms_mu1_p3(j,:)); 
+  ESqAvg_lms_mu1_p2(j) = mean(ESq_lms_mu1_p2(j,:)); 
+end
+
+// Compute steady-state errors.
+Einf_lms_mu1_p3 = mean(ESqAvg_lms_mu1_p3(901:1000));
+Einf_lms_mu1_p2 = mean(ESqAvg_lms_mu1_p2(901:1000));
+
+// Output results.
+printf("\nEinf_lms_mu1_p3, p = 3");
+disp(Einf_lms_mu1_p3);
+
+printf("\nEinf_lms_mu1_p2, p = 4");
+disp(Einf_lms_mu1_p2);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
@@ -164,3 +193,23 @@ disp(trace(Rg) * mu3 * sigmavSq / 2);
 subplot(321);
 title('Learning Curve, mu = 0.1muMax, p = 4');
 plot(ESqAvg_lms_mu1);
+
+// Part (e).
+subplot(323);
+title('Learning Curve mu = 0.01muMax, p = 4');
+plot(ESqAvg_lms_mu2);
+
+subplot(324);
+title('Learning Curve mu = 0.2muMax, p = 4');
+plot(ESqAvg_lms_mu3);
+
+// Part (f).
+subplot(325);
+title('Learning Curve, mu = 0.1muMax, p = 3');
+plot(ESqAvg_lms_mu1_p3);
+
+subplot(326);
+title('Learning Curve, mu = 0.1muMax, p = 2');
+plot(ESq_lms_mu1_p2);
+
+
