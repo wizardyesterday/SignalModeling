@@ -9,7 +9,7 @@ exec('utils.sci',-1);
 // Mainline code.
 //**********************************************************************
 // Set number of realizations.
-N = 1;
+N = 30;
 
 // Set number of samples.
 numberOfSamples = 500;
@@ -153,6 +153,40 @@ disp(W_g2_p10($,1:$)');
 // unknown system.  Repeat part (a) with noise variances of
 // sigmavSq = 0.01, 0.1, and 1.0.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+// Generate error sequences.
+for j = 1:N
+  // Generate reference signal, d(n).
+  d = filterBlock(X(:,j),b1,a1(2:$));
+
+  // Run normalized LMS adaptive filters wiht noisy reference.
+  [W_g1_v1_p4,E1_g1_v1_p4(:,j)] = nlms(X(:,j),d+v1,0.1,4);
+  [W_g1_v2_p4,E1_g1_v2_p4(:,j)] = nlms(X(:,j),d+v2,0.1,4);
+  [W_g1_v3_p4,E1_g1_v3_p4(:,j)] = nlms(X(:,j),d+v3,0.1,4);
+
+end
+
+// Compute squared errors.
+ESq_g1_v1_p4 = E1_g1_v1_p4 .* E1_g1_v1_p4;
+ESq_g1_v2_p4 = E1_g1_v2_p4 .* E1_g1_v2_p4;
+ESq_g1_v3_p4 = E1_g1_v3_p4 .* E1_g1_v3_p4;
+
+// Compute ensemble averages.  This is the learning curve.
+for j = 1:numberOfSamples
+  ESqAvg_g1_v1_p4(j) = mean(ESq_g1_v1_p4(j,:)); 
+  ESqAvg_g1_v2_p4(j) = mean(ESq_g1_v2_p4(j,:)); 
+  ESqAvg_g1_v3_p4(j) = mean(ESq_g1_v3_p4(j,:)); 
+end
+
+// Output results.
+printf("\nW, g = g1, Reference noise = v1, p = 4");
+disp(W_g1_v1_p4($,1:$)');
+
+printf("\nW, g = g1, Reference noise = v2, p = 4");
+disp(W_g1_v2_p4($,1:$)');
+
+printf("\nW, g = g1, Reference noise = v3, p = 4");
+disp(W_g1_v3_p4($,1:$)');
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
