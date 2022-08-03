@@ -528,3 +528,90 @@ function [W,E] = lms_signSign(x,d,mu,nord,w0)
 
 endfunction
 
+//**********************************************************************
+//
+//  Name: lms_iir
+//
+//  The purpose of this function is to perform adaptive filtering using
+//  an IIR filter.  The filtered signal approach to recursive filtering
+//  is implemented.
+//
+//  Calling Sequence: [a,b,e] = lms_iir(x,d,p,q,mu)
+//
+//  Inputs:
+//
+//    x - The input data to the adaptive filter.
+//
+//    d - The desired output.
+//
+//    p - The number of denominator coefficients.
+//
+//    q - The number of numerator coefficients.
+//
+//  Outputs:
+//
+//    a - The denominator coefficients of the model.
+//
+//    b - The numerator coefficients of the model.
+//
+//    e - A vector of errors as they evolve over time.  Each entry
+//    contains the error that is associated with each iteration.  For
+//    example, the first entry contains the error for iteration 1,
+//    the second entry contains the error for iteration 2, and so on.
+//    Note that E(n) = d(n) - dhat(n).
+//
+//**********************************************************************
+function [a,b,e] = lms_iir(x,d,p,q,mu)
+
+  // Save length of input vector.
+  N = length(x);
+
+  // Allocate state memory for IIR filters.
+  xState = zeros(1,q+1);
+  yState = zeros(1,p);
+  xfState = zeros(1,p);
+  yfState = zeros(1,p);
+  xfInState = 0;
+  yfInState = 0;
+
+  // Set initial conditions.
+  a = zeros(1,p);
+  b = zeros(1,q+1);
+
+  for n = 1:N
+    // Compute output value.
+    [y(n),xState,yState] = iirFilter(x(n),b,-a,xState,yState);
+
+    // Compute error.
+    e(n) = d(n) - y(n);
+
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Update filtered signals.  Now, yf(n) is the result of passing
+    // y(n) through an all-pole filter, 1/An(z).  Similarly xf(n) is
+    // the result of passing x(n) through an all-pole filter, 1/An(z).
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    [yf(n),yfInState,yfState] = iirFilter(y(n),1,-a,yfInState,yfState); 
+    [xf(n),xfInState,xfState] = iirFilter(x(n),1,-a,xfInState,xfState);
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Update the filter coefficients.  Note that E(n) * yf(n-k) and
+    // E(n) * xf(n-k) are gradient approximations.
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    for k = 1:p
+      if (n - k + 1) > 0
+        // Update recursive taps.
+        a(k) = a(k) + (mu * e(n) * yf(n-k+1));
+      end
+    end
+
+    for k = 1:q+1
+      if (n - k + 1) > 0
+        // Update nonrecursive taps.
+        b(k) = b(k) + (mu * e(n) * xf(n-k+1));
+      end
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    end
+  end
+
+endfunction
