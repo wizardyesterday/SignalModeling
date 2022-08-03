@@ -599,14 +599,14 @@ function [a,b,e] = lms_iir(x,d,p,q,mu)
     // E(n) * xf(n-k) are gradient approximations.
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     for k = 1:p
-      if (n - k + 1) > 0
+      if (n-k+1) > 0
         // Update recursive taps.
         a(k) = a(k) + (mu * e(n) * yf(n-k+1));
       end
     end
 
     for k = 1:q+1
-      if (n - k + 1) > 0
+      if (n-k+1) > 0
         // Update nonrecursive taps.
         b(k) = b(k) + (mu * e(n) * xf(n-k+1));
       end
