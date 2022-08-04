@@ -561,7 +561,7 @@ endfunction
 //    Note that E(n) = d(n) - dhat(n).
 //
 //**********************************************************************
-function [a,b,e] = lms_iir(x,d,p,q,mu)
+function [a,b,e] = lms_iir1(x,d,p,q,mu)
 
   // Save length of input vector.
   N = length(x);
@@ -580,7 +580,7 @@ function [a,b,e] = lms_iir(x,d,p,q,mu)
 
   for n = 1:N
     // Compute output value.
-    [y(n),xState,yState] = iirFilter(x(n),b,-a,xState,yState);
+    [y(n),xState,yState] = iirFilter(x(n),b,a,xState,yState);
 
     // Compute error.
     e(n) = d(n) - y(n);
@@ -590,8 +590,8 @@ function [a,b,e] = lms_iir(x,d,p,q,mu)
     // y(n) through an all-pole filter, 1/An(z).  Similarly xf(n) is
     // the result of passing x(n) through an all-pole filter, 1/An(z).
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-    [yf(n),yfInState,yfState] = iirFilter(y(n),1,-a,yfInState,yfState); 
-    [xf(n),xfInState,xfState] = iirFilter(x(n),1,-a,xfInState,xfState);
+    [yf(n),yfInState,yfState] = iirFilter(y(n),1,a,yfInState,yfState); 
+    [xf(n),xfInState,xfState] = iirFilter(x(n),1,a,xfInState,xfState);
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
