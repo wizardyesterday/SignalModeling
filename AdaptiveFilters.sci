@@ -530,13 +530,13 @@ endfunction
 
 //**********************************************************************
 //
-//  Name: lms_iir
+//  Name: lms_iirFilteredSignal
 //
 //  The purpose of this function is to perform adaptive filtering using
 //  an IIR filter.  The filtered signal approach to recursive filtering
 //  is implemented.
 //
-//  Calling Sequence: [a,b,e] = lms_iir(x,d,p,q,mu)
+//  Calling Sequence: [A,B,e] = lms_iirFilteredSignal(x,d,p,q,mu)
 //
 //  Inputs:
 //
@@ -550,9 +550,17 @@ endfunction
 //
 //  Outputs:
 //
-//    a - The denominator coefficients of the model.
+//    A - A matrix of filter coefficients as they evolve over time.
+//    Each row of this matrix contains the coefficients at the
+//    iteration that is associated with the row.  For example, row 1
+//    contains the coefficients for iteration 1, row 2 contains the
+//    coefficients for iteration 2, and so on.
 //
-//    b - The numerator coefficients of the model.
+//    B - A matrix of filter coefficients as they evolve over time.
+//    Each row of this matrix contains the coefficients at the
+//    iteration that is associated with the row.  For example, row 1
+//    contains the coefficients for iteration 1, row 2 contains the
+//    coefficients for iteration 2, and so on.
 //
 //    e - A vector of errors as they evolve over time.  Each entry
 //    contains the error that is associated with each iteration.  For
@@ -561,7 +569,7 @@ endfunction
 //    Note that E(n) = d(n) - dhat(n).
 //
 //**********************************************************************
-function [a,b,e] = lms_iir(x,d,p,q,mu)
+function [A,B,e] = lms_iirFilteredSignal(x,d,p,q,mu)
 
   // Save length of input vector.
   N = length(x);
@@ -610,7 +618,11 @@ function [a,b,e] = lms_iir(x,d,p,q,mu)
         // Update nonrecursive taps.
         b(k) = b(k) + (mu * e(n) * xf(n-k+1));
       end
-    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+    // Copy coefficients to returned values.
+    A(n,:) = a;
+    B(n,:) = b;
+   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     end
   end
 
