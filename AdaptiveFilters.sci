@@ -561,7 +561,7 @@ endfunction
 //    Note that E(n) = d(n) - dhat(n).
 //
 //**********************************************************************
-function [a,b,e] = lms_iir1(x,d,p,q,mu)
+function [a,b,e] = lms_iir(x,d,p,q,mu)
 
   // Save length of input vector.
   N = length(x);
