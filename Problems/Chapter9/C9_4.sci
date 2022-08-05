@@ -9,7 +9,7 @@ exec('utils.sci',-1);
 // Mainline code.
 //**********************************************************************
 // Set number of realizations.
-N = 30;
+N = 1;
 
 // Set number of samples.
 numberOfSamples = 500;
@@ -187,6 +187,44 @@ disp(W_g1_v2_p4($,1:$)');
 
 printf("\nW, g = g1, Reference noise = v3, p = 4");
 disp(W_g1_v3_p4($,1:$)');
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (e): Write a MATLAB file to implement the filtered
+// signal approach for IIR adaptive filtering.  With an adaptive
+// recursive filter of the form,
+//
+// y(n) = a_n(1)y(n-1) + b_n(0)x(n) + b_n(1)x(n-1),
+//
+// determine an appropriate value for the step size mu, and use
+// your m-file to model the system G(z).
+// Note that mu = 0.0087 was found by experiment.  Additionally,
+// 1500 samples are needed to illustrate convergence of the
+// filter.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+// Generate a 1500-sample unit variance white noise process.
+Xiir = generateGaussianProcess(1,1500,1);
+
+// Generate reference signal, d(n).
+d = filterBlock(Xiir,b1,a1(2:$));
+
+// Run IIR adaptive filter.
+[A_noNoise,B_noNoise,E_noNoise] = lms_iirFilteredSignal(Xiir,d,1,1,0.0087);
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Add white noise, v(n), to the output of the unknown system.
+// Repeat part (e) with noise variances of sigmaV^2 = 0.01, 0.1,
+// and 1.0.  For stability with noise, we set mu = 0.004.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+v1_iir = generateGaussianProcess(1,1500,sqrt(0.01));
+v2_iir = generateGaussianProcess(1,1500,sqrt(0.1));
+v3_iir = generateGaussianProcess(1,1500,1);
+
+// Run IIR adaptive filter with different noise values.
+[A_v1,B_v1,E_v1] = lms_iirFilteredSignal(Xiir,d+v1_iir,1,1,0.004);
+[A_v2,B_v2,E_v2] = lms_iirFilteredSignal(Xiir,d+v2_iir,1,1,0.004);
+[A_v3,B_v3,E_v3] = lms_iirFilteredSignal(Xiir,d+v3_iir,1,1,0.004);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
