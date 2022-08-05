@@ -42,6 +42,9 @@ a1 = [1 0.9];
 b2 = [1 0.5];
 a2 = [1 0.2];
 
+// Open output file.
+fd = mopen('C9_4_output.txt','w');
+
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (a): Use the normalized LMS algorithm, with p = 4, and
 // Beta = 0.1 to model G1(z).  Record the values of the filter
@@ -86,17 +89,17 @@ for j = 1:numberOfSamples
 end
 
 // Output results.
-printf("\nW, g = g1, p = 4");
-disp(W_g1_p4($,1:$)');
+mfprintf(fd,"\nW, g = g1, p = 4\n");
+mfprintf(fd,"%f\n",W_g1_p4($,1:$)');
 
-printf("\nW, g = g1, p = 6");
-disp(W_g1_p6($,1:$)');
+mfprintf(fd,"\nW, g = g1, p = 6\n");
+mfprintf(fd,"%f\n",W_g1_p6($,1:$)');
 
-printf("\nW, g = g1, p = 8");
-disp(W_g1_p8($,1:$)');
+mfprintf(fd,"\nW, g = g1, p = 8\n");
+mfprintf(fd,"%f\n",W_g1_p8($,1:$)');
 
-printf("\nW, g = g1, p = 10");
-disp(W_g1_p10($,1:$)');
+mfprintf(fd,"\nW, g = g1, p = 10");
+mfprintf(fd,"%f\n",W_g1_p10($,1:$)');
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (c): Repeat parts (a) and (b) when the denominator of
@@ -136,17 +139,17 @@ for j = 1:numberOfSamples
 end
 
 // Output results.
-printf("\nW, g = g2, p = 4");
-disp(W_g2_p4($,1:$)');
+mfprintf(fd,"\nW, g = g2, p = 4\n");
+mfprintf(fd,"%f\n",W_g2_p4($,1:$)');
 
-printf("\nW, g = g2, p = 6");
-disp(W_g2_p6($,1:$)');
+mfprintf(fd,"\nW, g = g2, p = 6\n");
+mfprintf(fd,"%f\n",W_g2_p6($,1:$)');
 
-printf("\nW, g = g2, p = 8");
-disp(W_g2_p8($,1:$)');
+mfprintf(fd,"\nW, g = g2, p = 8\n");
+mfprintf(fd,"%f\n",W_g2_p8($,1:$)');
 
-printf("\nW, g = g2, p = 10");
-disp(W_g2_p10($,1:$)');
+mfprintf(fd,"\nW, g = g2, p = 10");
+mfprintf(fd,"%f\n",W_g2_p10($,1:$)');
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (d): Add white noise, v(n), to the output of the
@@ -179,14 +182,14 @@ for j = 1:numberOfSamples
 end
 
 // Output results.
-printf("\nW, g = g1, Reference noise = v1, p = 4");
-disp(W_g1_v1_p4($,1:$)');
+mfprintf(fd,"\nW, g = g1, Reference noise = v1, p = 4\n");
+mfprintf(fd,"%f\n",W_g1_v1_p4($,1:$)');
 
-printf("\nW, g = g1, Reference noise = v2, p = 4");
-disp(W_g1_v2_p4($,1:$)');
+mfprintf(fd,"\nW, g = g1, Reference noise = v2, p = 4\n");
+mfprintf(fd,"%f\n",W_g1_v2_p4($,1:$)');
 
-printf("\nW, g = g1, Reference noise = v3, p = 4");
-disp(W_g1_v3_p4($,1:$)');
+mfprintf(fd,"\nW, g = g1, Reference noise = v3, p = 4\n");
+mfprintf(fd,"%f\n",W_g1_v3_p4($,1:$)');
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (e): Write a MATLAB file to implement the filtered
@@ -225,6 +228,11 @@ v3_iir = generateGaussianProcess(1,1500,1);
 [A_v1,B_v1,E_v1] = lms_iirFilteredSignal(Xiir,d+v1_iir,1,1,0.004);
 [A_v2,B_v2,E_v2] = lms_iirFilteredSignal(Xiir,d+v2_iir,1,1,0.004);
 [A_v3,B_v3,E_v3] = lms_iirFilteredSignal(Xiir,d+v3_iir,1,1,0.004);
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// We're done with the output file.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+mclose(fd);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
