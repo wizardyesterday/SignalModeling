@@ -627,3 +627,111 @@ function [A,B,e] = lms_iirFilteredSignal(x,d,p,q,mu)
   end
 
 endfunction
+
+//**********************************************************************
+//
+//  Name: nlms_optimized
+//
+//  The purpose of this function is to perform adaptive filtering using
+//  the normalized LMS algorithm.  An optimization has been made for the
+//  computation of ||X||^2.  Instead of computing the norm-squared on
+//  each iteration, we start with ||X(0)||^2 initially computed.  During
+//  loop execution, we compute,
+//
+//    ||X(n+1)||^2 = ||X(n)||^2 + |x(n+1)|^2 - |x(n-p)|^2
+//
+//  Now, x(n-p) is the last element of the kth row of the convolution
+//  matrix.  What remains to determine is x(n+1).  I used x(k) within
+//  the loop, noting that k is used as the loop index rather than
+//  n.  Experiments show that the coefficients converge as expected.
+//  When k+1, rather than k, was used instability occasionally occurred.
+//  It might be that Eq. (9.51) has a typographical error.  This really
+//  needs to be investigated.
+//
+//  Calling Sequence: [W,E] = nlms_optimized(x,d,Beta,nord,w0)
+//
+//  Inputs:
+//
+//    x - The input data to the adaptive filter.
+//
+//    d - The desired output.
+//
+//    Beta - The adaptive filtering update (normalized step-size)
+//    parameter.
+//
+//    nord - The number of filter coefficients.
+//
+//    w0 - An optional row vector that serves as the initial guess
+//    for FIR filter coefficients.  If w0 is omitted, then w0 = 0 is
+//    assumed.
+//    
+//  Outputs:
+//
+//    W - A matrix of filter coefficients as they evolve over time.
+//    Each row of this matrix contains the coefficients at the
+//    iteration that is associated with the row.  For example, row 1
+//    contains the coefficients for iteration 1, row 2 contains the
+//    coefficients for iteration 2, and so on.
+//
+//    E - A vector of errors as they evolve over time.  Each entry
+//    contains the error that is associated with each iteration.  For
+//    example, the first entry contains the error for iteration 1,
+//    the second entry contains the error for iteration 2, and so on.
+//    Note that E(n) = d(n) - dhat(n).
+//
+//**********************************************************************
+function [W,E] = nlms_optimized(x,d,Beta,nord,w0)
+
+  // Construct the data matrix.
+  X = convm(x,nord);
+
+  // Retrieve the size of the data matrix.
+  [M,N] = size(X);
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // argn(2) returns is the number of arguments passed to the 
+  // function.
+  // If 4 arguments were passed to the function, it is implied
+  // that the last two parameter was not passed.  In this
+  // case, the initial condition for the filter coefficients
+  // is set to a default value of all zeros. 
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  if argn(2) < 5
+    w0 = zeros(1,N);
+  end
+
+  // Force a row vector without altering the values.
+  w0   = w0(:).';
+
+  // Perform the first iteration for the error vector.
+  E(1) = d(1) - w0 * X(1,:).'; 
+
+  // Construct the normalizing denominator for the first iteration.
+  norm_X = X(1,:) * X(1,:)';
+  DEN = norm_X + 0.0001;
+
+  // Perform the first iteration for the filter vector.
+  W(1,:) = w0 + Beta / DEN * E(1) * conj(X(1,:));
+
+  if M > 1
+    for k = 2:M - nord + 1
+      // Update the error.
+      E(k) = d(k) - W(k-1,:) * X(k,:).';
+
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+      // Use the optimization,
+      // ||X(n+1)||^2 =
+      // ||X(n)||^2 + |x(n+1)|^2 - |x(n-p)|^2.
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+      norm_X = norm_X + x(k)^2 - X(k,$)^2;
+
+      // Update the normalizing denominator.
+      DEN = norm_X + 0.0001;
+
+      // Update the filter vector.
+      W(k,:) = W(k-1,:) + Beta / DEN * E(k) * conj(X(k,:));
+    end
+  end
+
+endfunction
+
