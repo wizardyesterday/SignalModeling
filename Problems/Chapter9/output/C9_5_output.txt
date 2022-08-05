@@ -1,0 +1,3 @@
+W (NLMS): 1.000000  W1 (Optimized NLMS): 1.000000
+W (NLMS): 1.800000  W1 (Optimized NLMS): 1.800000
+W (NLMS): 0.800000  W1 (Optimized NLMS): 0.800000
