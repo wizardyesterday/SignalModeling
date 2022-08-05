@@ -89,9 +89,11 @@ for j = 1:numberOfSamples
 end
 
 // Output results.
+mfprintf(fd,"\nPart (a)\n");
 mfprintf(fd,"\nW, g = g1, p = 4\n");
 mfprintf(fd,"%f\n",W_g1_p4($,1:$)');
 
+mfprintf(fd,"\nPart (b)\n");
 mfprintf(fd,"\nW, g = g1, p = 6\n");
 mfprintf(fd,"%f\n",W_g1_p6($,1:$)');
 
@@ -139,6 +141,7 @@ for j = 1:numberOfSamples
 end
 
 // Output results.
+mfprintf(fd,"\nPart (c)\n");
 mfprintf(fd,"\nW, g = g2, p = 4\n");
 mfprintf(fd,"%f\n",W_g2_p4($,1:$)');
 
@@ -182,6 +185,7 @@ for j = 1:numberOfSamples
 end
 
 // Output results.
+mfprintf(fd,"\nPart (d)\n");
 mfprintf(fd,"\nW, g = g1, Reference noise = v1, p = 4\n");
 mfprintf(fd,"%f\n",W_g1_v1_p4($,1:$)');
 
