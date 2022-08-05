@@ -9,7 +9,7 @@ exec('utils.sci',-1);
 // Mainline code.
 //**********************************************************************
 // Set number of realizations.
-N = 1;
+N = 30;
 
 // Set number of samples.
 numberOfSamples = 500;
@@ -200,7 +200,7 @@ mfprintf(fd,"%f\n",W_g1_v3_p4($,1:$)');
 //
 // determine an appropriate value for the step size mu, and use
 // your m-file to model the system G(z).
-// Note that mu = 0.0087 was found by experiment.  Additionally,
+// Note that mu = 0.0088 was found by experiment.  Additionally,
 // 1500 samples are needed to illustrate convergence of the
 // filter.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -212,12 +212,12 @@ Xiir = generateGaussianProcess(1,1500,1);
 d = filterBlock(Xiir,b1,a1(2:$));
 
 // Run IIR adaptive filter.
-[A_noNoise,B_noNoise,E_noNoise] = lms_iirFilteredSignal(Xiir,d,1,1,0.0087);
+[A_noNoise,B_noNoise,E_noNoise] = lms_iirFilteredSignal(Xiir,d,1,1,0.0088);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Add white noise, v(n), to the output of the unknown system.
 // Repeat part (e) with noise variances of sigmaV^2 = 0.01, 0.1,
-// and 1.0.  For stability with noise, we set mu = 0.004.
+// and 1.0.  For stability with noise, we set mu = 0.003.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 v1_iir = generateGaussianProcess(1,1500,sqrt(0.01));
@@ -225,9 +225,9 @@ v2_iir = generateGaussianProcess(1,1500,sqrt(0.1));
 v3_iir = generateGaussianProcess(1,1500,1);
 
 // Run IIR adaptive filter with different noise values.
-[A_v1,B_v1,E_v1] = lms_iirFilteredSignal(Xiir,d+v1_iir,1,1,0.004);
-[A_v2,B_v2,E_v2] = lms_iirFilteredSignal(Xiir,d+v2_iir,1,1,0.004);
-[A_v3,B_v3,E_v3] = lms_iirFilteredSignal(Xiir,d+v3_iir,1,1,0.004);
+[A_v1,B_v1,E_v1] = lms_iirFilteredSignal(Xiir,d+v1_iir,1,1,0.003);
+[A_v2,B_v2,E_v2] = lms_iirFilteredSignal(Xiir,d+v2_iir,1,1,0.003);
+[A_v3,B_v3,E_v3] = lms_iirFilteredSignal(Xiir,d+v3_iir,1,1,0.003);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // We're done with the output file.
@@ -237,4 +237,103 @@ mclose(fd);
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+scf(1);
+
+// Part (a), part (b).
+subplot(621);
+title('FIR Learning curve, g2, p = 4');
+plot(ESqAvg_g2_p4);
+
+subplot(622);
+title('FIR Learning curve, g2, p = 6');
+plot(ESqAvg_g2_p6);
+
+subplot(623);
+title('Learning curve, g2, p = 8');
+plot(ESqAvg_g2_p8);
+
+subplot(624);
+title('FIR Learning curve, g2, p = 10');
+plot(ESqAvg_g2_p10);
+
+// Part (c).
+subplot(625);
+title('FIR Learning curve, g2, p = 4');
+plot(ESqAvg_g2_p4);
+
+subplot(626);
+title('FIR Learning curve, g2, p = 6');
+plot(ESqAvg_g2_p6);
+
+subplot(627);
+title('FIR Learning curve, g2, p = 8');
+plot(ESqAvg_g2_p8);
+
+subplot(628);
+title('FIR Learning curve, g2, p = 10');
+plot(ESqAvg_g2_p10);
+
+// Part (d).
+subplot(629);
+title('FIR Learning curve, g1, sigmaV^2 = 0.01, p = 4');
+plot(ESqAvg_g1_v1_p4);
+
+subplot(6,2,10);
+title('FIR Learning curve, g1, sigmaV^2 = 0.1, p = 4');
+plot(ESqAvg_g1_v2_p4);
+
+subplot(6,2,11);
+title('FIR Learning curve, g1, sigmaV^2 = 1, p = 4');
+plot(ESqAvg_g1_v3_p4);
+
+scf(2);
+
+// Part (d), part (e).
+subplot(621);
+title('IIR Coefficients, a, mu = 0.0088, Noiseless');
+plot(A_noNoise);
+
+subplot(622);
+title('IIR Coefficients, b, mu = 0.0088, Noiseless');
+plot(B_noNoise);
+
+subplot(623);
+title('IIR Mean-Square Error, b, mu = 0.0088, Noiseless');
+plot(E_noNoise);
+
+subplot(624);
+title('IIR Coefficients, a, mu = 0.003, sigmaV^2 = 0.01');
+plot(A_v1);
+
+subplot(625);
+title('IIR Coefficients, b, mu = 0.003, signaV^2 = 0.01');
+plot(B_v1);
+
+subplot(626);
+title('IIR Mean-Square Error, b, mu = 0.003, sigmaV^2 = 0.01');
+plot(E_v1);
+
+subplot(627);
+title('IIR Coefficients, a, mu = 0.003, sigmaV^2 = 0.1');
+plot(A_v2);
+
+subplot(628);
+title('IIR Coefficients, b, mu = 0.003, signaV^2 = 0.1');
+plot(B_v2);
+
+subplot(629);
+title('IIR Mean-Square Error, b, mu = 0.003, sigmaV^2 = 0.1');
+plot(E_v2);
+
+subplot(6,2,10);
+title('IIR Coefficients, a, mu = 0.003, sigmaV^2 = 1');
+plot(A_v3);
+
+subplot(6,2,11);
+title('IIR Coefficients, b, mu = 0.003, signaV^2 = 1');
+plot(B_v3);
+
+subplot(6,2,12);
+title('IIR Mean-Square Error, b, mu = 0.003, sigmaV^2 = 1');
+plot(E_v3);
 
