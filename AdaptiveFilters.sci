@@ -239,7 +239,7 @@ endfunction
 //    Note that E(n) = d(n) - dhat(n).
 //
 //**********************************************************************
-function [W,E] = rls(x,d,nord,lambda)
+function [W,E] = rls(x,d,nord,Lambda)
 
   // Set initial reciprocal value for the P matrix.
   delta = 0.001;
@@ -260,7 +260,7 @@ function [W,E] = rls(x,d,nord,lambda)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   if argn(2) < 4
     // Default to growing window RLS algorithm.
-    lambda = 1.0;
+    Lambda = 1.0;
   end
 
   // Initial value.
@@ -274,16 +274,19 @@ function [W,E] = rls(x,d,nord,lambda)
     z = P * X(k,:)';
 
     // Update gain vector.
-    g = z / (lambda + X(k,:) * z);
+    g = z / (Lambda + X(k,:) * z);
 
-    // Update the apriori error.
+    // Update the a priori error.
     alpha = d(k) - X(k,:) * W(k-1,:).';
 
       // Update the filter vector.
     W(k,:) = W(k-1,:) + alpha * g.';
 
     // Update inverse autocorrelation matrix.
-    P = (P - g * z.') / lambda;
+    P = (P - g * z.') / Lambda;
+
+    // Set the returned error value.
+    E(k) = alpha;
   end
 
 endfunction
