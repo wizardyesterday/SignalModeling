@@ -165,7 +165,7 @@ for j = 1:N
   // Generate reference signal, d(n).
   d = filterBlock(X(:,j),b1,a1(2:$));
 
-  // Run normalized LMS adaptive filters wiht noisy reference.
+  // Run normalized LMS adaptive filters with noisy reference.
   [W_g1_v1_p4,E1_g1_v1_p4(:,j)] = nlms(X(:,j),d+v1,0.1,4);
   [W_g1_v2_p4,E1_g1_v2_p4(:,j)] = nlms(X(:,j),d+v2,0.1,4);
   [W_g1_v3_p4,E1_g1_v3_p4(:,j)] = nlms(X(:,j),d+v3,0.1,4);
