@@ -147,7 +147,32 @@ endfunction
 //  Name: convm
 //
 //  Purpose: The purpose of this function is to construct a convolution
-//  matrix.
+//  matrix.  Now, what exactly is a convolution matrix?  I'm glad you
+//  asked that question!  Let it be supposed that we have an FIR
+//  (nonrecursive) filter, h(n) = [h(0) h(1) ... h(q-1)]'.  That is,
+//  h(n) is described as a column vector.  Given that we have an input,
+//  x(n), the output, y(n) = x(n) * h(n) = h(n) * x(n), where '*'
+//  indicates convolution.  Now, convolution can be expressed as an
+//  inner product, y = xh, where x is taken to be a row vector, and,
+//  h is a column vector.  In general, an FIR is implemented  as a
+//  multitap delay line for which a convolution sum is carried out
+//  by the inner product of the delay line and the filter coefficients,
+//  h.
+//  What this function does is that it constructs, from an input
+//  sequence, x of length N, a matrix X with p columns and N+p-1 rows.
+//  Each row of the matrix, X, represents the state of a delay line,
+//  of length p, at time index n.  By post-multiplying row 1 of X by h,
+//  we have the output y(0), by multiplying row2 of X by h, we have
+//  y(1), and so forth.  In general, the vector, y = Xh.  The
+//  structure of the matrix with x = [x(0) x(1) x(2) x(3)]' and p = 4, is,
+//
+//              [x(0)  0     0        0]
+//              [x(1)  x(0)  0        0]
+//              [x(2)  x(1)  x(0)     0]
+//              [x(3)  x(2)  x(1)  x(0)]
+//              [0     x(3)  x(2)  x(1)]
+//              [0     0     x(3)  x(2)]
+//              [0     0     0     x(3)]
 //
 //  Calling Sequence: X = convm(x,p)
 //
@@ -174,6 +199,7 @@ function X = convm(x,p)
 
   // Construct the matrix.
   for i = 1:p
+    // Construct current column vector.
     X(:,i) = xpad(p-i+1:N-i+1);
   end
 
