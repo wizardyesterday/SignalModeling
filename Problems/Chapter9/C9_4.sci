@@ -19,7 +19,7 @@ sigmavSq = 1;
 
 //------------------------------------------
 // Generate Gaussian random process.  We
-// want 30 realizations of length 5=0.
+// want 30 realizations of length 50.
 // The number of realizations may be scaled
 // back due to memory limitations.
 //------------------------------------------
