@@ -42,7 +42,6 @@ muMax = 2 / max(lamda_a1);
 
 // Set typical values of the step size.
 mu1 = muMax / 10;
-mu2 = muMax / 50;
 mu2 = muMax / 25;
 
 // Set exponential weighting factors.
@@ -143,7 +142,7 @@ title('LMS Coefficient Trajectory, mu = muMax / 10, a1, p = 2');
 plot(W_a1_mu1_p2);
 
 subplot(325);
-title('LMS Coefficient Trajectory, mu = muMax / 50, a1, p = 2');
+title('LMS Coefficient Trajectory, mu = muMax / 25, a1, p = 2');
 plot(W_a1_mu2_p2);
 
 // Part (b).
@@ -156,7 +155,7 @@ title('LMS Learning Curve, mu = muMax / 10, a1, p = 2');
 plot(ESqAvg_a1_mu1_p2);
 
 subplot(326)
-title('LMS Learning Curve, mu = muMax / 50, a1, p = 2');
+title('LMS Learning Curve, mu = muMax / 25, a1, p = 2');
 plot(ESqAvg_a1_mu2_p2);
 
 scf(2);
