@@ -59,10 +59,6 @@ for j = 1:N
   X1(:,j) = filterBlock(X(:,j),1,a1(2:$));
 end
 
-// Open output file.
-fd = mopen('C9_4_output.txt','w');
-fd = mopen('/dev/null','w');
-
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (a): Implement an RLS adaptive predictor with lamda = 1
 // (growing window RLS), and plot w_n(k) for k = 1,2.  Compare
@@ -101,16 +97,36 @@ for j = 1:numberOfSamples
  ESqAvg_a1_mu2_p2(j) = mean(ESq_a1_mu2_p2(j,:)); 
 end
 
-// Output results.
-//mfprintf(fd,"\nPart (a)\n");
 
-//mfprintf(fd,"\nPart (b)\n");
-//mfprintf(fd,"\nW, g = g1, p = 6\n");
+// Part (c): Repeat part (b) for exponential weighting factors of
+// lamda = 0.99, 0.95, 0.92, 0.90, and discuss the trade-offs
+// involved in the choice of lamda.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Generate error sequences.
+for j = 1:N
+  // Generate x(n-1).
+  xnm1 = filterBlock(X1(:,j),[0 1],0);
 
-//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// We're done with the output file.
-//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-mclose(fd);
+  // Run second-order RLS adaptive filters.
+  [W_a1_lamda2_p2,E_a1_lamda2_p2(:,j)] = rls(xnm1,X1(:,j),2,lamda2);
+  [W_a1_lamda3_p2,E_a1_lamda3_p2(:,j)] = rls(xnm1,X1(:,j),2,lamda3);
+  [W_a1_lamda4_p2,E_a1_lamda4_p2(:,j)] = rls(xnm1,X1(:,j),2,lamda4);
+  [W_a1_lamda5_p2,E_a1_lamda5_p2(:,j)] = rls(xnm1,X1(:,j),2,lamda5);
+end
+
+// Compute squared errors.
+ESq_a1_lamda2_p2 = E_a1_lamda2_p2 .* E_a1_lamda2_p2;
+ESq_a1_lamda3_p2 = E_a1_lamda3_p2 .* E_a1_lamda3_p2;
+ESq_a1_lamda4_p2 = E_a1_lamda4_p2 .* E_a1_lamda4_p2;
+ESq_a1_lamda5_p2 = E_a1_lamda5_p2 .* E_a1_lamda5_p2;
+
+// Compute ensemble averages.  This is the learning curve.
+for j = 1:numberOfSamples
+ ESqAvg_a1_lamda2_p2(j) = mean(ESq_a1_lamda2_p2(j,:)); 
+ ESqAvg_a1_lamda3_p2(j) = mean(ESq_a1_lamda3_p2(j,:)); 
+ ESqAvg_a1_lamda4_p2(j) = mean(ESq_a1_lamda4_p2(j,:)); 
+ ESqAvg_a1_lamda5_p2(j) = mean(ESq_a1_lamda5_p2(j,:)); 
+end
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
@@ -142,3 +158,40 @@ plot(ESqAvg_a1_mu1_p2);
 subplot(326)
 title('LMS Learning Curve, mu = muMax / 50, a1, p = 2');
 plot(ESqAvg_a1_mu2_p2);
+
+scf(2);
+
+// Part (c).
+subplot(421);
+title('RLS Coefficient Trajectory, Lamda = 0.99, a1, p = 2');
+plot(W_a1_lamda2_p2);
+
+subplot(423);
+title('RLS Coefficient Trajectory, Lamda = 0.95, a1, p = 2');
+plot(W_a1_lamda3_p2);
+
+subplot(425);
+title('RLS Coefficient Trajectory, Lamda = 0.92, a1, p = 2');
+plot(W_a1_lamda4_p2);
+
+subplot(427);
+title('RLS Coefficient Trajectory, Lamda = 0.90, a1, p = 2');
+plot(W_a1_lamda5_p2);
+
+subplot(422);
+title('RLS Learning Curve, Lamda = 0.99, a1, p = 2');
+plot(ESqAvg_a1_lamda2_p2);
+
+subplot(424);
+title('RLS Learning Curve, Lamda = 0.95, a1, p = 2');
+plot(ESqAvg_a1_lamda3_p2);
+
+subplot(426);
+title('RLS Learning Curve, Lamda = 0.92, a1, p = 2');
+plot(ESqAvg_a1_lamda4_p2);
+
+subplot(428);
+title('RLS Learning Curve, Lamda = 0.90, a1, p = 2');
+plot(ESqAvg_a1_lamda5_p2);
+
+
