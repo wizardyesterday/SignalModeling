@@ -175,7 +175,7 @@ xnm1 = filterBlock(X2,[0 1],0);
 [W_a2_lamda5_p2,E_dummy] = rls(xnm1,X2,2,lamda5);
 
 // Run the LMS filter.
-[W_a2_mu2_p2,E_dummy] = lms(xnm1,X2,muMax/150,2);
+[W_a2_mu_p2,E_dummy] = lms(xnm1,X2,muMax/150,2);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
@@ -242,5 +242,36 @@ plot(ESqAvg_a1_lamda4_p2);
 subplot(428);
 title('RLS Learning Curve, Lamda = 0.90, a1, p = 2');
 plot(ESqAvg_a1_lamda5_p2);
+
+scf(3);
+
+// Part (e).
+subplot(321);
+title('RLS Coefficient Trajectory, Lamda = 1, a2, p = 2');
+plot(W_a2_lamda1_p2);
+
+subplot(322);
+title('RLS Coefficient Trajectory, Lamda = 0.99, a2, p = 2');
+plot(W_a2_lamda2_p2);
+
+subplot(323);
+title('RLS Coefficient Trajectory, Lamda = 0.95, a2, p = 2');
+plot(W_a2_lamda3_p2);
+
+subplot(324);
+title('RLS Coefficient Trajectory, Lamda = 0.92, a2, p = 2');
+plot(W_a2_lamda4_p2);
+
+subplot(325);
+title('RLS Coefficient Trajectory, Lamda = 0.90, a2, p = 2');
+plot(W_a2_lamda5_p2);
+
+subplot(326);
+title('LMS Coefficient Trajectory, mu = muMax/150, a2, p = 2');
+plot(W_a2_mu_p2);
+
+
+
+
 
 
