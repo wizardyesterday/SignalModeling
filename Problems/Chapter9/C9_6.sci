@@ -26,7 +26,7 @@ sigmavSq = 1;
 X = generateGaussianProcess(N,numberOfSamples,sigmavSq);
 
 // Coefficients for a1.
-a1 = [1 -1.2728 0.81]';
+a1 = [1 1.2728 -0.81]';
 
 // Compute autocorrelation.
 r_a1 = ator(a1,1);
@@ -55,7 +55,7 @@ lamda5 = 0.90;
 // Generate AR(2) processes.
 //----------------------------------------
 for j = 1:N
-  X1(:,j) = filterBlock(X(:,j),1,a1(2:$));
+  X1(:,j) = filterBlock(X(:,j),1,-a1(2:$));
 end
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -97,6 +97,7 @@ for j = 1:numberOfSamples
 end
 
 
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (c): Repeat part (b) for exponential weighting factors of
 // lamda = 0.99, 0.95, 0.92, 0.90, and discuss the trade-offs
 // involved in the choice of lamda.
@@ -126,6 +127,55 @@ for j = 1:numberOfSamples
  ESqAvg_a1_lamda4_p2(j) = mean(ESq_a1_lamda4_p2(j,:)); 
  ESqAvg_a1_lamda5_p2(j) = mean(ESq_a1_lamda5_p2(j,:)); 
 end
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (d): Modify the m-file for the RLS algorithm to implement
+// a sliding window RLS algorithm.
+// This will be completed at a latter time, when I locate the
+// original literature that derived the subject matter in the
+// textbook.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (e): Let x(n) = a_n(1)x(n-1) - 0.81x(n-2) + v(n),
+// where v(n) is unit variance white noise, and a_n(1) is a
+// time-varying coefficient given by,
+// an_1) = 1.2728; 0 <= n < 50; 100 <= n <= 200, 0; 50 <= n < 100.
+// Compare the effectiveness of the LMS, growing window RLS,
+// exponentially weighted RLS, and sliding window RLS algorithms
+// for adaptive linear prediction.
+// Note: sliding window RLS will be implemented at a later time.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Generate unit variance white noise.
+v = generateGaussianProcess(1,200,1);
+
+a_n = [1.2728*ones(1,50) zeros(1,50) 1.2728*ones(1,100)];
+
+// Instantiate the pipelines.
+aState = zeros(1,2);
+bState = zeros(1,1);
+
+// Generate AR(2) process using time-varying coefficients.
+for j = 1:200
+  // Set the coefficients.
+  a = [a_n(j) -0.81];
+
+  // Run the sample through the filter.
+  [X2(j),bState,aState] = iirFilter(v(j),1,-a,bState,aState);
+end
+
+// Generate x(n-1).
+xnm1 = filterBlock(X2,[0 1],0);
+
+// Run the second-order RLS adaptive filters.
+[W_a2_lamda1_p2,E_dummy] = rls(xnm1,X2,2,lamda1);
+[W_a2_lamda2_p2,E_dummy] = rls(xnm1,X2,2,lamda2);
+[W_a2_lamda3_p2,E_dummy] = rls(xnm1,X2,2,lamda3);
+[W_a2_lamda4_p2,E_dummy] = rls(xnm1,X2,2,lamda4);
+[W_a2_lamda5_p2,E_dummy] = rls(xnm1,X2,2,lamda5);
+
+// Run the LMS filter.
+[W_a2_mu2_p2,E_dummy] = lms(xnm1,X2,muMax/150,2);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
