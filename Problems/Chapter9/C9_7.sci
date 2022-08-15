@@ -12,13 +12,16 @@ exec('utils.sci',-1);
 //  The purpose of this function is to perform adaptive filtering using
 //  the Widrow-Hoff LMS algorithm with a p-vector variant.
 //
-//  Calling Sequence: [W,E] = lms_pvector(x,rdx,mu,nord,w0)
+//  Calling Sequence: [W,E] = lms_pvector(x,Rdx,mu,nord,w0)
 //
 //  Inputs:
 //
 //    x - The input data to the adaptive filter.
 //
-//    rdx - The cross-correlation between d(n) and x(n).
+//    Rdx - The cross-correlation between d(n) and x(n).  This is
+//    a matrix of nord columns per row such that a cross-correlation
+//    was constructed nord elements at a time.
+//    Note: this parameter may have to be reworked.
 //
 //    mu - The adaptive filtering update (step-size) parameter.
 //
@@ -43,16 +46,13 @@ exec('utils.sci',-1);
 //    Note that E(n) = d(n) - dhat(n).
 //
 //**********************************************************************
-function W = lms_pvector(x,rdx,mu,nord,w0)
+function W = lms_pvector(x,Rdx,mu,nord,w0)
 
   // Construct the data matrix.
   X = convm(x,nord);
 
   // Retrieve the size of the data matrix.
   [M,N] = size(X);
-
-  // Construct a convolution matrix from rdx(n).
-  Rdx = convm(rdx,nord);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // argn(2) returns is the number of arguments passed to the 
@@ -76,7 +76,7 @@ function W = lms_pvector(x,rdx,mu,nord,w0)
     for k = 2:M - nord + 1
 
       // Do this to simplify notation.      
-      correction = mu * Rdx(k,:) - mu * (W(k-1,:) * X(k,:).') * X(k,:);
+      correction = mu * Rdx(j,:) - mu * (W(k-1,:) * X(k,:).') * X(k,:);
 
       // Update the filter vector.
       W(k,:) = W(k-1,:) + correction;
@@ -181,19 +181,39 @@ mprintf("\nLMS Theoretical E(infinity): %f\n",EInfTheor_a1_mu1_p2);
 // x(n).  Plot w_n(k) versus n, and compare your results to the
 // LMS adaptive linear predictor.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Set filter order.
+p = 2;
+
 // Set desired signal.
 d = X1(:,1);
 
 // Generate x(n-1).
 xnm1 = filterBlock(d,[0 1],0);
 
-// Compute cross-correlation.
-rdx = convol(xnm1,d($:-1:1));
-ind = find(rdx == max(rdx));
-rdx = rdx(ind:$);
+//----------------------------------------------------
+// Perform cross-correlation using p values at a time.
+// This creates p columns in each row of the cross-
+// correlation matrix.  The number of elements, in
+// each row, is the same as the number of elements
+// in the coefficient vector.
+//----------------------------------------------------
+for j = 1:length(d)-1
+  // Perform cross-correlation.
+  rdx = convol(d(j:j+p-1),xnm1(j+p-1:-1:j));
 
-// run LMS adaptive filter.
-W = lms_pvector(xnm1,rdx,mu1,2);
+  // Compute the length for the following step.
+  index = length(rdx);
+
+  // Compute index of first element in the new row.
+  index = round(index/2);
+
+  // Set the current row to the cross-correlation.
+  Rdx(j,:) = rdx(index:$);
+end
+//----------------------------------------------------
+
+// run p-vector adaptive filter.
+W = lms_pvector(xnm1,Rdx,mu1,p);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
