@@ -12,13 +12,15 @@ exec('utils.sci',-1);
 //  Purpose: The purpose of this function is to compute the
 //  estimated cross-correlation function of two input sequences.
 //
-//  Calling Sequence: r = crosscorrelate(x,lag)
+//  Calling Sequence: rxy = crosscorrelate(x,lag)
 //
 //  Inputs:
 //
-//    x - The input vector to be processed.
+//    x - The input vector to be processed.  Note that the lag
+//    should be sigificantly less than the length of this vector.
 //
-//    y - The input vector to be cross-correlated with x.
+//    y - The input vector to be cross-correlated with x.  Note that
+//    the lag should be sigificantly less than the length of this vector.
 //
 //    numberOfSamples - The number of samples for which to carry out
 //    the cross-correlation.
@@ -27,21 +29,37 @@ exec('utils.sci',-1);
 //
 //  Outputs:
 //
-//    r - The estimated autocorrelation function.
+//    rxy - The estimated cross-correlation function.
 //
 //**********************************************************************
-function r = crosscorrelate(x,y,numberOfSamples,lag);
+function rxy = crosscorrelate(x,y,numberOfSamples,lag);
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Ensure that numberOfSamples is consistant with the length
+  // of the data records.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  Lx = length(x);
+  Ly = length(y);
+
+  // We want to know the length of the shortest sequence.
+  L = min(Lx,Ly);
+
+  if numberOfSamples > L
+    // Adjust to avoid indices out of range.
+    numberOfSamples = L;
+  end
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Start with a clean slate.
   accumulator = 0;
 
   for i = 1:numberOfSamples
     // Perform correlation processing.
-    accumulator = accumulator + x(i) * y(i + lag);
+    accumulator = accumulator + x(i) * conj(y(i + lag));
   end
 
   // Set result.
-  r = accumulator;
+  rxy = accumulator / numberOfSamples;
 
 endfunction
 
@@ -110,15 +128,15 @@ function W = lms_pvector(x,Rdx,mu,nord,w0)
   w0   = w0(:).';
 
   // Perform the first iteration for the filter vector.
-  W(1,:) = w0 + mu * Rdx(1,:) - mu * (w0 * X(1,:).') * X(1,:);
+  W(1,:) = w0 + mu * Rdx(1,:) - mu * (w0 * X(1,:).') * conj(X(1,:));
 
   if M > 1
     for k = 2:M - nord + 1
 
-      // Do this to simplify notation.      
-      correction = mu * Rdx(k,:) - mu * (W(k-1,:) * X(k,:).') * X(k,:);
+      // Do this to simplify notation.
+      correction = mu * Rdx(k,:) - mu * (W(k-1,:) * X(k,:).') * conj(X(k,:));
 
-      // Update the filter vector.
+      // Update the coefficient vector.
       W(k,:) = W(k-1,:) + correction;
     end
   end
@@ -233,21 +251,22 @@ d = filterBlock(v,1,-a1(2:$));
 // Generate x(n-1).
 xnm1 = filterBlock(d,[0 1],0);
 
-// Construct cross-correlation sequence.
-for j = 0:numberOfSamples
-
-  rdx(j + 1) = crosscorrelate(d,xnm1,numberOfSamples,j);
-end
-
-//-------------------------------------------------
-// Construct matrix containing rows, rdx_(n),
-// where rdx_ is a vector of p elements.
-//-------------------------------------------------
-for j = 1:numberOfSamples
-  for k = 0:p-1
-    // Add next row vector.
-    Rdx(j,k+1) = rdx(j+k);
+for n = 1:numberOfSamples
+  //--------------------------------------------------
+  // Construct the next vector, whose entries are,
+  // rdx(k) = E{d(n)xnim1(n-k)}; k = 0, ..., p-1.
+  //--------------------------------------------------
+  for k = 0:p-1 
+    rdx(k + 1) = crosscorrelate(d(n:$),xnm1(n:$),numberOfSamples,k);
   end
+
+  //--------------------------------------------------
+  // Add rdx_ = [rdx(0) rdx(1) ... rdx(p-1)]' to the
+  // next row of Rdx.  Note that rdx_ is a vector of
+  // cross-correlations, thus, Rdx is a matrix whose
+  // rows are these vectors.
+  //--------------------------------------------------
+  Rdx(n,:) = rdx';
 end
 
 // Pass a truncated sequence to the p-vector algorithm to maintain consistancy,
