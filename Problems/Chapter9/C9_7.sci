@@ -6,6 +6,49 @@
 exec('utils.sci',-1);
 
 //**********************************************************************
+
+//  Name: crosscorrelate
+//
+//  Purpose: The purpose of this function is to compute the
+//  estimated cross-correlation function of two input sequences.
+//
+//  Calling Sequence: r = crosscorrelate(x,lag)
+//
+//  Inputs:
+//
+//    x - The input vector to be processed.
+//
+//    y - The input vector to be cross-correlated with x.
+//
+//    numberOfSamples - The number of samples for which to carry out
+//    the cross-correlation.
+//
+//    lag - The autocorrelation lag.
+//
+//  Outputs:
+//
+//    r - The estimated autocorrelation function.
+//
+//**********************************************************************
+function r = crosscorrelate(x,y,numberOfSamples,lag);
+
+  // Start with a clean slate.
+  accumulator = 0;
+
+  // Avoid constant reevaluation during loop execution.
+  upperLimit = numberOfSamples - lag;
+
+  for i = 1:upperLimit
+    // Perform correlation processing.
+    accumulator = accumulator + x(i) * y(i + lag);
+  end
+
+  // Scale as appropriate.
+  r = accumulator / upperLimit;
+
+endfunction
+
+//**********************************************************************
 //
 //  Name: lms_pvector
 //
@@ -76,7 +119,7 @@ function W = lms_pvector(x,Rdx,mu,nord,w0)
     for k = 2:M - nord + 1
 
       // Do this to simplify notation.      
-      correction = mu * Rdx(j,:) - mu * (W(k-1,:) * X(k,:).') * X(k,:);
+      correction = mu * Rdx(k,:) - mu * (W(k-1,:) * X(k,:).') * X(k,:);
 
       // Update the filter vector.
       W(k,:) = W(k-1,:) + correction;
@@ -184,8 +227,11 @@ mprintf("\nLMS Theoretical E(infinity): %f\n",EInfTheor_a1_mu1_p2);
 // Set filter order.
 p = 2;
 
-// Set desired signal.
-d = X1(:,1);
+// Generate unit variance white Gaussian noise.
+v = generateGaussianProcess(1,2 * numberOfSamples,1);
+
+// Set desired signal, the AR(2) process.
+d = filterBlock(v,1,-a1(2:$));
 
 // Generate x(n-1).
 xnm1 = filterBlock(d,[0 1],0);
@@ -197,23 +243,22 @@ xnm1 = filterBlock(d,[0 1],0);
 // each row, is the same as the number of elements
 // in the coefficient vector.
 //----------------------------------------------------
-for j = 1:length(d)-1
+for j = 1:numberOfSamples
+
   // Perform cross-correlation.
-  rdx = convol(d(j:j+p-1),xnm1(j+p-1:-1:j));
-
-  // Compute the length for the following step.
-  index = length(rdx);
-
-  // Compute index of first element in the new row.
-  index = round(index/2);
+  for k = 1:p
+    rdx(k) = crosscorrelate(d(j:$),xnm1(j:$),numberOfSamples,k-1);
+  end
 
   // Set the current row to the cross-correlation.
-  Rdx(j,:) = rdx(index:$);
+  Rdx(j,:) = rdx';
 end
 //----------------------------------------------------
 
+xnm1_t = xnm1(1:numberOfSamples);
+
 // run p-vector adaptive filter.
-W = lms_pvector(xnm1,Rdx,mu1,p);
+W = lms_pvector(xnm1_t,Rdx,mu1,p);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
