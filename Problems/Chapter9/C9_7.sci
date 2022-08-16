@@ -255,6 +255,7 @@ for j = 1:numberOfSamples
 end
 //----------------------------------------------------
 
+// Pass a truncated sequence to the p-vector algorithm to maintain consistancy,
 xnm1_t = xnm1(1:numberOfSamples);
 
 // run p-vector adaptive filter.
