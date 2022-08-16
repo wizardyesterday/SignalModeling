@@ -259,7 +259,7 @@ end
 xnm1_t = xnm1(1:numberOfSamples);
 
 // run p-vector adaptive filter.
-W = lms_pvector(xnm1_t,Rdx,mu1,p);
+W = lms_pvector(xnm1_t,Rdx,mu1/15,p);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
