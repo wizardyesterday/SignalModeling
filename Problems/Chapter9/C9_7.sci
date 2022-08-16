@@ -35,16 +35,13 @@ function r = crosscorrelate(x,y,numberOfSamples,lag);
   // Start with a clean slate.
   accumulator = 0;
 
-  // Avoid constant reevaluation during loop execution.
-  upperLimit = numberOfSamples - lag;
-
-  for i = 1:upperLimit
+  for i = 1:numberOfSamples
     // Perform correlation processing.
     accumulator = accumulator + x(i) * y(i + lag);
   end
 
-  // Scale as appropriate.
-  r = accumulator / upperLimit;
+  // Set result.
+  r = accumulator;
 
 endfunction
 
@@ -236,30 +233,43 @@ d = filterBlock(v,1,-a1(2:$));
 // Generate x(n-1).
 xnm1 = filterBlock(d,[0 1],0);
 
-//----------------------------------------------------
-// Perform cross-correlation using p values at a time.
-// This creates p columns in each row of the cross-
-// correlation matrix.  The number of elements, in
-// each row, is the same as the number of elements
-// in the coefficient vector.
-//----------------------------------------------------
-for j = 1:numberOfSamples
+// Construct cross-correlation sequence.
+for j = 0:numberOfSamples
 
-  // Perform cross-correlation.
-  for k = 1:p
-    rdx(k) = crosscorrelate(d(j:$),xnm1(j:$),numberOfSamples,k-1);
-  end
-
-  // Set the current row to the cross-correlation.
-  Rdx(j,:) = rdx';
+  rdx(j + 1) = crosscorrelate(d,xnm1,numberOfSamples,j);
 end
-//----------------------------------------------------
+
+//-------------------------------------------------
+// Construct matrix containing rows, rdx_(n),
+// where rdx_ is a vector of p elements.
+//-------------------------------------------------
+for j = 1:numberOfSamples
+  for k = 0:p-1
+    // Add next row vector.
+    Rdx(j,k+1) = rdx(j+k);
+  end
+end
 
 // Pass a truncated sequence to the p-vector algorithm to maintain consistancy,
 xnm1_t = xnm1(1:numberOfSamples);
 
-// run p-vector adaptive filter.
+// Run p-vector adaptive filter.
 W = lms_pvector(xnm1_t,Rdx,mu1/15,p);
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (f): Investigate the sensitivity of the p-vector
+// algorithm to errors in the vector rdx by making small changes
+// in the values of rdx used in part (e).
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Perturb the values of rdx.
+for j = 1:numberOfSamples
+  for k = 1:p
+    RdxPerturbed(j,k) = Rdx(j,k) + 0.05 * (-1)^k;
+  end
+end
+
+// Run p-vector adaptive filter.
+WPerturbed = lms_pvector(xnm1_t,RdxPerturbed,mu1/15,p);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
