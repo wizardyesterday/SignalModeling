@@ -6,13 +6,13 @@
 exec('utils.sci',-1);
 
 //**********************************************************************
-
+//
 //  Name: crosscorrelate
 //
 //  Purpose: The purpose of this function is to compute the
 //  estimated cross-correlation function of two input sequences.
 //
-//  Calling Sequence: rxy = crosscorrelate(x,lag)
+//  Calling Sequence: rxy = crosscorrelate(x,y,numberOfSamples,lag)
 //
 //  Inputs:
 //
@@ -38,24 +38,20 @@ function rxy = crosscorrelate(x,y,numberOfSamples,lag);
   // Ensure that numberOfSamples is consistant with the length
   // of the data records.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Compute sequence lengths.
   Lx = length(x);
   Ly = length(y);
 
-  // We want to know the length of the shortest sequence.
-  L = min(Lx,Ly);
-
-  if numberOfSamples > L
-    // Adjust to avoid indices out of range.
-    numberOfSamples = L;
-  end
+  // Choose the smaller of the two lengths.
+  numberOfSamples = min(Lx,Ly);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Start with a clean slate.
   accumulator = 0;
 
-  for i = 1:numberOfSamples
+  for i = lag+1:numberOfSamples
     // Perform correlation processing.
-    accumulator = accumulator + x(i) * conj(y(i + lag));
+    accumulator = accumulator + x(i) * conj(y(i - lag));
   end
 
   // Set result.
@@ -243,7 +239,7 @@ mprintf("\nLMS Theoretical E(infinity): %f\n",EInfTheor_a1_mu1_p2);
 p = 2;
 
 // Generate unit variance white Gaussian noise.
-v = generateGaussianProcess(1,2 * numberOfSamples,1);
+v = generateGaussianProcess(1,2*numberOfSamples,1);
 
 // Set desired signal, the AR(2) process.
 d = filterBlock(v,1,-a1(2:$));
@@ -273,7 +269,7 @@ end
 xnm1_t = xnm1(1:numberOfSamples);
 
 // Run p-vector adaptive filter.
-W = lms_pvector(xnm1_t,Rdx,mu1/15,p);
+W = lms_pvector(xnm1_t,Rdx,mu1,p);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (f): Investigate the sensitivity of the p-vector
@@ -287,8 +283,8 @@ for j = 1:numberOfSamples
   end
 end
 
-// Run p-vector adaptive filter.
-WPerturbed = lms_pvector(xnm1_t,RdxPerturbed,mu1/15,p);
+// Run p-vector adaptive filter on the perturbed reference.
+WPerturbed = lms_pvector(xnm1_t,RdxPerturbed,mu1,p);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
