@@ -541,13 +541,22 @@ function rxy = crosscorrelate(x,y,numberOfSamples,lag);
   // Start with a clean slate.
   accumulator = 0;
 
-  for i = lag+1:numberOfSamples
-    // Perform correlation processing.
-    accumulator = accumulator + x(i) * conj(y(i - lag));
+  // Default value if cross-correlation isn't executed.
+  rxy = 0;
+
+  if lag < numberOfSamples
+    for i = lag+1:numberOfSamples
+      // Perform correlation processing.
+      accumulator = accumulator + x(i) * conj(y(i - lag));
+    end
+
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Set result, and scale.  Note that lag is subtracted to
+    // mitigate the end effect.
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    rxy = accumulator / (numberOfSamples - lag);
   end
 
-  // Set result.
-  rxy = accumulator / numberOfSamples;
 
 endfunction
 

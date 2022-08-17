@@ -105,7 +105,7 @@ mprintf("\nLMS Theoretical E(infinity): %f\n",EInfTheor_a1_mu1_p2);
 p = 2;
 
 // Generate unit variance white Gaussian noise.
-v = generateGaussianProcess(1,2*numberOfSamples,1);
+v = generateGaussianProcess(1,numberOfSamples,1);
 
 // Set desired signal, the AR(2) process.
 d = filterBlock(v,1,-a1(2:$));
@@ -131,11 +131,8 @@ for n = 1:numberOfSamples
   Rdx(n,:) = rdx';
 end
 
-// Pass a truncated sequence to the p-vector algorithm to maintain consistancy,
-xnm1_t = xnm1(1:numberOfSamples);
-
 // Run p-vector adaptive filter.
-W = lms_pvector(xnm1_t,Rdx,mu1/3,p);
+W = lms_pvector(xnm1,Rdx,mu1/3,p);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (f): Investigate the sensitivity of the p-vector
@@ -145,12 +142,12 @@ W = lms_pvector(xnm1_t,Rdx,mu1/3,p);
 // Perturb the values of rdx.
 for j = 1:numberOfSamples
   for k = 1:p
-    RdxPerturbed(j,k) = Rdx(j,k) + 0.05 * (-1)^k;
+    RdxPerturbed(j,k) = Rdx(j,k) + 0.5 * (-1)^k;
   end
 end
 
 // Run p-vector adaptive filter on the perturbed reference.
-WPerturbed = lms_pvector(xnm1_t,RdxPerturbed,mu1/3,p);
+WPerturbed = lms_pvector(xnm1,RdxPerturbed,mu1/3,p);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
