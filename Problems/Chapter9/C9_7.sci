@@ -6,144 +6,10 @@
 exec('utils.sci',-1);
 
 //**********************************************************************
-//
-//  Name: crosscorrelate
-//
-//  Purpose: The purpose of this function is to compute the
-//  estimated cross-correlation function of two input sequences.
-//
-//  Calling Sequence: rxy = crosscorrelate(x,y,numberOfSamples,lag)
-//
-//  Inputs:
-//
-//    x - The input vector to be processed.  Note that the lag
-//    should be sigificantly less than the length of this vector.
-//
-//    y - The input vector to be cross-correlated with x.  Note that
-//    the lag should be sigificantly less than the length of this vector.
-//
-//    numberOfSamples - The number of samples for which to carry out
-//    the cross-correlation.
-//
-//    lag - The autocorrelation lag.
-//
-//  Outputs:
-//
-//    rxy - The estimated cross-correlation function.
-//
-//**********************************************************************
-function rxy = crosscorrelate(x,y,numberOfSamples,lag);
-
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Ensure that numberOfSamples is consistant with the length
-  // of the data records.
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Compute sequence lengths.
-  Lx = length(x);
-  Ly = length(y);
-
-  // Choose the smaller of the two lengths.
-  numberOfSamples = min(Lx,Ly);
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-
-  // Start with a clean slate.
-  accumulator = 0;
-
-  for i = lag+1:numberOfSamples
-    // Perform correlation processing.
-    accumulator = accumulator + x(i) * conj(y(i - lag));
-  end
-
-  // Set result.
-  rxy = accumulator / numberOfSamples;
-
-endfunction
-
-//**********************************************************************
-//
-//  Name: lms_pvector
-//
-//  The purpose of this function is to perform adaptive filtering using
-//  the Widrow-Hoff LMS algorithm with a p-vector variant.
-//
-//  Calling Sequence: [W,E] = lms_pvector(x,Rdx,mu,nord,w0)
-//
-//  Inputs:
-//
-//    x - The input data to the adaptive filter.
-//
-//    Rdx - The cross-correlation between d(n) and x(n).  This is
-//    a matrix of nord columns per row such that a cross-correlation
-//    was constructed nord elements at a time.
-//    Note: this parameter may have to be reworked.
-//
-//    mu - The adaptive filtering update (step-size) parameter.
-//
-//    nord - The number of filter coefficients.
-//
-//    w0 - An optional row vector that serves as the initial guess
-//    for FIR filter coefficients.  If w0 is omitted, then w0 = 0 is
-//    assumed.
-//    
-//  Outputs:
-//
-//    W - A matrix of filter coefficients as they evolve over time.
-//    Each row of this matrix contains the coefficients at the
-//    iteration that is associated with the row.  For example, row 1
-//    contains the coefficients for iteration 1, row 2 contains the
-//    coefficients for iteration 2, and so on.
-//
-//    E - A vector of errors as they evolve over time.  Each entry
-//    contains the error that is associated with each iteration.  For
-//    example, the first entry contains the error for iteration 1,
-//    the second entry contains the error for iteration 2, and so on.
-//    Note that E(n) = d(n) - dhat(n).
-//
-//**********************************************************************
-function W = lms_pvector(x,Rdx,mu,nord,w0)
-
-  // Construct the data matrix.
-  X = convm(x,nord);
-
-  // Retrieve the size of the data matrix.
-  [M,N] = size(X);
-
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // argn(2) returns is the number of arguments passed to the 
-  // function.
-  // If 4 arguments were passed to the function, it is implied
-  // that the last two parameter was not passed.  In this
-  // case, the initial condition for the filter coefficients
-  // is set to a default value of all zeros. 
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  if argn(2) < 5
-    w0 = zeros(1,N);
-  end
-
-  // Force a row vector without altering the values.
-  w0   = w0(:).';
-
-  // Perform the first iteration for the filter vector.
-  W(1,:) = w0 + mu * Rdx(1,:) - mu * (w0 * X(1,:).') * conj(X(1,:));
-
-  if M > 1
-    for k = 2:M - nord + 1
-
-      // Do this to simplify notation.
-      correction = mu * Rdx(k,:) - mu * (W(k-1,:) * X(k,:).') * conj(X(k,:));
-
-      // Update the coefficient vector.
-      W(k,:) = W(k-1,:) + correction;
-    end
-  end
-
-endfunction
-
-//**********************************************************************
 // Mainline code.
 //**********************************************************************
 // Set number of realizations.
-N = 1;
+N = 30;
 
 // Set number of samples.
 numberOfSamples = 500;
@@ -269,7 +135,7 @@ end
 xnm1_t = xnm1(1:numberOfSamples);
 
 // Run p-vector adaptive filter.
-W = lms_pvector(xnm1_t,Rdx,mu1,p);
+W = lms_pvector(xnm1_t,Rdx,mu1/3,p);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (f): Investigate the sensitivity of the p-vector
@@ -284,10 +150,27 @@ for j = 1:numberOfSamples
 end
 
 // Run p-vector adaptive filter on the perturbed reference.
-WPerturbed = lms_pvector(xnm1_t,RdxPerturbed,mu1,p);
+WPerturbed = lms_pvector(xnm1_t,RdxPerturbed,mu1/3,p);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-//scf(1);
+scf(1);
+
+subplot(411);
+title('LMS Coefficients, p=2, a_ = [1 0.8 -0.9], mu=muMax / 800');
+plot(W_a1_mu1_p2);
+
+subplot(412);
+title('LMS Learning Curve, p=2, a_ = [1 0.8 -0.9], mu=muMax / 800');
+plot(ESqAvg_a1_mu1_p2);
+
+subplot(413);
+title('P-vector Coefficients, p=2, a_ = [1 0.8 -0.9], mu=muMax / 2400');
+plot(W);
+
+subplot(414);
+title('P-vector Coefficients, Noisy, p=2, a_ = [1 0.8 -0.9], mu=muMax / 2400');
+plot(WPerturbed);
+
 
