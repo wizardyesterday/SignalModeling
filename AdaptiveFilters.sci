@@ -738,3 +738,77 @@ function [W,E] = nlms_optimized(x,d,Beta,nord,w0)
 
 endfunction
 
+//**********************************************************************
+//
+//  Name: lms_pvector
+//
+//  The purpose of this function is to perform adaptive filtering using
+//  the LMS algorithm with a Griffiths p-vector variant.
+//
+//  Calling Sequence: W = lms_pvector(x,Rdx,mu,nord,w0)
+//
+//  Inputs:
+//
+//    x - The input data to the adaptive filter.
+//
+//    Rdx - The cross-correlation between d(n) and x(n).  This is
+//    a matrix of nord columns per row such that a cross-correlation
+//    was constructed nord elements at a time.
+//    Note: this parameter may have to be reworked.
+//
+//    mu - The adaptive filtering update (step-size) parameter.
+//
+//    nord - The number of filter coefficients.
+//
+//    w0 - An optional row vector that serves as the initial guess
+//    for FIR filter coefficients.  If w0 is omitted, then w0 = 0 is
+//    assumed.
+//    
+//  Outputs:
+//
+//    W - A matrix of filter coefficients as they evolve over time.
+//    Each row of this matrix contains the coefficients at the
+//    iteration that is associated with the row.  For example, row 1
+//    contains the coefficients for iteration 1, row 2 contains the
+//    coefficients for iteration 2, and so on.
+//
+//**********************************************************************
+function W = lms_pvector(x,Rdx,mu,nord,w0)
+
+  // Construct the data matrix.
+  X = convm(x,nord);
+
+  // Retrieve the size of the data matrix.
+  [M,N] = size(X);
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // argn(2) returns is the number of arguments passed to the 
+  // function.
+  // If 4 arguments were passed to the function, it is implied
+  // that the last two parameter was not passed.  In this
+  // case, the initial condition for the filter coefficients
+  // is set to a default value of all zeros. 
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  if argn(2) < 5
+    w0 = zeros(1,N);
+  end
+
+  // Force a row vector without altering the values.
+  w0   = w0(:).';
+
+  // Perform the first iteration for the filter vector.
+  W(1,:) = w0 + mu * Rdx(1,:) - mu * (w0 * X(1,:).') * conj(X(1,:));
+
+  if M > 1
+    for k = 2:M - nord + 1
+
+      // Do this to simplify notation.
+      correction = mu * Rdx(k,:) - mu * (W(k-1,:) * X(k,:).') * conj(X(k,:));
+
+      // Update the coefficient vector.
+      W(k,:) = W(k-1,:) + correction;
+    end
+  end
+
+endfunction
+

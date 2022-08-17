@@ -497,6 +497,60 @@ function X = generateGaussianProcess(numberOfRealizations, ...
 
 endfunction
 
+//**********************************************************************
+//
+//  Name: crosscorrelate
+//
+//  Purpose: The purpose of this function is to compute the
+//  estimated cross-correlation function of two input sequences.
+//
+//  Calling Sequence: rxy = crosscorrelate(x,y,numberOfSamples,lag)
+//
+//  Inputs:
+//
+//    x - The input vector to be processed.  Note that the lag
+//    should be sigificantly less than the length of this vector.
+//
+//    y - The input vector to be cross-correlated with x.  Note that
+//    the lag should be sigificantly less than the length of this vector.
+//
+//    numberOfSamples - The number of samples for which to carry out
+//    the cross-correlation.
+//
+//    lag - The autocorrelation lag.
+//
+//  Outputs:
+//
+//    rxy - The estimated cross-correlation function.
+//
+//**********************************************************************
+function rxy = crosscorrelate(x,y,numberOfSamples,lag);
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Ensure that numberOfSamples is consistant with the length
+  // of the data records.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Compute sequence lengths.
+  Lx = length(x);
+  Ly = length(y);
+
+  // Choose the smaller of the two lengths.
+  numberOfSamples = min(Lx,Ly);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  // Start with a clean slate.
+  accumulator = 0;
+
+  for i = lag+1:numberOfSamples
+    // Perform correlation processing.
+    accumulator = accumulator + x(i) * conj(y(i - lag));
+  end
+
+  // Set result.
+  rxy = accumulator / numberOfSamples;
+
+endfunction
+
 // Bring in the rest of the files.
 exec('SignalModeling.sci',-1);
 exec('LevinsonRecursion.sci',-1);
