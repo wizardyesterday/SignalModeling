@@ -87,7 +87,7 @@ function [W,E] = lms(x,d,mu,nord,w0)
   // argn(2) returns is the number of arguments passed to the 
   // function.
   // If 4 arguments were passed to the function, it is implied
-  // that the last two parameter was not passed.  In this
+  // that the last parameter was not passed.  In this
   // case, the initial condition for the filter coefficients
   // is set to a default value of all zeros. 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -167,7 +167,7 @@ function [W,E] = nlms(x,d,Beta,nord,w0)
   // argn(2) returns is the number of arguments passed to the 
   // function.
   // If 4 arguments were passed to the function, it is implied
-  // that the last two parameter was not passed.  In this
+  // that the last parameter was not passed.  In this
   // case, the initial condition for the filter coefficients
   // is set to a default value of all zeros. 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -253,8 +253,8 @@ function [W,E] = rls(x,d,nord,Lambda)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // argn(2) returns is the number of arguments passed to the 
   // function.
-  // If 4 arguments were passed to the function, it is implied
-  // that the last two parameter was not passed.  In this
+  // If 3 arguments were passed to the function, it is implied
+  // that the last parameter was not passed.  In this
   // case, the initial condition for the filter coefficients
   // is set to a default value of all zeros. 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -342,7 +342,7 @@ function [W,E] = lms_signError(x,d,mu,nord,w0)
   // argn(2) returns is the number of arguments passed to the 
   // function.
   // If 4 arguments were passed to the function, it is implied
-  // that the last two parameter was not passed.  In this
+  // that the last parameter was not passed.  In this
   // case, the initial condition for the filter coefficients
   // is set to a default value of all zeros. 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -422,7 +422,7 @@ function [W,E] = lms_signData(x,d,mu,nord,w0)
   // argn(2) returns is the number of arguments passed to the 
   // function.
   // If 4 arguments were passed to the function, it is implied
-  // that the last two parameter was not passed.  In this
+  // that the last parameter was not passed.  In this
   // case, the initial condition for the filter coefficients
   // is set to a default value of all zeros. 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -502,7 +502,7 @@ function [W,E] = lms_signSign(x,d,mu,nord,w0)
   // argn(2) returns is the number of arguments passed to the 
   // function.
   // If 4 arguments were passed to the function, it is implied
-  // that the last two parameter was not passed.  In this
+  // that the last parameter was not passed.  In this
   // case, the initial condition for the filter coefficients
   // is set to a default value of all zeros. 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -695,7 +695,7 @@ function [W,E] = nlms_optimized(x,d,Beta,nord,w0)
   // argn(2) returns is the number of arguments passed to the 
   // function.
   // If 4 arguments were passed to the function, it is implied
-  // that the last two parameter was not passed.  In this
+  // that the last parameter was not passed.  In this
   // case, the initial condition for the filter coefficients
   // is set to a default value of all zeros. 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -785,7 +785,7 @@ function W = lms_pvector(x,Rdx,mu,nord,w0)
   // argn(2) returns is the number of arguments passed to the 
   // function.
   // If 4 arguments were passed to the function, it is implied
-  // that the last two parameter was not passed.  In this
+  // that the last parameter was not passed.  In this
   // case, the initial condition for the filter coefficients
   // is set to a default value of all zeros. 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -864,8 +864,8 @@ function [W,E] = lms_variableStepSize(x,d,c1,c2,nord,w0)
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // argn(2) returns is the number of arguments passed to the 
   // function.
-  // If 4 arguments were passed to the function, it is implied
-  // that the last two parameter was not passed.  In this
+  // If 5 arguments were passed to the function, it is implied
+  // that the last parameter was not passed.  In this
   // case, the initial condition for the filter coefficients
   // is set to a default value of all zeros. 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
