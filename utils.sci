@@ -514,9 +514,6 @@ endfunction
 //    y - The input vector to be cross-correlated with x.  Note that
 //    the lag should be sigificantly less than the length of this vector.
 //
-//    numberOfSamples - The number of samples for which to carry out
-//    the cross-correlation.
-//
 //    lag - The autocorrelation lag.
 //
 //  Outputs:
@@ -524,7 +521,7 @@ endfunction
 //    rxy - The estimated cross-correlation function.
 //
 //**********************************************************************
-function rxy = crosscorrelate(x,y,numberOfSamples,lag);
+function rxy = crosscorrelate(x,y,lag);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Ensure that numberOfSamples is consistant with the length

@@ -89,7 +89,7 @@ EInf_a1_mu1_p2 = mean(ESqAvg_a1_mu1_p2(numberOfSamples-99:numberOfSamples));
 // Compute the theoretical steady-state mean-square error
 EInfTheor_a1_mu1_p2 = sigmavSq / (1 - mu1 * trace(R) / 2);
 
-mprintf("\nLMS E(infinity): %f\n",EInf_a1_mu1_p2);
+mprintf("\nLMS Estimated E(infinity): %f\n",EInf_a1_mu1_p2);
 mprintf("\nLMS Theoretical E(infinity): %f\n",EInfTheor_a1_mu1_p2);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -119,7 +119,7 @@ for n = 1:numberOfSamples
   // rdx(k) = E{d(n)xnim1(n-k)}; k = 0, ..., p-1.
   //--------------------------------------------------
   for k = 0:p-1 
-    rdx(k + 1) = crosscorrelate(d(n:$),xnm1(n:$),numberOfSamples,k);
+    rdx(k + 1) = crosscorrelate(d(n:$),xnm1(n:$),k);
   end
 
   //--------------------------------------------------
