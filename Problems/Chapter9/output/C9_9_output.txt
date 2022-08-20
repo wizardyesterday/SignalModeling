@@ -1,0 +1,10 @@
+Tap: 1 Adaptive Filter: 0.087816  Wiener Filter: 0.088352
+Tap: 2 Adaptive Filter: 0.161828  Wiener Filter: 0.086417
+Tap: 3 Adaptive Filter: -0.011815  Wiener Filter: 0.084433
+Tap: 4 Adaptive Filter: 0.114281  Wiener Filter: 0.082399
+Tap: 5 Adaptive Filter: 0.099815  Wiener Filter: 0.080381
+Tap: 6 Adaptive Filter: 0.155895  Wiener Filter: 0.078318
+Tap: 7 Adaptive Filter: 0.046772  Wiener Filter: 0.076265
+Tap: 8 Adaptive Filter: 0.064867  Wiener Filter: 0.074158
+Tap: 9 Adaptive Filter: 0.117648  Wiener Filter: 0.072040
+Tap: 10 Adaptive Filter: 0.072189  Wiener Filter: 0.069922

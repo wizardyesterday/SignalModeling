@@ -8,6 +8,9 @@ exec('utils.sci',-1);
 //**********************************************************************
 // Mainline code.
 //**********************************************************************
+// Open output file.
+fd = mopen('C9_9_output.txt','w');
+
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Part (a): Paper exercise.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -42,11 +45,13 @@ x = d + v';
 
 Beta = 0.1;
 
+// Set filter orders.
 p5 = 5;
 p10 = 10;
 p15 = 15;
 p20 = 20;
 
+// Set delays.
 n5 = 5;
 n10 = 10;
 n25 = 25;
@@ -67,6 +72,33 @@ n25 = 25;
 [W_n25_p20,dhat_n25_p20] = nlms_noiseCanceller(x,n25,Beta,p20);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Part (d):
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Compute cross-correlation sequence.
+for n = 1:900
+  rdx(n) = crosscorrelate(d,x,n-1);
+end
+
+// Compute the variance of v(n).
+sigmavSq = variance(v);
+
+// Run the signal through the Wiener filter.
+[w,e] = FirWienerFilter(rdx,sigmavSq,10);
+
+for i = 1:10
+  mfprintf(fd,"Tap: %d ",i);
+  mfprintf(fd,"Adaptive Filter: %f  Wiener Filter: %f\n",W_n25_p10($,i),w(i));
+end
+
+// Let's test the Wiener filter.
+dhatWiener = filterBlock(x,w,0);
+
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// We're done with the output file.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+mclose(fd);
+
+////_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 scf(1);
@@ -82,6 +114,10 @@ plot(v);
 subplot(425);
 title('Noise Corrupted Signal, x(n)');
 plot(x);
+
+subplot(427);
+title('Wiener Filter Output, p = 10');
+plot(dhatWiener);
 
 // n0 = 5.
 
