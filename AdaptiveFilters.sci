@@ -1018,6 +1018,12 @@ endfunction
 //*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
 //
 // The following code is still under development. Don't use it yet.
+// Here's the status of things.  Formation of the current windows seems
+// to be fine.  We slide a window one sample at a time (maybe that's
+// correct?).  The previous window is represented by x_(n - L), where
+// x_ represents a vector.
+// That is, x_(n - L) = [x(n-L) x(n-L-1) ... x(n-l-p]'.  This vector
+// needs to be formed, but it's not being done correctly.
 //
 //*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
 //*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
@@ -1051,7 +1057,7 @@ endfunction
 //    coefficients for iteration 2, and so on.
 //
 //**********************************************************************
-function W = rls_slidingWindow(x,d,nord,L)
+function W = rls_blah(x,d,nord,L)
 
   // Set initial reciprocal value for the P matrix.
   delta = 0.001;
@@ -1127,7 +1133,7 @@ function W = rls_slidingWindow(x,d,nord,L)
       g_t = z_t / (1 - X_prev(j,:) * z_t);
 
       // Update the a priori error.
-      alpha_t = dWindowPrev(j) - X_prev(j,:) * W_t(n,:).';
+      alpha_t = dWindowPrev(j) - X_prev(j,:) * W_t.';
 
       // Update the filter vector.
       W(n,:) = W_t - alpha_t * g_t.';
