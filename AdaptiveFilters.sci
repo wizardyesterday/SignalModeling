@@ -1141,13 +1141,13 @@ function W = rls_slidingWindow(x,d,nord,L)
       // Update inverse autocorrelation matrix.
       P = P_t + g * z_t.';
 
-      // Update the previous buffers.
-      xWindowPrev = xWindow(2:$);
-      dWindowPrev = dWindow;
-
       // Increment to the next iteration of w_n.
       n = n + 1;
     end
+
+    // Update the previous buffers.
+    xWindowPrev = xWindow(2:$);
+    dWindowPrev = dWindow;
   end
 
 endfunction
