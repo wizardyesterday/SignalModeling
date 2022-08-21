@@ -1011,3 +1011,148 @@ function [W,dhat] = nlms_noiseCanceller(x,n0,Beta,nord,w0)
   end
 
 endfunction
+
+
+//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+//
+// The following code is still under development. Don't use it yet.
+//
+//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+
+//**********************************************************************
+//
+//  Name: rls_slidingWindow
+//
+//  The purpose of this function is to perform adaptive filtering
+//  using the sliding window  recursive least squares algorithm.
+//
+//  Calling Sequence: W = rls_slidingWindow(x,d,nord,L)
+//
+//  Inputs:
+//
+//    x - The input data to the adaptive filter.
+//
+//    d - The desired output.
+//
+//    nord - The number of filter coefficients.
+//
+//    L - The window size in samples.
+//    
+//  Outputs:
+//
+//    W - A matrix of filter coefficients as they evolve over time.
+//    Each row of this matrix contains the coefficients at the
+//    iteration that is associated with the row.  For example, row 1
+//    contains the coefficients for iteration 1, row 2 contains the
+//    coefficients for iteration 2, and so on.
+//
+//**********************************************************************
+function W = rls_slidingWindow(x,d,nord,L)
+
+  // Set initial reciprocal value for the P matrix.
+  delta = 0.001;
+
+  // Construct the data matrix.
+  X = convm(x,nord);
+
+  // Retrieve the size of the data matrix.
+  [M,N] = size(X);
+
+  // Initial value.
+  P = eye(N,N) / delta;
+
+  // Initialize first iteration of the filter vectors.
+  W(1,:) = zeros(1,N);
+  W_t(1,:) = zeros(1,N);
+
+  // Allocate previous windows.
+  xWindowPrev = zeros(1,L);
+  dWindowPrev = zeros(1:L);
+
+  // Construct the data matrix.
+  X_prev = convm(x,nord);
+
+  // Initialize iteration number.
+  n = 2;
+ 
+//  for k = 2:L:M - nord - L
+  for k = 2:M - nord - L
+
+    // Set current windows.
+    xWindow = x(k:k+L+1);
+    dWindow = d(k:k+L);
+
+    // Construct convolution matrices.
+    X = convm(xWindow,nord);
+    X_prev = convm(xWindowPrev,nord);
+
+    for j = 1:L
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      // First step of the algorithm.  This is the updating
+      // step.
+      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+      // Update the filtered information vector.
+      z = P * X(j,:)';
+
+      // Update gain vector.
+      g = z / (1 + X(j,:) * z);
+
+      // Update the a priori error.
+      alpha = dWindow(j) - X(j,:) * W(n-1,:).';
+
+      // Update the filter vector.
+      W_t = W(n-1,:) + alpha * g.';
+
+      // Update inverse autocorrelation matrix.
+      P_t = P - g * z.';
+
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      // Second step of the algorithm.  This is the
+      // downdating step.
+      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+      // Update the filtered information vector.
+      z_t = P_t * X_prev(j,:)';
+
+      // Update gain vector.
+      g_t = z_t / (1 - X_prev(j,:) * z_t);
+
+      // Update the a priori error.
+      alpha_t = dWindowPrev(j) - X_prev(j,:) * W_t(n,:).';
+
+      // Update the filter vector.
+      W(n,:) = W_t - alpha_t * g_t.';
+
+      // Update inverse autocorrelation matrix.
+      P = P_t + g * z_t.';
+
+      // Update the previous buffers.
+      xWindowPrev = xWindow(2:$);
+      dWindowPrev = dWindow;
+
+      // Increment to the next iteration of w_n.
+      n = n + 1;
+    end
+  end
+
+endfunction
+
+//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+//
+// Remember, don't use the rls_slidingWindow() function, yet.
+//
+//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
+
