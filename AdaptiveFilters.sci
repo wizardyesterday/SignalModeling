@@ -1057,7 +1057,7 @@ endfunction
 //    coefficients for iteration 2, and so on.
 //
 //**********************************************************************
-function W = rls_blah(x,d,nord,L)
+function W = rls_slidingWindow(x,d,nord,L)
 
   // Set initial reciprocal value for the P matrix.
   delta = 0.001;
