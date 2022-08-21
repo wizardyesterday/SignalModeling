@@ -1025,6 +1025,9 @@ endfunction
 // That is, x_(n - L) = [x(n-L) x(n-L-1) ... x(n-l-p]'.  This vector
 // needs to be formed, but it's not being done correctly.
 //
+// Okay, we're getting there.  The output of the algorithm still is
+// incorrect, so there is more work to be done.
+//
 //*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
 //*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
 //*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
@@ -1085,12 +1088,23 @@ function W = rls_slidingWindow(x,d,nord,L)
   // Initialize iteration number.
   n = 2;
  
-//  for k = 2:L:M - nord - L
-  for k = 2:M - nord - L
+  for k = 2:L:M - nord - L
+//  for k = 2:M - nord - L
 
     // Set current windows.
     xWindow = x(k:k+L+1);
     dWindow = d(k:k+L);
+
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Wait until at least one buffer
+    // is available to be transferred to
+    // the previous buffer.
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    if (k - L) > 0
+      // Update the previous windows.
+      xWindowPrev = x(k-L:k);
+      dWindowPrev = d(k-L:k);
+    end
 
     // Construct convolution matrices.
     X = convm(xWindow,nord);
@@ -1145,9 +1159,6 @@ function W = rls_slidingWindow(x,d,nord,L)
       n = n + 1;
     end
 
-    // Update the previous buffers.
-    xWindowPrev = xWindow(2:$);
-    dWindowPrev = dWindow;
   end
 
 endfunction
