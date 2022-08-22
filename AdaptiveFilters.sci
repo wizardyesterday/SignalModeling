@@ -1065,11 +1065,20 @@ function W = rls_slidingWindow(x,d,nord,L)
   // Set initial reciprocal value for the P matrix.
   delta = 0.001;
 
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // This block of code is necessary so that the
+  // size of the convolution matrix can be retrieved
+  // for further operations.  The computed value of
+  // N isn't really needed since it indirectly set
+  // to the value of nord (the order, p, of the
+  // filter).
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct the data matrix.
   X = convm(x,nord);
 
   // Retrieve the size of the data matrix.
   [M,N] = size(X);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Initial value.
   P = eye(N,N) / delta;
@@ -1083,7 +1092,6 @@ function W = rls_slidingWindow(x,d,nord,L)
   dWindowPrev = zeros(1:L);
 
   // Construct the data matrix.
-  X_prev = convm(x,nord);
 
   // Initialize iteration number.
   n = 2;
