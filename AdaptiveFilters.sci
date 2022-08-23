@@ -328,8 +328,8 @@ function W = rls_slidingWindow(x,d,nord,L)
   // This block of code is necessary so that the
   // size of the convolution matrix can be retrieved
   // for further operations.  The computed value of
-  // N isn't really needed since it indirectly set
-  // to the value of nord (the order, p, of the
+  // N isn't really needed since it is indirectly
+  // set to the value of nord (the order, p, of the
   // filter).
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Construct the data matrix.
@@ -350,10 +350,21 @@ function W = rls_slidingWindow(x,d,nord,L)
   xWindowPrev = zeros(1,L);
   dWindowPrev = zeros(1:L);
 
-  // Initialize iteration number.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Initialize the iteration number.  Note that this
+  // variable tracks the value of the outer loop
+  // index (it has the same value of the index, k.
+  // When I wrote the original code, I needed
+  // flexibility with respect to the index for the
+  // coefficient vector, and the index used for the
+  // row of the convolution matrix.  Books present
+  // things in a simple manner.  Unfortunately,
+  // implementing these algorithms can sometimes be
+  // somewhat tricky.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   n = 2;
  
-  for k = 2:L:M - nord - L
+  for k = 2:M - nord - L
 
     // Set current windows.
     xWindow = x(k:k+L+1);
@@ -374,13 +385,13 @@ function W = rls_slidingWindow(x,d,nord,L)
     X = convm(xWindow,nord);
     X_prev = convm(xWindowPrev,nord);
 
-    for j = 1:L
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
-      // First step of the algorithm.  This is the updating
-      // step.
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // First step of the algorithm.  This is the updating
+    // step.
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    for j = 1:L+1
 
       // Update the filtered information vector.
       z = P * X(j,:)';
@@ -392,37 +403,38 @@ function W = rls_slidingWindow(x,d,nord,L)
       alpha = dWindow(j) - X(j,:) * W(n-1,:).';
 
       // Update the filter vector.
-      W_t = W(n-1,:) + alpha * g.';
+      W_tilde = W(n-1,:) + alpha * g.';
 
       // Update inverse autocorrelation matrix.
-      P_t = P - g * z.';
-
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
-      // Second step of the algorithm.  This is the
-      // downdating step.
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-
-      // Update the filtered information vector.
-      z_t = P_t * X_prev(j,:)';
-
-      // Update gain vector.
-      g_t = z_t / (1 - X_prev(j,:) * z_t);
-
-      // Update the a priori error.
-      alpha_t = dWindowPrev(j) - X_prev(j,:) * W_t.';
-
-      // Update the filter vector.
-      W(n,:) = W_t - alpha_t * g_t.';
-
-      // Update inverse autocorrelation matrix.
-      P = P_t + g * z_t.';
-
-      // Increment to the next iteration of w_n.
-      n = n + 1;
+      P_tilde = P - g * z.';
     end
 
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // Second step of the algorithm.  This is the
+    // downdating step.
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    for j = 1:L
+
+      // Update the filtered information vector.
+      z_tilde = P_tilde * X_prev(j,:)';
+
+      // Update gain vector.
+      g_tilde = z_tilde / (1 - X_prev(j,:) * z_tilde);
+
+      // Update the a priori error.
+      alpha_tilde = dWindowPrev(j) - X_prev(j,:) * W_tilde.';
+
+      // Update the filter vector.
+      W(n,:) = W_tilde - alpha_tilde * g_tilde.';
+
+      // Update inverse autocorrelation matrix.
+      P = P_tilde + g_tilde * z_tilde.';
+    end
+
+    // Increment to the next iteration of w_n.
+    n = n + 1;
   end
 
 endfunction
