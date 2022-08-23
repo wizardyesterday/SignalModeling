@@ -129,11 +129,8 @@ for j = 1:numberOfSamples
 end
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// Part (d): Modify the m-file for the RLS algorithm to implement
-// a sliding window RLS algorithm.
-// This will be completed at a latter time, when I locate the
-// original literature that derived the subject matter in the
-// textbook.
+// Part (d): The function, rls_slidingWindow() has been added to
+// the AdaptiveFilters.sci file.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -144,7 +141,6 @@ end
 // Compare the effectiveness of the LMS, growing window RLS,
 // exponentially weighted RLS, and sliding window RLS algorithms
 // for adaptive linear prediction.
-// Note: sliding window RLS will be implemented at a later time.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Generate unit variance white noise.
 v = generateGaussianProcess(1,200,1);
@@ -176,6 +172,9 @@ xnm1 = filterBlock(X2,[0 1],0);
 
 // Run the LMS filter.
 [W_a2_mu_p2,E_dummy] = lms(xnm1,X2,muMax/150,2);
+
+// Run the second-order sliding window RLS filter with a window of 30 samples.
+Wrls_sw = rls_slidingWindow(xnm1,X2,2,30);
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 // Plot results.
@@ -246,29 +245,33 @@ plot(ESqAvg_a1_lamda5_p2);
 scf(3);
 
 // Part (e).
-subplot(321);
+subplot(421);
 title('RLS Coefficient Trajectory, Lamda = 1, a2, p = 2');
 plot(W_a2_lamda1_p2);
 
-subplot(322);
+subplot(422);
 title('RLS Coefficient Trajectory, Lamda = 0.99, a2, p = 2');
 plot(W_a2_lamda2_p2);
 
-subplot(323);
+subplot(423);
 title('RLS Coefficient Trajectory, Lamda = 0.95, a2, p = 2');
 plot(W_a2_lamda3_p2);
 
-subplot(324);
+subplot(424);
 title('RLS Coefficient Trajectory, Lamda = 0.92, a2, p = 2');
 plot(W_a2_lamda4_p2);
 
-subplot(325);
+subplot(425);
 title('RLS Coefficient Trajectory, Lamda = 0.90, a2, p = 2');
 plot(W_a2_lamda5_p2);
 
-subplot(326);
+subplot(426);
 title('LMS Coefficient Trajectory, mu = muMax/150, a2, p = 2');
 plot(W_a2_mu_p2);
+
+subplot(427);
+title('Sliding Window RLS Coefficient Trajectory, L = 30, a2, p = 2');
+plot(Wrls_sw);
 
 
 

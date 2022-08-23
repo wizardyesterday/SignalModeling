@@ -293,6 +293,142 @@ endfunction
 
 //**********************************************************************
 //
+//  Name: rls_slidingWindow
+//
+//  The purpose of this function is to perform adaptive filtering
+//  using the sliding window  recursive least squares algorithm.
+//
+//  Calling Sequence: W = rls_slidingWindow(x,d,nord,L)
+//
+//  Inputs:
+//
+//    x - The input data to the adaptive filter.
+//
+//    d - The desired output.
+//
+//    nord - The number of filter coefficients.
+//
+//    L - The window size in samples.
+//    
+//  Outputs:
+//
+//    W - A matrix of filter coefficients as they evolve over time.
+//    Each row of this matrix contains the coefficients at the
+//    iteration that is associated with the row.  For example, row 1
+//    contains the coefficients for iteration 1, row 2 contains the
+//    coefficients for iteration 2, and so on.
+//
+//**********************************************************************
+function W = rls_slidingWindow(x,d,nord,L)
+
+  // Set initial reciprocal value for the P matrix.
+  delta = 0.001;
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // This block of code is necessary so that the
+  // size of the convolution matrix can be retrieved
+  // for further operations.  The computed value of
+  // N isn't really needed since it indirectly set
+  // to the value of nord (the order, p, of the
+  // filter).
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Construct the data matrix.
+  X = convm(x,nord);
+
+  // Retrieve the size of the data matrix.
+  [M,N] = size(X);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  // Initial value.
+  P = eye(N,N) / delta;
+
+  // Initialize first iteration of the filter vectors.
+  W(1,:) = zeros(1,N);
+  W_t(1,:) = zeros(1,N);
+
+  // Allocate previous windows.
+  xWindowPrev = zeros(1,L);
+  dWindowPrev = zeros(1:L);
+
+  // Initialize iteration number.
+  n = 2;
+ 
+  for k = 2:L:M - nord - L
+
+    // Set current windows.
+    xWindow = x(k:k+L+1);
+    dWindow = d(k:k+L);
+
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Wait until at least one buffer
+    // is available to be transferred to
+    // the previous buffer.
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    if (k - L) > 0
+      // Update the previous windows.
+      xWindowPrev = x(k-L:k);
+      dWindowPrev = d(k-L:k);
+    end
+
+    // Construct convolution matrices.
+    X = convm(xWindow,nord);
+    X_prev = convm(xWindowPrev,nord);
+
+    for j = 1:L
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      // First step of the algorithm.  This is the updating
+      // step.
+      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+      // Update the filtered information vector.
+      z = P * X(j,:)';
+
+      // Update gain vector.
+      g = z / (1 + X(j,:) * z);
+
+      // Update the a priori error.
+      alpha = dWindow(j) - X(j,:) * W(n-1,:).';
+
+      // Update the filter vector.
+      W_t = W(n-1,:) + alpha * g.';
+
+      // Update inverse autocorrelation matrix.
+      P_t = P - g * z.';
+
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      // Second step of the algorithm.  This is the
+      // downdating step.
+      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+      // Update the filtered information vector.
+      z_t = P_t * X_prev(j,:)';
+
+      // Update gain vector.
+      g_t = z_t / (1 - X_prev(j,:) * z_t);
+
+      // Update the a priori error.
+      alpha_t = dWindowPrev(j) - X_prev(j,:) * W_t.';
+
+      // Update the filter vector.
+      W(n,:) = W_t - alpha_t * g_t.';
+
+      // Update inverse autocorrelation matrix.
+      P = P_t + g * z_t.';
+
+      // Increment to the next iteration of w_n.
+      n = n + 1;
+    end
+
+  end
+
+endfunction
+
+//**********************************************************************
+//
 //  Name: lms_signError
 //
 //  The purpose of this function is to perform adaptive filtering using
@@ -1011,171 +1147,4 @@ function [W,dhat] = nlms_noiseCanceller(x,n0,Beta,nord,w0)
   end
 
 endfunction
-
-
-//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
-//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
-//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
-//
-// The following code is still under development. Don't use it yet.
-// Here's the status of things.  Formation of the current windows seems
-// to be fine.  We slide a window one sample at a time (maybe that's
-// correct?).  The previous window is represented by x_(n - L), where
-// x_ represents a vector.
-// That is, x_(n - L) = [x(n-L) x(n-L-1) ... x(n-l-p]'.  This vector
-// needs to be formed, but it's not being done correctly.
-//
-// Okay, we're getting there.  The output of the algorithm still is
-// incorrect, so there is more work to be done.
-//
-//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
-//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
-//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
-
-//**********************************************************************
-//
-//  Name: rls_slidingWindow
-//
-//  The purpose of this function is to perform adaptive filtering
-//  using the sliding window  recursive least squares algorithm.
-//
-//  Calling Sequence: W = rls_slidingWindow(x,d,nord,L)
-//
-//  Inputs:
-//
-//    x - The input data to the adaptive filter.
-//
-//    d - The desired output.
-//
-//    nord - The number of filter coefficients.
-//
-//    L - The window size in samples.
-//    
-//  Outputs:
-//
-//    W - A matrix of filter coefficients as they evolve over time.
-//    Each row of this matrix contains the coefficients at the
-//    iteration that is associated with the row.  For example, row 1
-//    contains the coefficients for iteration 1, row 2 contains the
-//    coefficients for iteration 2, and so on.
-//
-//**********************************************************************
-function W = rls_slidingWindow(x,d,nord,L)
-
-  // Set initial reciprocal value for the P matrix.
-  delta = 0.001;
-
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // This block of code is necessary so that the
-  // size of the convolution matrix can be retrieved
-  // for further operations.  The computed value of
-  // N isn't really needed since it indirectly set
-  // to the value of nord (the order, p, of the
-  // filter).
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Construct the data matrix.
-  X = convm(x,nord);
-
-  // Retrieve the size of the data matrix.
-  [M,N] = size(X);
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-
-  // Initial value.
-  P = eye(N,N) / delta;
-
-  // Initialize first iteration of the filter vectors.
-  W(1,:) = zeros(1,N);
-  W_t(1,:) = zeros(1,N);
-
-  // Allocate previous windows.
-  xWindowPrev = zeros(1,L);
-  dWindowPrev = zeros(1:L);
-
-  // Initialize iteration number.
-  n = 2;
- 
-  for k = 2:L:M - nord - L
-//  for k = 2:M - nord - L
-
-    // Set current windows.
-    xWindow = x(k:k+L+1);
-    dWindow = d(k:k+L);
-
-    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-    // Wait until at least one buffer
-    // is available to be transferred to
-    // the previous buffer.
-    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-    if (k - L) > 0
-      // Update the previous windows.
-      xWindowPrev = x(k-L:k);
-      dWindowPrev = d(k-L:k);
-    end
-
-    // Construct convolution matrices.
-    X = convm(xWindow,nord);
-    X_prev = convm(xWindowPrev,nord);
-
-    for j = 1:L
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
-      // First step of the algorithm.  This is the updating
-      // step.
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-
-      // Update the filtered information vector.
-      z = P * X(j,:)';
-
-      // Update gain vector.
-      g = z / (1 + X(j,:) * z);
-
-      // Update the a priori error.
-      alpha = dWindow(j) - X(j,:) * W(n-1,:).';
-
-      // Update the filter vector.
-      W_t = W(n-1,:) + alpha * g.';
-
-      // Update inverse autocorrelation matrix.
-      P_t = P - g * z.';
-
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
-      // Second step of the algorithm.  This is the
-      // downdating step.
-      //++++++++++++++++++++++++++++++++++++++++++++++++++++++
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-
-      // Update the filtered information vector.
-      z_t = P_t * X_prev(j,:)';
-
-      // Update gain vector.
-      g_t = z_t / (1 - X_prev(j,:) * z_t);
-
-      // Update the a priori error.
-      alpha_t = dWindowPrev(j) - X_prev(j,:) * W_t.';
-
-      // Update the filter vector.
-      W(n,:) = W_t - alpha_t * g_t.';
-
-      // Update inverse autocorrelation matrix.
-      P = P_t + g * z_t.';
-
-      // Increment to the next iteration of w_n.
-      n = n + 1;
-    end
-
-  end
-
-endfunction
-
-//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
-//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
-//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
-//
-// Remember, don't use the rls_slidingWindow() function, yet.
-//
-//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
-//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
-//*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
 
