@@ -1091,8 +1091,6 @@ function W = rls_slidingWindow(x,d,nord,L)
   xWindowPrev = zeros(1,L);
   dWindowPrev = zeros(1:L);
 
-  // Construct the data matrix.
-
   // Initialize iteration number.
   n = 2;
  
